@@ -82,7 +82,11 @@ label{display:block;margin-top:12px;font-weight:600}
 <h2 id="cdt">New course</h2>
 <label>Course name<input name="name" required maxlength="80" placeholder="Algorithms"></label>
 <label>Professor<input name="prof" maxlength="80"></label>
-<label>Class times and room<input name="sched" maxlength="120" placeholder="Mon 08:00, Room B2.3"></label>
+<label>Class day<select name="day"><option value="">No weekly class<option value="MO">Monday<option value="TU">Tuesday<option value="WE">Wednesday<option value="TH">Thursday<option value="FR">Friday<option value="SA">Saturday<option value="SU">Sunday</select></label>
+<label>Starts<input type="time" name="start"></label>
+<label>Ends<input type="time" name="end"></label>
+<label>Room<input name="room" maxlength="60" placeholder="B2.3"></label>
+<label>Repeats until (end of semester)<input type="date" name="until"></label>
 <div class="act"><button type="button" id="cdel" class="lnk dng">Delete</button><span></span><button type="button" class="lnk" data-x>Cancel</button><button class="pri">Save course</button></div>
 </form></dialog>
 <script type="module">
@@ -122,7 +126,7 @@ function render(){
  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
  const L=$('#list');
  if(view==='courses'){
-  L.innerHTML=courses.length?[...courses].sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<li class="t" data-c="${c.id}" style="--h:${hue(c.id)}"><div class="b"><b>${esc(c.name)}</b><small>${esc([c.prof,c.sched].filter(Boolean).join(', '))||'No details yet'}</small></div><span class="r">${tasks.filter(t=>t.courseId===c.id&&!t.done).length} open</span></li>`).join(''):empty('No courses yet','Tap + to add a course, then link tasks to it.');
+  L.innerHTML=courses.length?[...courses].sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<li class="t" data-c="${c.id}" style="--h:${hue(c.id)}"><div class="b"><b>${esc(c.name)}</b><small>${esc([c.prof,c.day?({MO:'Mon',TU:'Tue',WE:'Wed',TH:'Thu',FR:'Fri',SA:'Sat',SU:'Sun'})[c.day]+' '+c.start+'-'+c.end:c.sched,c.room].filter(Boolean).join(', '))||'No details yet'}</small></div><span class="r">${tasks.filter(t=>t.courseId===c.id&&!t.done).length} open</span></li>`).join(''):empty('No courses yet','Tap + to add a course, then link tasks to it.');
   return;
  }
  const eod=new Date();eod.setHours(23,59,59,999);const wk=Date.now()+7*864e5;
@@ -163,12 +167,12 @@ $('#tdel').onclick=()=>{if(confirm('Delete this task?')){setDoc(path('tasks',edi
 function openCourse(id){
  editing=id||null;const c=courses.find(x=>x.id===id),f=$('#cf');
  $('#cdt').textContent=c?'Edit course':'New course';$('#cdel').hidden=!c;
- f.name.value=c?.name||'';f.prof.value=c?.prof||'';f.sched.value=c?.sched||'';
- $('#cd').showModal();
+ f.name.value=c?.name||'';f.prof.value=c?.prof||'';f.day.value=c?.day||'';f.start.value=c?.start||'';f.end.value=c?.end||'';f.room.value=c?.room||'';f.until.value=c?.until||'';
+ window.dlCourse=c;const g=$('#chg');if(g)g.hidden=!(c&&c.day&&c.start&&c.until);$('#cd').showModal();
 }
 $('#cf').onsubmit=e=>{
  e.preventDefault();const f=e.target,id=editing||crypto.randomUUID();
- setDoc(path('courses',id),{name:f.name.value.trim(),prof:f.prof.value.trim(),sched:f.sched.value.trim(),updatedAt:Date.now()}).catch(er=>msg(er.message));
+ setDoc(path('courses',id),{name:f.name.value.trim(),prof:f.prof.value.trim(),day:f.day.value,start:f.start.value,end:f.end.value,room:f.room.value.trim(),until:f.until.value,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));
  $('#cd').close();
 };
 $('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose the course link.')){deleteDoc(path('courses',editing)).catch(er=>msg(er.message));$('#cd').close()}};
