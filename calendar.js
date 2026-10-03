@@ -33,6 +33,7 @@ async function sync(){
  busy=true;
  try{
   for(const t of tasks)if(t.deleted&&!t.calSig)await deleteDoc(pth(t));
+  for(const c of courses)if(c.deleted&&!c.calSig)await deleteDoc(cref(c));
   if(!on()){tok=null;return}
   for(const t of tasks){
    const w=want(t),h=t.calSig||null;

@@ -117,7 +117,7 @@ onAuthStateChanged(auth,u=>{
  if(!u){uid=null;return}
  uid=u.uid;$('#sub').textContent=new Date().toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'});
  const sub=(n,cb)=>onSnapshot(collection(db,`users/${uid}/${n}`),s=>{cb(s.docs.map(d=>({id:d.id,...d.data()})));render();$('#st').textContent=s.metadata.hasPendingWrites?'Saving':s.metadata.fromCache?'Offline copy':'Synced'},e=>msg(e.message));
- unsubs=[sub('courses',a=>courses=a),sub('tasks',a=>tasks=a.filter(t=>!t.deleted))];
+ unsubs=[sub('courses',a=>courses=a.filter(c=>!c.deleted)),sub('tasks',a=>tasks=a.filter(t=>!t.deleted))];
 });
 
 function render(){
@@ -175,9 +175,10 @@ $('#cf').onsubmit=e=>{
  setDoc(path('courses',id),{name:f.name.value.trim(),prof:f.prof.value.trim(),day:f.day.value,start:f.start.value,end:f.end.value,room:f.room.value.trim(),until:f.until.value,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));
  $('#cd').close();
 };
-$('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose the course link.')){deleteDoc(path('courses',editing)).catch(er=>msg(er.message));$('#cd').close()}};
+$('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose the course link.')){setDoc(path('courses',editing),{day:'',deleted:true,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));$('#cd').close()}};
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
 <script type="module" src="calendar.js"></script>
+<script type="module" src="backup.js"></script>
 </body></html>
