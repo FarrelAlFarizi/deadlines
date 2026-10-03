@@ -14,7 +14,7 @@ const want=t=>!t.done&&!t.deleted?sig(t):null;
 const pth=t=>doc(db,`users/${uid}/tasks/${t.id}`);
 const eid=t=>'dl'+t.id.replace(/-/g,'');
 const on=()=>tok&&Date.now()<exp;
-function lab(){const n=tasks.filter(t=>want(t)!==(t.calSig||null)).length+courses.filter(c=>cpend(c)).length;btn.textContent=on()?'Calendar on':n?`Connect Calendar (${n})`:'Connect Calendar'}
+function lab(){const n=tasks.filter(t=>want(t)!==(t.calSig||null)).length+courses.filter(c=>cpend(c)).length;btn.textContent=on()?'Calendar on':n?`Sync ${n} to Calendar`:'Connect Calendar';btn.style.color=!on()&&n?'var(--late)':''}
 function body(t){
  const s=new Date(t.due),e=new Date(s.getTime()+30*6e4);
  const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
