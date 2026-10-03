@@ -1,0 +1,31 @@
+/* Visual polish, loaded after the inline styles */
+:root{--bg:#F4F2FF;--s:#fff;--ln:#E6E3F5;--ac:#5B4BFF;--sh:0 1px 2px rgb(20 16 60/.06),0 8px 24px rgb(20 16 60/.07)}
+@media(prefers-color-scheme:dark){:root{--bg:#0B0E1A;--s:#151A2C;--ln:#262C45;--ac:#9AA2FF;--sh:0 1px 2px rgb(0 0 0/.4),0 8px 24px rgb(0 0 0/.35)}}
+body{background:radial-gradient(900px 360px at 50% -140px,color-mix(in srgb,var(--ac) 24%,transparent),transparent) no-repeat,var(--bg)}
+header{padding-top:28px}
+header h1{letter-spacing:-.03em}
+.t{border-left:0;position:relative;overflow:hidden;box-shadow:var(--sh);border-radius:18px;padding:14px 14px 14px 20px}
+.t::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:hsl(var(--h,230) 70% 58%)}
+.t b{font-size:1.02rem}
+.r{font-size:.82rem;padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--mut) 14%,transparent)}
+.late .r{background:color-mix(in srgb,var(--late) 16%,transparent)}
+.soon .r{background:color-mix(in srgb,var(--soon) 18%,transparent)}
+.fin .r{background:none}
+.chk{border-radius:10px;transition:background .15s}
+.fin .chk{background:color-mix(in srgb,var(--ac) 18%,transparent)}
+#tabs{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:616px;margin:0 auto;border:1px solid var(--ln);border-radius:22px;box-shadow:var(--sh);padding-bottom:0;overflow:hidden}
+#tabs button{padding:15px 2px}
+#tabs .on{box-shadow:none;background:color-mix(in srgb,var(--ac) 14%,transparent)}
+#fab{bottom:calc(88px + env(safe-area-inset-bottom));background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 50%,#ff6bd6))}
+dialog{border-radius:24px;box-shadow:var(--sh)}
+input,select,textarea{border-radius:12px}
+.pri{border-radius:12px;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 60%,#ff6bd6))}
+#cls h3{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:4px 0 8px}
+.c{display:flex;gap:14px;align-items:center;background:color-mix(in srgb,hsl(var(--h,230) 70% 58%) 12%,var(--s));border-radius:18px;padding:12px 16px;margin-bottom:8px;box-shadow:var(--sh)}
+.c time{font-weight:800;min-width:96px;font-variant-numeric:tabular-nums}
+.c small{display:block}
+.c.x{opacity:.55}.c.x b{text-decoration:line-through}
+#cls{margin-bottom:6px}
+#flt{display:flex;gap:8px;margin:0 0 12px}
+#flt input{flex:1;margin:0}
+#flt select{width:auto;margin:0}

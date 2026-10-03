@@ -9,7 +9,7 @@ const btn=document.createElement('button');btn.id='cal';btn.className='lnk';
 document.querySelector('.hr').insertBefore(btn,document.querySelector('#out'));
 const stat=m=>{document.querySelector('#st').textContent=m};
 const cn=t=>courses.find(c=>c.id===t.courseId)?.name||'';
-const sig=t=>[t.title,t.type,t.due,t.notes,cn(t)].join('|');
+const sig=t=>[t.title,t.type,t.due,t.notes,cn(t),JSON.stringify((window.dlRem||{})[t.type]||REM[t.type])].join('|');
 const want=t=>!t.done&&!t.deleted?sig(t):null;
 const pth=t=>doc(db,`users/${uid}/tasks/${t.id}`);
 const eid=t=>'dl'+t.id.replace(/-/g,'');
@@ -20,7 +20,7 @@ function body(t){
  const tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
  return {id:eid(t),status:'confirmed',summary:`${t.type}: ${t.title}`,description:[cn(t),t.notes].filter(Boolean).join('\n'),
   start:{dateTime:s.toISOString(),timeZone:tz},end:{dateTime:e.toISOString(),timeZone:tz},
-  reminders:{useDefault:false,overrides:(REM[t.type]||[1440]).map(m=>({method:'popup',minutes:m}))}};
+  reminders:{useDefault:false,overrides:((window.dlRem||{})[t.type]||REM[t.type]||[1440]).map(m=>({method:'popup',minutes:m}))}};
 }
 const gc=async(m,p,b)=>{
  const r=await fetch(GC+p,{method:m,headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});
@@ -28,7 +28,7 @@ const gc=async(m,p,b)=>{
  return r;
 };
 async function sync(){
- if(!uid)return;
+ if(!uid||window.dlReady===false)return;
  if(busy){again=true;return}
  busy=true;
  try{
@@ -74,7 +74,7 @@ const p2=n=>String(n).padStart(2,'0');
 const dstr=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
 function occ(c,n){const a=[],d=new Date(),u=new Date(c.until+'T23:59');d.setHours(0,0,0,0);for(;a.length<n&&d<=u;d.setDate(d.getDate()+1))if(d.getDay()===DN[c.day])a.push(dstr(d));return a}
 const live=c=>c.day&&c.start&&c.end&&c.until&&occ(c,1).length>0;
-const csig=c=>[c.name,c.prof,c.day,c.start,c.end,c.room,c.until].join('|');
+const csig=c=>[c.name,c.prof,c.day,c.start,c.end,c.room,c.until,(window.dlClsRem||[30]).join()].join('|');
 const cid=c=>'dlc'+c.id.replace(/-/g,'');
 const cref=c=>doc(db,`users/${uid}/courses/${c.id}`);
 const at=(d,t)=>({dateTime:new Date(`${d}T${t}`).toISOString(),timeZone:Intl.DateTimeFormat().resolvedOptions().timeZone});
@@ -82,7 +82,7 @@ const ovd=c=>{const o=c.ov||{},a=c.calOv||{};return Object.keys({...o,...a}).som
 const cpend=c=>{const w=live(c)?csig(c):null;return w!==(c.calSig||null)||(w&&ovd(c))};
 function cbody(c){const d=occ(c,1)[0];return {id:cid(c),status:'confirmed',summary:c.name,location:c.room||'',description:c.prof?'Lecturer: '+c.prof:'',
  start:at(d,c.start),end:at(d,c.end),recurrence:[`RRULE:FREQ=WEEKLY;BYDAY=${c.day};UNTIL=${c.until.replace(/-/g,'')}T235959Z`],
- reminders:{useDefault:false,overrides:[{method:'popup',minutes:30}]}}}
+ reminders:{useDefault:false,overrides:(window.dlClsRem||[30]).map(m=>({method:'popup',minutes:m}))}}}
 const obody=(c,k,o)=>o?(o.mode==='cancel'?{status:'cancelled'}:{status:'confirmed',start:at(o.date||k,o.start||c.start),end:at(o.date||k,o.end||c.end),location:o.room||c.room||''}):{status:'confirmed',start:at(k,c.start),end:at(k,c.end),location:c.room||''};
 async function syncCourses(){
  for(let c of courses){
@@ -122,3 +122,5 @@ f.onsubmit=e=>{e.preventDefault();const k=f.k.value,ov={...(cur.ov||{})};
  if(f.m.value==='reset')delete ov[k];else ov[k]=f.m.value==='cancel'?{mode:'cancel'}:{mode:'move',date:f.d.value||k,start:f.s.value,end:f.e.value,room:f.r.value.trim()};
  updateDoc(cref(cur),{ov}).catch(er=>stat(er.message));dlg.close()};
 dlg.querySelector('#ox').onclick=()=>dlg.close();
+
+document.addEventListener('dlcfg',()=>{lab();sync()});

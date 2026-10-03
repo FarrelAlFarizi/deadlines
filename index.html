@@ -52,7 +52,7 @@ dialog::backdrop{background:rgb(0 0 0/.5)}
 dialog h2{margin:0 0 8px}
 label{display:block;margin-top:12px;font-weight:600}
 .act{display:flex;gap:8px;align-items:center;margin-top:20px}.act span{flex:1}
-</style></head>
+</style><link rel="stylesheet" href="theme.css"></head>
 <body>
 <main id="login" hidden>
 <h1>Deadlines</h1>
@@ -134,7 +134,7 @@ function render(){
  L.innerHTML=a.length?a.map(t=>{
   const c=courses.find(x=>x.id===t.courseId),ms=due(t)-Date.now();
   const u=t.done?'fin':ms<0?'late':ms<1728e5?'soon':'';
-  return `<li class="t ${u}" data-id="${t.id}" style="--h:${c?hue(c.id):230}"><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${t.done?'✓':''}</button><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Done':rel(ms)}</span></li>`}).join(''):
+  return `<li class="t ${u}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230}"><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${t.done?'✓':''}</button><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Done':rel(ms)}</span></li>`}).join(''):
   empty({today:'Nothing due today',week:'Nothing due this week',all:'No open tasks',done:'Nothing finished yet'}[view],'Tap + to add a task.');
 }
 setInterval(render,6e4);
@@ -179,6 +179,7 @@ $('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
+<script type="module" src="extras.js"></script>
 <script type="module" src="calendar.js"></script>
 <script type="module" src="backup.js"></script>
 </body></html>
