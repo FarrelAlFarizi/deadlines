@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Deadlines</title>
+<meta name="theme-color" content="#4F46E5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Deadlines">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF1F6;--s:#fff;--ink:#101828;--mut:#667085;--ln:#D8DEE9;--ac:#4F46E5;--onac:#fff;--late:#D92D20;--soon:#B54708;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#0E1320;--s:#171E2E;--ink:#EAEEF7;--mut:#8F9BB3;--ln:#2A3347;--ac:#8B93FF;--onac:#0E1320;--late:#FF6B5E;--soon:#F5B14C}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.4 'Bricolage Grotesque',system-ui,sans-serif}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left)}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{font-size:16px;width:100%;padding:10px 12px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);margin-top:4px}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+main,#app{max-width:640px;margin:0 auto;padding:0 16px}
+#login{padding-top:20vh}
+#login h1{font-size:3rem;margin:0 0 8px}
+header{display:flex;justify-content:space-between;align-items:flex-end;padding:24px 0 12px}
+header h1{font-size:2.4rem;font-weight:800;line-height:1;margin:0}
+small{color:var(--mut)}
+.hr{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.lnk{background:none;border:0;padding:6px 4px;cursor:pointer;color:var(--ac);font-weight:600}
+.dng{color:var(--late)}
+.pri{background:var(--ac);color:var(--onac);border:0;border-radius:10px;padding:12px 20px;font-weight:600;cursor:pointer}
+ul{list-style:none;margin:0;padding:0 0 150px}
+.t{display:flex;align-items:center;gap:12px;background:var(--s);border-left:6px solid hsl(var(--h,230) 65% 55%);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer}
+.t .b{flex:1;min-width:0}
+.t b{display:block;overflow-wrap:anywhere}
+.t small{display:block}
+.r{font-weight:600;font-size:1.05rem;text-align:right;white-space:nowrap}
+.late .r{color:var(--late)}.soon .r{color:var(--soon)}
+.fin b,.fin .r{text-decoration:line-through;opacity:.55}
+.chk{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--mut);background:none;cursor:pointer;font-weight:800;color:var(--ac)}
+.fin .chk{border-color:var(--ac)}
+.empty{text-align:center;padding:48px 8px;color:var(--mut)}
+.empty b{display:block;color:var(--ink);font-size:1.1rem}
+#fab{position:fixed;right:max(16px,calc(50% - 304px));bottom:calc(76px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;border:0;background:var(--ac);color:var(--onac);font-size:2rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgb(0 0 0/.3)}
+#tabs{position:fixed;left:0;right:0;bottom:0;background:var(--s);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
+#tabs div{max-width:640px;margin:0 auto;display:flex}
+#tabs button{flex:1;background:none;border:0;padding:14px 2px;cursor:pointer;color:var(--mut);font-weight:600;font-size:.9rem}
+#tabs .on{color:var(--ac);box-shadow:inset 0 3px var(--ac)}
+dialog{border:0;border-radius:16px;width:min(92vw,440px);padding:20px;background:var(--s);color:var(--ink)}
+dialog::backdrop{background:rgb(0 0 0/.5)}
+dialog h2{margin:0 0 8px}
+label{display:block;margin-top:12px;font-weight:600}
+.act{display:flex;gap:8px;align-items:center;margin-top:20px}.act span{flex:1}
+</style></head>
+<body>
+<main id="login" hidden>
+<h1>Deadlines</h1>
+<p>Classes, assignments and exams in one list, synced on every device you sign in on.</p>
+<button id="signin" class="pri">Sign in with Google</button>
+<p id="err" role="alert"></p>
+</main>
+<div id="app" hidden>
+<header><div><h1 id="ttl">Today</h1><small id="sub"></small></div>
+<div class="hr"><small id="st">Syncing</small><button id="out" class="lnk">Sign out</button></div></header>
+<ul id="list"></ul>
+<button id="fab" aria-label="Add new">+</button>
+<nav id="tabs"><div>
+<button data-v="today">Today</button><button data-v="week">Week</button><button data-v="all">All</button><button data-v="done">Done</button><button data-v="courses">Courses</button>
+</div></nav>
+</div>
+<dialog id="td"><form id="tf">
+<h2 id="tdt">New task</h2>
+<label>Title<input name="title" required maxlength="120" placeholder="Algorithms assignment 3"></label>
+<label>Course<select name="course" id="cs"></select></label>
+<label>Type<select name="type"><option>Assignment<option>Quiz<option>Exam<option>Project</select></label>
+<label>Due<input type="datetime-local" name="due" required></label>
+<label>Notes<textarea name="notes" rows="3"></textarea></label>
+<div class="act"><button type="button" id="tdel" class="lnk dng">Delete</button><span></span><button type="button" class="lnk" data-x>Cancel</button><button class="pri">Save task</button></div>
+</form></dialog>
+<dialog id="cd"><form id="cf">
+<h2 id="cdt">New course</h2>
+<label>Course name<input name="name" required maxlength="80" placeholder="Algorithms"></label>
+<label>Professor<input name="prof" maxlength="80"></label>
+<label>Class times and room<input name="sched" maxlength="120" placeholder="Mon 08:00, Room B2.3"></label>
+<div class="act"><button type="button" id="cdel" class="lnk dng">Delete</button><span></span><button type="button" class="lnk" data-x>Cancel</button><button class="pri">Save course</button></div>
+</form></dialog>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,setDoc,deleteDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyBe49PRXy_VtbrE-2I80AUo28CVUZPhY30",authDomain:"deadline-tracker-220cc.firebaseapp.com",projectId:"deadline-tracker-220cc",storageBucket:"deadline-tracker-220cc.firebasestorage.app",messagingSenderId:"700144852855",appId:"1:700144852855:web:ac7badeace66dc61d4cb72"});
+const auth=getAuth(app);
+const db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const msg=m=>{$('#err').textContent=m;$('#st').textContent=m};
+let uid,courses=[],tasks=[],view='today',unsubs=[],editing=null;
+const due=t=>new Date(t.due);
+const hue=id=>[...String(id)].reduce((a,c)=>a+c.charCodeAt(0),0)*47%360;
+const p2=n=>String(n).padStart(2,'0');
+const ls=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`;
+const when=d=>d.toLocaleString([],{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+function rel(ms){const a=Math.abs(ms),m=Math.round(a/6e4),h=Math.round(a/36e5),d=Math.round(a/864e5);const v=m<60?`${m} min`:h<48?`${h} h`:`${d} days`;return ms<0?`${v} late`:`in ${v}`}
+const empty=(a,b)=>`<li class="empty"><b>${a}</b>${b}</li>`;
+const path=(n,id)=>doc(db,`users/${uid}/${n}/${id}`);
+
+$('#signin').onclick=async()=>{const p=new GoogleAuthProvider();try{await signInWithPopup(auth,p)}catch(e){if(e.code==='auth/popup-closed-by-user')return;try{await signInWithRedirect(auth,p)}catch(e2){msg(e2.message)}}};
+$('#out').onclick=()=>signOut(auth);
+onAuthStateChanged(auth,u=>{
+ unsubs.forEach(f=>f());unsubs=[];
+ $('#login').hidden=!!u;$('#app').hidden=!u;
+ if(!u){uid=null;return}
+ uid=u.uid;$('#sub').textContent=new Date().toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'});
+ const sub=(n,cb)=>onSnapshot(collection(db,`users/${uid}/${n}`),s=>{cb(s.docs.map(d=>({id:d.id,...d.data()})));render();$('#st').textContent=s.metadata.hasPendingWrites?'Saving':s.metadata.fromCache?'Offline copy':'Synced'},e=>msg(e.message));
+ unsubs=[sub('courses',a=>courses=a),sub('tasks',a=>tasks=a)];
+});
+
+function render(){
+ if(!uid)return;
+ $('#ttl').textContent={today:'Today',week:'Next 7 days',all:'All tasks',done:'Done',courses:'Courses'}[view];
+ document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+ const L=$('#list');
+ if(view==='courses'){
+  L.innerHTML=courses.length?[...courses].sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<li class="t" data-c="${c.id}" style="--h:${hue(c.id)}"><div class="b"><b>${esc(c.name)}</b><small>${esc([c.prof,c.sched].filter(Boolean).join(', '))||'No details yet'}</small></div><span class="r">${tasks.filter(t=>t.courseId===c.id&&!t.done).length} open</span></li>`).join(''):empty('No courses yet','Tap + to add a course, then link tasks to it.');
+  return;
+ }
+ const eod=new Date();eod.setHours(23,59,59,999);const wk=Date.now()+7*864e5;
+ const a=tasks.filter(t=>view==='done'?t.done:!t.done&&(view==='all'||due(t)<=(view==='today'?eod:wk))).sort((x,y)=>view==='done'?due(y)-due(x):due(x)-due(y));
+ L.innerHTML=a.length?a.map(t=>{
+  const c=courses.find(x=>x.id===t.courseId),ms=due(t)-Date.now();
+  const u=t.done?'fin':ms<0?'late':ms<1728e5?'soon':'';
+  return `<li class="t ${u}" data-id="${t.id}" style="--h:${c?hue(c.id):230}"><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${t.done?'✓':''}</button><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Done':rel(ms)}</span></li>`}).join(''):
+  empty({today:'Nothing due today',week:'Nothing due this week',all:'No open tasks',done:'Nothing finished yet'}[view],'Tap + to add a task.');
+}
+setInterval(render,6e4);
+
+$('#tabs').onclick=e=>{const b=e.target.closest('button');if(b){view=b.dataset.v;render()}};
+$('#fab').onclick=()=>view==='courses'?openCourse():openTask();
+$('#list').onclick=e=>{
+ const k=e.target.closest('[data-k]');
+ if(k){const t=tasks.find(x=>x.id===k.dataset.k);setDoc(path('tasks',t.id),{done:!t.done,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));return}
+ const li=e.target.closest('li');if(!li)return;
+ li.dataset.c?openCourse(li.dataset.c):li.dataset.id&&openTask(li.dataset.id);
+};
+document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+
+function openTask(id){
+ editing=id||null;const t=tasks.find(x=>x.id===id),f=$('#tf');
+ $('#tdt').textContent=t?'Edit task':'New task';$('#tdel').hidden=!t;
+ $('#cs').innerHTML='<option value="">No course</option>'+courses.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+ const d=new Date();d.setDate(d.getDate()+1);d.setHours(23,59,0,0);
+ f.title.value=t?.title||'';f.course.value=t?.courseId||'';f.type.value=t?.type||'Assignment';f.due.value=t?.due||ls(d);f.notes.value=t?.notes||'';
+ $('#td').showModal();
+}
+$('#tf').onsubmit=e=>{
+ e.preventDefault();const f=e.target,id=editing||crypto.randomUUID(),old=tasks.find(x=>x.id===id);
+ setDoc(path('tasks',id),{title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim(),done:old?.done||false,updatedAt:Date.now()}).catch(er=>msg(er.message));
+ $('#td').close();
+};
+$('#tdel').onclick=()=>{if(confirm('Delete this task?')){deleteDoc(path('tasks',editing)).catch(er=>msg(er.message));$('#td').close()}};
+
+function openCourse(id){
+ editing=id||null;const c=courses.find(x=>x.id===id),f=$('#cf');
+ $('#cdt').textContent=c?'Edit course':'New course';$('#cdel').hidden=!c;
+ f.name.value=c?.name||'';f.prof.value=c?.prof||'';f.sched.value=c?.sched||'';
+ $('#cd').showModal();
+}
+$('#cf').onsubmit=e=>{
+ e.preventDefault();const f=e.target,id=editing||crypto.randomUUID();
+ setDoc(path('courses',id),{name:f.name.value.trim(),prof:f.prof.value.trim(),sched:f.sched.value.trim(),updatedAt:Date.now()}).catch(er=>msg(er.message));
+ $('#cd').close();
+};
+$('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose the course link.')){deleteDoc(path('courses',editing)).catch(er=>msg(er.message));$('#cd').close()}};
+
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script>
+</body></html>
