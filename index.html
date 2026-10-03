@@ -113,7 +113,7 @@ onAuthStateChanged(auth,u=>{
  if(!u){uid=null;return}
  uid=u.uid;$('#sub').textContent=new Date().toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'});
  const sub=(n,cb)=>onSnapshot(collection(db,`users/${uid}/${n}`),s=>{cb(s.docs.map(d=>({id:d.id,...d.data()})));render();$('#st').textContent=s.metadata.hasPendingWrites?'Saving':s.metadata.fromCache?'Offline copy':'Synced'},e=>msg(e.message));
- unsubs=[sub('courses',a=>courses=a),sub('tasks',a=>tasks=a)];
+ unsubs=[sub('courses',a=>courses=a),sub('tasks',a=>tasks=a.filter(t=>!t.deleted))];
 });
 
 function render(){
@@ -158,7 +158,7 @@ $('#tf').onsubmit=e=>{
  setDoc(path('tasks',id),{title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim(),done:old?.done||false,updatedAt:Date.now()}).catch(er=>msg(er.message));
  $('#td').close();
 };
-$('#tdel').onclick=()=>{if(confirm('Delete this task?')){deleteDoc(path('tasks',editing)).catch(er=>msg(er.message));$('#td').close()}};
+$('#tdel').onclick=()=>{if(confirm('Delete this task?')){setDoc(path('tasks',editing),{deleted:true,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));$('#td').close()}};
 
 function openCourse(id){
  editing=id||null;const c=courses.find(x=>x.id===id),f=$('#cf');
@@ -175,4 +175,5 @@ $('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
+<script type="module" src="calendar.js"></script>
 </body></html>
