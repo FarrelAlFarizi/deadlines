@@ -8,8 +8,8 @@ if(hr&&sub){
  mb.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
  [...hr.querySelectorAll('button')].forEach(b=>{if(b.id!=='cal')menu.append(b)});
  hr.append(mb,menu);
- const close=()=>{menu.hidden=true;mb.setAttribute('aria-expanded','false')};
- mb.onclick=e=>{e.stopPropagation();menu.hidden=!menu.hidden;mb.setAttribute('aria-expanded',String(!menu.hidden))};
+ const close=()=>{if(menu.hidden)return;menu.classList.add('out');mb.setAttribute('aria-expanded','false');setTimeout(()=>{menu.hidden=true;menu.classList.remove('out')},160)};
+ mb.onclick=e=>{e.stopPropagation();if(menu.hidden){menu.hidden=false;mb.setAttribute('aria-expanded','true')}else close()};
  menu.onclick=close;
  document.addEventListener('click',e=>{if(!menu.contains(e.target))close()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
