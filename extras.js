@@ -60,12 +60,28 @@ let draft={},pick=null;
 const render=()=>{$('#rl').innerHTML=[...TYPES,'cls'].map(k=>{const a=draft[k],max=k==='cls'?3:5;return `<div class="rg"><b>${LAB[k]||k}</b>${a.map((m,i)=>`<button type="button" class="chip" data-k="${k}" data-i="${i}">${fmt(m)}</button>`).join('')}${a.length<max?`<button type="button" class="chip add" data-k="${k}">+ Add</button>`:''}</div>`}).join('')};
 const val=w=>Math.min(Math.round(w.scrollTop/H),w.children.length-1);
 const mark=w=>{w.querySelector('.on')?.classList.remove('on');w.children[val(w)].classList.add('on')};
+function attachWheel(w){
+ let acc=0,tgt=null,t;
+ const step=dir=>{
+  const i=Math.max(0,Math.min(w.children.length-1,(tgt??val(w))+dir));
+  tgt=i;w.scrollTo({top:i*H,behavior:'smooth'});
+  clearTimeout(t);t=setTimeout(()=>{tgt=null},300);
+ };
+ w.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const d=e.deltaMode===1?e.deltaY*16:e.deltaY;
+  if(!d)return;
+  if(Math.abs(d)>=50){acc=0;step(Math.sign(d));return}
+  acc+=d;
+  if(Math.abs(acc)>=40){step(Math.sign(acc));acc=0}
+ },{passive:false});
+}
 const ws=pk.querySelector('.ws');
 const W=[['days',MAXD+1],['hours',24],['min',60]].map(([l,n])=>{
  const c=document.createElement('div');c.className='wc';
  c.innerHTML=`<div class="wl">${l}</div><div class="wh" tabindex="0" role="listbox" aria-label="${l}">${Array.from({length:n},(_,i)=>`<div data-i="${i}">${i}</div>`).join('')}</div>`;
  ws.append(c);const w=c.querySelector('.wh');
- w.onscroll=()=>mark(w);
+ w.onscroll=()=>mark(w);attachWheel(w);
  w.onclick=e=>{const i=e.target.dataset.i;if(i!=null)w.scrollTo({top:i*H,behavior:'smooth'})};
  return w;
 });
