@@ -46,3 +46,30 @@ if(sel){
  document.addEventListener('keydown',e=>{if(e.key==='Escape')shut()});
  lab();
 }
+
+/* Animated dialog closing */
+{
+ const oc=HTMLDialogElement.prototype.close,os=HTMLDialogElement.prototype.showModal;
+ HTMLDialogElement.prototype.close=function(...a){
+  if(!this.open||this._closing||calm)return oc.apply(this,a);
+  this._closing=true;this.classList.add('closing');
+  const t=this._tok=(this._tok||0)+1;
+  setTimeout(()=>{if(this._tok!==t||!this._closing)return;this._closing=false;this.classList.remove('closing');oc.apply(this,a)},230);
+ };
+ HTMLDialogElement.prototype.showModal=function(){
+  if(this._closing){this._tok=(this._tok||0)+1;this._closing=false;this.classList.remove('closing');oc.call(this)}
+  return os.call(this);
+ };
+ document.addEventListener('cancel',e=>{if(e.target instanceof HTMLDialogElement){e.preventDefault();e.target.close()}},true);
+}
+/* end dialogs */
+
+/* Title fades in from the top when the tab changes */
+const ttl=$('#ttl');
+if(ttl&&!calm){
+ let last='';
+ new MutationObserver(()=>{
+  const t=ttl.textContent;if(t===last)return;last=t;
+  ttl.animate([{opacity:0,transform:'translateY(-16px)'},{opacity:1,transform:'none'}],{duration:480,easing:'cubic-bezier(.2,.8,.2,1)'});
+ }).observe(ttl,{childList:true,characterData:true,subtree:true});
+}

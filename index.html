@@ -66,7 +66,7 @@ label{display:block;margin-top:12px;font-weight:600}
 <ul id="list"></ul>
 <button id="fab" aria-label="Add new">+</button>
 <nav id="tabs"><div>
-<button data-v="today">Today</button><button data-v="week">Week</button><button data-v="all">All</button><button data-v="done">Done</button><button data-v="courses">Courses</button>
+<button data-v="today">Today</button><button data-v="week">Week</button><button data-v="all">All</button><button data-v="done">Finished</button><button data-v="courses">Courses</button>
 </div></nav>
 </div>
 <dialog id="td"><form id="tf">
@@ -122,7 +122,7 @@ onAuthStateChanged(auth,u=>{
 
 function render(){
  if(!uid)return;
- $('#ttl').textContent={today:'Today',week:'Next 7 days',all:'All tasks',done:'Done',courses:'Courses'}[view];
+ $('#ttl').textContent={today:'Today',week:'Week',all:'All',done:'Finished',courses:'Courses'}[view];
  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
  const L=$('#list');
  if(view==='courses'){
@@ -134,7 +134,7 @@ function render(){
  L.innerHTML=a.length?a.map(t=>{
   const c=courses.find(x=>x.id===t.courseId),ms=due(t)-Date.now();
   const u=t.done?'fin':ms<0?'late':ms<1728e5?'soon':'';
-  return `<li class="t ${u}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230}"><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${t.done?'✓':''}</button><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Done':rel(ms)}</span></li>`}).join(''):
+  return `<li class="t ${u}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230}"><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${t.done?'✓':''}</button><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Finished':rel(ms)}</span></li>`}).join(''):
   empty({today:'Nothing due today',week:'Nothing due this week',all:'No open tasks',done:'Nothing finished yet'}[view],'Tap + to add a task.');
 }
 setInterval(render,6e4);

@@ -91,3 +91,13 @@ dialog[open]::backdrop{animation:dfade .3s ease}
 #ddl button.on{color:var(--ac)}
 #ddl button:hover{background:color-mix(in srgb,var(--ac) 10%,transparent)}
 @media(prefers-reduced-motion:reduce){#menu,#ddl,dialog[open],dialog[open]::backdrop{animation:none}#pill,#ddb svg{transition:none}}
+
+/* Livelier, smaller pop-ups with a closing animation */
+@keyframes dpop{0%{opacity:0;transform:translateY(40px) scale(.72)}55%{opacity:1;transform:translateY(-6px) scale(1.04)}100%{opacity:1;transform:none}}
+@keyframes dout{to{opacity:0;transform:translateY(26px) scale(.8)}}
+@keyframes dfadeout{to{opacity:0}}
+dialog[open]{animation:dpop .46s cubic-bezier(.2,.9,.3,1)}
+dialog.closing{animation:dout .22s ease-in forwards;pointer-events:none}
+dialog.closing::backdrop{animation:dfadeout .22s ease forwards}
+#td,#cd{width:min(88vw,380px);padding:18px}
+@media(prefers-reduced-motion:reduce){dialog.closing,dialog.closing::backdrop{animation:none}}
