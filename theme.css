@@ -29,3 +29,31 @@ input,select,textarea{border-radius:12px}
 #flt{display:flex;gap:8px;margin:0 0 12px}
 #flt input{flex:1;margin:0}
 #flt select{width:auto;margin:0}
+
+/* Compact header and menu */
+header{padding:14px 0 10px;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:1.9rem}
+#sub,#st{font-size:.82rem}
+#st::before{content:"\00b7";margin:0 6px}
+.hr{flex-direction:row;align-items:center;gap:8px;position:relative;flex:none}
+#cal{padding:7px 12px;border-radius:999px;font-size:.8rem;white-space:nowrap;background:color-mix(in srgb,var(--ac) 12%,transparent)}
+#mb{width:38px;height:38px;border-radius:12px;border:1px solid var(--ln);background:var(--s);display:grid;place-items:center;cursor:pointer;color:var(--ink);padding:0}
+#menu{position:absolute;right:0;top:calc(100% + 8px);z-index:20;min-width:170px;display:flex;flex-direction:column;background:var(--s);border:1px solid var(--ln);border-radius:16px;box-shadow:var(--sh);padding:6px}
+#menu button{text-align:left;padding:11px 12px;border-radius:10px;color:var(--ink)}
+#menu button:hover{background:color-mix(in srgb,var(--ac) 10%,transparent)}
+#menu #out{color:var(--late)}
+/* Reminder chips and wheel picker */
+dialog{max-height:88vh;overflow-y:auto}
+.rg{margin-top:14px}
+.rg b{display:block;margin-bottom:6px;font-size:.9rem}
+.chip{border:1px solid var(--ln);background:var(--bg);color:var(--ink);border-radius:999px;padding:7px 14px;margin:0 6px 6px 0;font-weight:600;cursor:pointer}
+.chip.add{color:var(--ac);border-style:dashed}
+.ws{display:flex;gap:8px;position:relative;margin:8px 0}
+.ws::after{content:"";position:absolute;left:0;right:0;top:102px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--ac) 12%,transparent);pointer-events:none}
+.wc{flex:1;text-align:center;min-width:0}
+.wl{font-size:.75rem;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;height:22px}
+.wh{height:200px;overflow-y:auto;scroll-snap-type:y mandatory;padding:80px 0;scrollbar-width:none;overscroll-behavior:contain}
+.wh::-webkit-scrollbar{display:none}
+.wh div{height:40px;line-height:40px;scroll-snap-align:center;font-size:1.25rem;font-variant-numeric:tabular-nums;color:var(--mut);cursor:pointer}
+.wh div.on{color:var(--ink);font-weight:800}
+#pe{color:var(--late);min-height:1.2em;margin:4px 0 0}

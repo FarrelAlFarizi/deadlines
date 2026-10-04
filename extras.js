@@ -47,21 +47,50 @@ const apply=()=>{
 $('#q').oninput=apply;$('#ft').onchange=apply;
 new MutationObserver(()=>{apply();drawCls()}).observe($('#list'),{childList:true});
 setInterval(drawCls,6e4);
-const parse=s=>[...String(s).matchAll(/(\d+)\s*(d|h|m)/gi)].map(m=>m[1]*({d:1440,h:60,m:1}[m[2].toLowerCase()])).filter(n=>n>0&&n<=40320).slice(0,5);
-const fmt=a=>a.map(n=>n%1440===0?n/1440+'d':n%60===0?n/60+'h':n+'m').join(', ');
+const H=40,MAXD=28,LAB={cls:'Classes'};
+const fmt=m=>m===0?'At due':[Math.floor(m/1440)&&Math.floor(m/1440)+'d',Math.floor(m%1440/60)&&Math.floor(m%1440/60)+'h',m%60&&m%60+'m'].filter(Boolean).join(' ');
 const sb=document.createElement('button');sb.className='lnk';sb.textContent='Settings';
 $('.hr').insertBefore(sb,$('#out'));
 const dlg=document.createElement('dialog');
-dlg.innerHTML=`<form><h2>Reminder settings</h2><p><small>How long before the due time Google Calendar alerts you. Use d, h and m, for example 7d, 1d, 3h.</small></p>${TYPES.map(t=>`<label>${t}<input name="${t}"></label>`).join('')}<label>Classes<input name="cls"></label><div class="act"><span></span><button type="button" class="lnk" id="sx">Close</button><button class="pri">Save</button></div></form>`;
-document.body.append(dlg);
-const f=dlg.querySelector('form');
-sb.onclick=()=>{TYPES.forEach(t=>{f[t].value=fmt(cfg.rem?.[t]||DEF[t])});f.cls.value=fmt(cfg.cls||[30]);dlg.showModal()};
-dlg.querySelector('#sx').onclick=()=>dlg.close();
-f.onsubmit=e=>{
+dlg.innerHTML=`<form><h2>Reminders</h2><p><small>Google Calendar alerts you this long before a due time or class start. Tap a time to change it.</small></p><div id="rl"></div><div class="act"><span></span><button type="button" class="lnk" id="sx">Close</button><button class="pri">Save</button></div></form>`;
+const pk=document.createElement('dialog');
+pk.innerHTML=`<form id="pf"><h2>Time before</h2><div class="ws"></div><p id="pe" role="alert"></p><div class="act"><button type="button" class="lnk dng" id="prm">Remove</button><span></span><button type="button" class="lnk" id="pc">Cancel</button><button class="pri">Done</button></div></form>`;
+document.body.append(dlg,pk);
+let draft={},pick=null;
+const render=()=>{$('#rl').innerHTML=[...TYPES,'cls'].map(k=>{const a=draft[k],max=k==='cls'?3:5;return `<div class="rg"><b>${LAB[k]||k}</b>${a.map((m,i)=>`<button type="button" class="chip" data-k="${k}" data-i="${i}">${fmt(m)}</button>`).join('')}${a.length<max?`<button type="button" class="chip add" data-k="${k}">+ Add</button>`:''}</div>`}).join('')};
+const val=w=>Math.min(Math.round(w.scrollTop/H),w.children.length-1);
+const mark=w=>{w.querySelector('.on')?.classList.remove('on');w.children[val(w)].classList.add('on')};
+const ws=pk.querySelector('.ws');
+const W=[['days',MAXD+1],['hours',24],['min',60]].map(([l,n])=>{
+ const c=document.createElement('div');c.className='wc';
+ c.innerHTML=`<div class="wl">${l}</div><div class="wh" tabindex="0" role="listbox" aria-label="${l}">${Array.from({length:n},(_,i)=>`<div data-i="${i}">${i}</div>`).join('')}</div>`;
+ ws.append(c);const w=c.querySelector('.wh');
+ w.onscroll=()=>mark(w);
+ w.onclick=e=>{const i=e.target.dataset.i;if(i!=null)w.scrollTo({top:i*H,behavior:'smooth'})};
+ return w;
+});
+function openPick(k,i){
+ pick={k,i};const m=i==null?60:draft[k][i];
+ $('#pe').textContent='';$('#prm').hidden=i==null;
+ pk.showModal();
+ requestAnimationFrame(()=>{[Math.floor(m/1440),Math.floor(m%1440/60),m%60].forEach((v,j)=>{W[j].scrollTop=v*H;mark(W[j])})});
+}
+$('#rl').onclick=e=>{const b=e.target.closest('.chip');if(b)openPick(b.dataset.k,b.dataset.i===undefined?null:+b.dataset.i)};
+$('#pf').onsubmit=e=>{
+ e.preventDefault();
+ const m=val(W[0])*1440+val(W[1])*60+val(W[2]);
+ if(m>MAXD*1440){$('#pe').textContent='The longest allowed is 28 days.';return}
+ const a=draft[pick.k];if(pick.i==null)a.push(m);else a[pick.i]=m;
+ draft[pick.k]=[...new Set(a)].sort((x,y)=>y-x);pk.close();render();
+};
+$('#prm').onclick=()=>{draft[pick.k].splice(pick.i,1);pk.close();render()};
+$('#pc').onclick=()=>pk.close();
+sb.onclick=()=>{draft={};TYPES.forEach(t=>{draft[t]=[...(cfg.rem?.[t]||DEF[t])]});draft.cls=[...(cfg.cls||[30])];render();dlg.showModal()};
+$('#sx').onclick=()=>dlg.close();
+dlg.querySelector('form').onsubmit=e=>{
  e.preventDefault();const rem={};
- TYPES.forEach(t=>{const a=parse(f[t].value);rem[t]=a.length?a:DEF[t]});
- const c=parse(f.cls.value);
- setDoc(doc(db,`users/${uid}/meta/settings`),{rem,cls:c.length?c.slice(0,3):[30]}).catch(er=>alert(er.message));
+ TYPES.forEach(t=>{rem[t]=draft[t]});
+ setDoc(doc(db,`users/${uid}/meta/settings`),{rem,cls:draft.cls}).catch(er=>alert(er.message));
  dlg.close();
 };
 onAuthStateChanged(auth,u=>{
