@@ -50,7 +50,7 @@ async function sync(){
    }
   }
  await syncCourses();
- }catch(e){if(e.message!=='auth')stat(e.message)}
+ }catch(e){if(e.message!=='auth'){stat(e.message);if(window.dlNote)window.dlNote('Calendar: '+e.message)}}
  finally{busy=false;lab();if(again){again=false;sync()}}
 }
 btn.onclick=async()=>{

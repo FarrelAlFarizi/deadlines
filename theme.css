@@ -61,3 +61,8 @@ dialog{max-height:88vh;overflow-y:auto}
 /* Undo toast */
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(156px + env(safe-area-inset-bottom));z-index:30;display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--bg);padding:8px 8px 8px 18px;border-radius:999px;box-shadow:var(--sh);font-weight:600;max-width:calc(100vw - 32px)}
 #toast button{background:none;border:0;color:inherit;font-weight:800;text-decoration:underline;cursor:pointer;padding:8px 12px}
+
+/* Gentle fade for the undo toast */
+#toast{border-radius:22px;opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,10px);transition:opacity .6s ease,transform .6s ease,visibility 0s linear .6s}
+#toast.show{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0);transition:opacity .4s ease,transform .4s ease,visibility 0s}
+@media(prefers-reduced-motion:reduce){#toast,#toast.show{transition:none}}

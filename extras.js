@@ -119,15 +119,19 @@ onAuthStateChanged(auth,u=>{
   onSnapshot(doc(db,`users/${uid}/meta/settings`),s=>{cfg=s.data()||{};window.dlRem=cfg.rem;window.dlClsRem=cfg.cls;ready()},()=>ready())];
 });
 
-const tt=document.createElement('div');tt.id='toast';tt.hidden=true;tt.setAttribute('role','status');document.body.append(tt);
+const tt=document.createElement('div');tt.id='toast';tt.setAttribute('role','status');document.body.append(tt);
 let tm;
-function toast(msg,undo){
+const hideT=()=>tt.classList.remove('show');
+function toast(msg,undo,ms=5000){
  clearTimeout(tm);tt.innerHTML='';
- const s=document.createElement('span');s.textContent=msg;
- const b=document.createElement('button');b.type='button';b.textContent='Undo';
- b.onclick=()=>{tt.hidden=true;clearTimeout(tm);undo()};
- tt.append(s,b);tt.hidden=false;tm=setTimeout(()=>{tt.hidden=true},5500);
+ const s=document.createElement('span');s.textContent=msg;tt.append(s);
+ const add=(label,fn,keep)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=()=>{if(!keep){hideT();clearTimeout(tm)}fn()};tt.append(b)};
+ if(undo)add('Undo',undo);
+ const c=$('#cal');
+ if(undo&&c&&c.textContent!=='Calendar on')add('Sync calendar',()=>c.click(),true);
+ tt.classList.add('show');tm=setTimeout(hideT,ms);
 }
+window.dlNote=m=>toast(m,null,8000);
 const wr=(n,id,data)=>setDoc(doc(db,`users/${uid}/${n}/${id}`),data,{merge:true}).catch(er=>alert(er.message));
 const later=(map,n,id,msg,data)=>{
  const commit=()=>{const p=map.get(id);if(!p)return;clearTimeout(p.t);map.delete(id);wr(n,id,{...data,updatedAt:Date.now()})};
