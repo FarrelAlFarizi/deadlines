@@ -57,3 +57,7 @@ dialog{max-height:88vh;overflow-y:auto}
 .wh div{height:40px;line-height:40px;scroll-snap-align:center;font-size:1.25rem;font-variant-numeric:tabular-nums;color:var(--mut);cursor:pointer}
 .wh div.on{color:var(--ink);font-weight:800}
 #pe{color:var(--late);min-height:1.2em;margin:4px 0 0}
+
+/* Undo toast */
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(156px + env(safe-area-inset-bottom));z-index:30;display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--bg);padding:8px 8px 8px 18px;border-radius:999px;box-shadow:var(--sh);font-weight:600;max-width:calc(100vw - 32px)}
+#toast button{background:none;border:0;color:inherit;font-weight:800;text-decoration:underline;cursor:pointer;padding:8px 12px}

@@ -39,9 +39,11 @@ function drawCls(){
  const day=d=>new Date(d+'T00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
  cls.innerHTML=`<h3>${v==='today'?'Classes today':'Classes this week'}</h3>`+o.map(e=>`<div class="c${e.x?' x':''}" style="--h:${hue(e.c.id)}"><time>${v==='week'?day(e.date)+'<br>':''}${e.start} to ${e.end}</time><div><b>${esc(e.c.name)}</b><small>${esc([e.room,e.mv&&'Changed',e.x&&'Cancelled'].filter(Boolean).join(', '))}</small></div></div>`).join('');
 }
+const pendT=new Map(),pendC=new Map();
 const apply=()=>{
  const q=$('#q').value.toLowerCase(),t=$('#ft').value;
- document.querySelectorAll('#list .t[data-id]').forEach(li=>{li.hidden=!!((t&&li.dataset.type!==t)||(q&&!li.textContent.toLowerCase().includes(q)))});
+ document.querySelectorAll('#list .t[data-id]').forEach(li=>{li.hidden=pendT.has(li.dataset.id)||!!((t&&li.dataset.type!==t)||(q&&!li.textContent.toLowerCase().includes(q)))});
+ document.querySelectorAll('#list .t[data-c]').forEach(li=>{li.hidden=pendC.has(li.dataset.c)});
  flt.hidden=view()==='courses';
 };
 $('#q').oninput=apply;$('#ft').onchange=apply;
@@ -116,3 +118,33 @@ onAuthStateChanged(auth,u=>{
  subs=[onSnapshot(collection(db,`users/${uid}/courses`),s=>{courses=s.docs.map(d=>({id:d.id,...d.data()})).filter(c=>!c.deleted);drawCls()}),
   onSnapshot(doc(db,`users/${uid}/meta/settings`),s=>{cfg=s.data()||{};window.dlRem=cfg.rem;window.dlClsRem=cfg.cls;ready()},()=>ready())];
 });
+
+const tt=document.createElement('div');tt.id='toast';tt.hidden=true;tt.setAttribute('role','status');document.body.append(tt);
+let tm;
+function toast(msg,undo){
+ clearTimeout(tm);tt.innerHTML='';
+ const s=document.createElement('span');s.textContent=msg;
+ const b=document.createElement('button');b.type='button';b.textContent='Undo';
+ b.onclick=()=>{tt.hidden=true;clearTimeout(tm);undo()};
+ tt.append(s,b);tt.hidden=false;tm=setTimeout(()=>{tt.hidden=true},5500);
+}
+const wr=(n,id,data)=>setDoc(doc(db,`users/${uid}/${n}/${id}`),data,{merge:true}).catch(er=>alert(er.message));
+const later=(map,n,id,msg,data)=>{
+ const commit=()=>{const p=map.get(id);if(!p)return;clearTimeout(p.t);map.delete(id);wr(n,id,{...data,updatedAt:Date.now()})};
+ map.set(id,{t:setTimeout(commit,6000),commit});apply();
+ toast(msg,()=>{const p=map.get(id);if(p)clearTimeout(p.t);map.delete(id);apply()});
+};
+$('#list').addEventListener('click',e=>{
+ const b=e.target.closest('[data-k]');if(!b)return;
+ const prev=b.closest('li').classList.contains('fin'),id=b.dataset.k;
+ toast(prev?'Marked not done':'Marked done',()=>wr('tasks',id,{done:prev,updatedAt:Date.now()}));
+},true);
+$('#td').addEventListener('click',e=>{
+ if(!e.target.closest('#tdel')||!window.dlEdit)return;
+ e.stopPropagation();e.preventDefault();const id=window.dlEdit;$('#td').close();later(pendT,'tasks',id,'Task deleted',{deleted:true});
+},true);
+$('#cd').addEventListener('click',e=>{
+ if(!e.target.closest('#cdel')||!window.dlEditC)return;
+ e.stopPropagation();e.preventDefault();const id=window.dlEditC;$('#cd').close();later(pendC,'courses',id,'Course deleted',{day:'',deleted:true});
+},true);
+addEventListener('pagehide',()=>{[...pendT.values(),...pendC.values()].forEach(p=>p.commit())});

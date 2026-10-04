@@ -150,7 +150,7 @@ $('#list').onclick=e=>{
 document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 
 function openTask(id){
- editing=id||null;const t=tasks.find(x=>x.id===id),f=$('#tf');
+ window.dlEdit=id||null;editing=id||null;const t=tasks.find(x=>x.id===id),f=$('#tf');
  $('#tdt').textContent=t?'Edit task':'New task';$('#tdel').hidden=!t;
  $('#cs').innerHTML='<option value="">No course</option>'+courses.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
  const d=new Date();d.setDate(d.getDate()+1);d.setHours(23,59,0,0);
@@ -165,7 +165,7 @@ $('#tf').onsubmit=e=>{
 $('#tdel').onclick=()=>{if(confirm('Delete this task?')){setDoc(path('tasks',editing),{deleted:true,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));$('#td').close()}};
 
 function openCourse(id){
- editing=id||null;const c=courses.find(x=>x.id===id),f=$('#cf');
+ window.dlEditC=id||null;editing=id||null;const c=courses.find(x=>x.id===id),f=$('#cf');
  $('#cdt').textContent=c?'Edit course':'New course';$('#cdel').hidden=!c;
  f.name.value=c?.name||'';f.prof.value=c?.prof||'';f.day.value=c?.day||'';f.start.value=c?.start||'';f.end.value=c?.end||'';f.room.value=c?.room||'';f.until.value=c?.until||'';
  window.dlCourse=c;const g=$('#chg');if(g)g.hidden=!(c&&c.day&&c.start&&c.until);$('#cd').showModal();
