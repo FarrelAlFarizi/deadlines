@@ -101,3 +101,5 @@ dialog.closing{animation:dout .22s ease-in forwards;pointer-events:none}
 dialog.closing::backdrop{animation:dfadeout .22s ease forwards}
 #td,#cd{width:min(88vw,380px);padding:18px}
 @media(prefers-reduced-motion:reduce){dialog.closing,dialog.closing::backdrop{animation:none}}
+
+.ferr{color:var(--late);min-height:1.2em;margin:10px 0 0;font-size:.9rem}

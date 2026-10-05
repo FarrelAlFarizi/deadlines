@@ -35,7 +35,7 @@ async function sync(){
   for(const t of tasks)if(t.deleted&&!t.calSig)await deleteDoc(pth(t));
   for(const c of courses)if(c.deleted&&!c.calSig)await deleteDoc(cref(c));
   if(!on()){tok=null;return}
-  for(const t of tasks){
+  for(const t of tasks)try{
    const w=want(t),h=t.calSig||null;
    if(w===h)continue;
    if(w){
@@ -48,8 +48,9 @@ async function sync(){
     if(!r.ok&&r.status!==404&&r.status!==410)throw new Error('Calendar error '+r.status);
     if(t.deleted)await deleteDoc(pth(t));else await setDoc(pth(t),{calSig:null},{merge:true});
    }
-  }
+  }catch(e){bad(e)}
  await syncCourses();
+ if(errs.length)report();
  }catch(e){if(e.message!=='auth'){stat(e.message);if(window.dlNote)window.dlNote('Calendar: '+e.message)}}
  finally{busy=false;lab();if(again){again=false;sync()}}
 }
@@ -73,7 +74,7 @@ const DN={MO:1,TU:2,WE:3,TH:4,FR:5,SA:6,SU:0};
 const p2=n=>String(n).padStart(2,'0');
 const dstr=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
 function occ(c,n){const a=[],d=new Date(),u=new Date(c.until+'T23:59');d.setHours(0,0,0,0);for(;a.length<n&&d<=u;d.setDate(d.getDate()+1))if(d.getDay()===DN[c.day])a.push(dstr(d));return a}
-const live=c=>c.day&&c.start&&c.end&&c.until&&occ(c,1).length>0;
+const live=c=>c.day&&c.start&&c.end&&c.end>c.start&&c.until&&occ(c,1).length>0;
 const csig=c=>[c.name,c.prof,c.day,c.start,c.end,c.room,c.until,(window.dlClsRem||[30]).join()].join('|');
 const cid=c=>'dlc'+c.id.replace(/-/g,'');
 const cref=c=>doc(db,`users/${uid}/courses/${c.id}`);
@@ -85,7 +86,7 @@ function cbody(c){const d=occ(c,1)[0];return {id:cid(c),status:'confirmed',summa
  reminders:{useDefault:false,overrides:(window.dlClsRem||[30]).map(m=>({method:'popup',minutes:m}))}}}
 const obody=(c,k,o)=>o?(o.mode==='cancel'?{status:'cancelled'}:{status:'confirmed',start:at(o.date||k,o.start||c.start),end:at(o.date||k,o.end||c.end),location:o.room||c.room||''}):{status:'confirmed',start:at(k,c.start),end:at(k,c.end),location:c.room||''};
 async function syncCourses(){
- for(let c of courses){
+ for(let c of courses)try{
   const w=live(c)?csig(c):null,h=c.calSig||null;
   if(w!==h){
    if(w){let r=await gc('POST','',cbody(c));if(r.status===409)r=await gc('PUT','/'+cid(c),cbody(c));if(!r.ok)throw new Error('Calendar error '+r.status+': '+(await r.text()).slice(0,140))}
@@ -101,13 +102,13 @@ async function syncCourses(){
    if(ws)ap[k]=ws;else delete ap[k];ch=true;
   }
   if(ch)await updateDoc(cref(c),{calOv:ap});
- }
+ }catch(e){bad(e)}
 }
 const dlg=document.createElement('dialog');
 dlg.innerHTML=`<form><h2>Change one class</h2><label>Which class<select name="k"></select></label>
 <label>What happens<select name="m"><option value="move">Move or change it</option><option value="cancel">Cancel it</option><option value="reset">Back to normal</option></select></label>
 <div id="mv"><label>New date<input type="date" name="d"></label><label>Starts<input type="time" name="s"></label><label>Ends<input type="time" name="e"></label><label>Room<input name="r" maxlength="60"></label></div>
-<p><small>Only this one class changes. The following weeks stay as scheduled.</small></p>
+<p><small>Only this one class changes. The following weeks stay as scheduled.</small></p><p id="oerr" class="ferr" role="alert"></p>
 <div class="act"><span></span><button type="button" class="lnk" id="ox">Close</button><button class="pri">Save change</button></div></form>`;
 document.body.append(dlg);
 const f=dlg.querySelector('form');let cur;
@@ -118,9 +119,13 @@ f.k.onchange=defs;f.m.onchange=defs;
 chg.onclick=()=>{cur=window.dlCourse;if(!cur)return;
  f.k.innerHTML=occ(cur,8).map(d=>`<option value="${d}">${new Date(d+'T00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'})}${cur.ov?.[d]?' (changed)':''}</option>`).join('');
  f.m.value='move';defs();document.querySelector('#cd').close();dlg.showModal()};
-f.onsubmit=e=>{e.preventDefault();const k=f.k.value,ov={...(cur.ov||{})};
+f.onsubmit=e=>{e.preventDefault();const er=dlg.querySelector('#oerr');er.textContent='';if(f.m.value==='move'&&(f.e.value||cur.end)<=(f.s.value||cur.start)){er.textContent='The class must end after it starts.';return}const k=f.k.value,ov={...(cur.ov||{})};
  if(f.m.value==='reset')delete ov[k];else ov[k]=f.m.value==='cancel'?{mode:'cancel'}:{mode:'move',date:f.d.value||k,start:f.s.value,end:f.e.value,room:f.r.value.trim()};
  updateDoc(cref(cur),{ov}).catch(er=>stat(er.message));dlg.close()};
 dlg.querySelector('#ox').onclick=()=>dlg.close();
 
 document.addEventListener('dlcfg',()=>{lab();sync()});
+
+const errs=[];let lastE='',lastT=0;
+function bad(e){if(e.message==='auth')throw e;errs.push(e.message)}
+function report(){const m=errs[0];errs.length=0;if(m===lastE&&Date.now()-lastT<30000)return;lastE=m;lastT=Date.now();stat(m);if(window.dlNote)window.dlNote('Calendar: '+m)}

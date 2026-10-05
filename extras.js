@@ -17,6 +17,7 @@ const cls=document.createElement('div');cls.id='cls';
 const flt=document.createElement('div');flt.id='flt';
 flt.innerHTML=`<input id="q" type="search" placeholder="Search tasks" aria-label="Search tasks"><select id="ft" aria-label="Filter by type"><option value="">All types<option>Assignment<option>Quiz<option>Exam<option>Project</select>`;
 $('#list').before(cls,flt);
+const nm=document.createElement('div');nm.id='nm';nm.className='empty';nm.hidden=true;nm.textContent='No matching tasks';flt.after(nm);
 function occs(a,b){
  const out=[],A=dstr(a),B=dstr(b);
  for(const c of courses){
@@ -44,6 +45,8 @@ const apply=()=>{
  const q=$('#q').value.toLowerCase(),t=$('#ft').value;
  document.querySelectorAll('#list .t[data-id]').forEach(li=>{li.hidden=pendT.has(li.dataset.id)||!!((t&&li.dataset.type!==t)||(q&&!li.textContent.toLowerCase().includes(q)))});
  document.querySelectorAll('#list .t[data-c]').forEach(li=>{li.hidden=pendC.has(li.dataset.c)});
+ const all=[...document.querySelectorAll('#list .t[data-id]')];
+ nm.hidden=!(all.length&&(q||t)&&all.every(li=>li.hidden)&&all.some(li=>!pendT.has(li.dataset.id)));
  flt.hidden=view()==='courses';
 };
 $('#q').oninput=apply;$('#ft').onchange=apply;
@@ -152,3 +155,14 @@ $('#cd').addEventListener('click',e=>{
  e.stopPropagation();e.preventDefault();const id=window.dlEditC;$('#cd').close();later(pendC,'courses',id,'Course deleted',{day:'',deleted:true});
 },true);
 addEventListener('pagehide',()=>{[...pendT.values(),...pendC.values()].forEach(p=>p.commit())});
+
+const cerr=document.createElement('p');cerr.id='cerr';cerr.className='ferr';cerr.setAttribute('role','alert');
+$('#cd .act').before(cerr);
+$('#cd').addEventListener('submit',e=>{
+ const f=$('#cf');cerr.textContent='';if(!f.day.value)return;
+ const s=f.start.value,en=f.end.value,u=f.until.value;
+ const m=!s||!en||!u?'For a weekly class, fill in Starts, Ends and Repeats until.':en<=s?'The class must end after it starts.':'';
+ if(m){e.preventDefault();e.stopImmediatePropagation();cerr.textContent=m}
+},true);
+$('#cd').addEventListener('input',()=>{cerr.textContent=''});
+$('#cd').addEventListener('close',()=>{cerr.textContent=''});

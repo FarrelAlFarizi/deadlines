@@ -15,6 +15,7 @@ dlg.innerHTML=`<form><h2>Backup and import</h2>
 document.body.append(dlg);
 let uid;onAuthStateChanged(auth,u=>{uid=u?.uid});
 const say=m=>{$('#bm').textContent=m};
+const S=(v,n=80)=>String(v??'').slice(0,n),T=v=>/^\d{2}:\d{2}$/.test(v)?v:'',Dt=v=>/^\d{4}-\d{2}-\d{2}$/.test(v)?v:'',DY=v=>['MO','TU','WE','TH','FR','SA','SU'].includes(v)?v:'';
 btn.onclick=()=>{say('');dlg.showModal()};
 $('#bc').onclick=()=>dlg.close();
 const strip=d=>{const {calSig,calOv,...r}=d;return r};
@@ -39,13 +40,13 @@ $('#bi').onclick=async()=>{
   for(const c of d.courses||[]){
    const k=String(c.name||'').toLowerCase();if(!k||cs[k])continue;
    const id=crypto.randomUUID();
-   await setDoc(doc(db,`users/${uid}/courses/${id}`),{name:c.name,prof:c.prof||'',day:c.day||'',start:c.start||'',end:c.end||'',room:c.room||'',until:c.until||'',updatedAt:Date.now()});
+   await setDoc(doc(db,`users/${uid}/courses/${id}`),{name:S(c.name),prof:S(c.prof),day:DY(c.day),start:T(c.start),end:T(c.end),room:S(c.room,60),until:Dt(c.until),updatedAt:Date.now()});
    cs[k]=id;nc++;
   }
   for(const t of d.tasks||[]){
-   if(!t.title||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(t.due||'')||ex.has(t.title+'|'+t.due)){sk++;continue}
+   if(!t.title||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(t.due||'')||isNaN(Date.parse(t.due))||ex.has(t.title+'|'+t.due)){sk++;continue}
    const cid=cs[String(t.course||'').toLowerCase()]||(Object.values(cs).includes(t.courseId)?t.courseId:'');
-   await setDoc(doc(db,`users/${uid}/tasks/${crypto.randomUUID()}`),{title:t.title,courseId:cid,type:['Assignment','Quiz','Exam','Project'].includes(t.type)?t.type:'Assignment',due:t.due,notes:t.notes||'',done:!!t.done,updatedAt:Date.now()});
+   await setDoc(doc(db,`users/${uid}/tasks/${crypto.randomUUID()}`),{title:S(t.title,120),courseId:cid,type:['Assignment','Quiz','Exam','Project'].includes(t.type)?t.type:'Assignment',due:t.due,notes:S(t.notes,2000),done:!!t.done,updatedAt:Date.now()});
    ex.add(t.title+'|'+t.due);nt++;
   }
   say(`Imported ${nc} courses and ${nt} tasks. Skipped ${sk} (duplicates or invalid).`);
