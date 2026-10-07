@@ -47,7 +47,7 @@ const apply=()=>{
  document.querySelectorAll('#list .t[data-c]').forEach(li=>{li.hidden=pendC.has(li.dataset.c)});
  const all=[...document.querySelectorAll('#list .t[data-id]')];
  nm.hidden=!(all.length&&(q||t)&&all.every(li=>li.hidden)&&all.some(li=>!pendT.has(li.dataset.id)));
- flt.hidden=view()==='courses';
+ flt.hidden=['courses','insights'].includes(view());
 };
 $('#q').oninput=apply;$('#ft').onchange=apply;
 new MutationObserver(()=>{apply();drawCls()}).observe($('#list'),{childList:true});
@@ -144,7 +144,7 @@ const later=(map,n,id,msg,data)=>{
 $('#list').addEventListener('click',e=>{
  const b=e.target.closest('[data-k]');if(!b)return;
  const prev=b.closest('li').classList.contains('fin'),id=b.dataset.k;
- toast(prev?'Marked not done':'Marked done',()=>wr('tasks',id,{done:prev,updatedAt:Date.now()}));
+ toast(prev?'Marked not done':'Marked done',()=>wr('tasks',id,{done:prev,doneAt:prev?Date.now():0,updatedAt:Date.now()}));
 },true);
 $('#td').addEventListener('click',e=>{
  if(!e.target.closest('#tdel')||!window.dlEdit)return;

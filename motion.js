@@ -73,3 +73,10 @@ if(ttl&&!calm){
   ttl.animate([{opacity:0,transform:'translateY(-16px)'},{opacity:1,transform:'none'}],{duration:480,easing:'cubic-bezier(.2,.8,.2,1)'});
  }).observe(ttl,{childList:true,characterData:true,subtree:true});
 }
+
+/* The list rises in when the tab changes */
+const lst=$('#list');
+if(ttl&&lst&&!calm){
+ let last2='',tm2;
+ new MutationObserver(()=>{const t=ttl.textContent;if(t===last2)return;last2=t;lst.classList.add('enter');clearTimeout(tm2);tm2=setTimeout(()=>lst.classList.remove('enter'),900)}).observe(ttl,{childList:true,characterData:true,subtree:true});
+}

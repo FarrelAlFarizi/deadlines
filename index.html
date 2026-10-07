@@ -2,72 +2,30 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Deadlines</title>
-<meta name="theme-color" content="#4F46E5">
+<meta name="theme-color" content="#E9E9EC">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Deadlines">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#EEF1F6;--s:#fff;--ink:#101828;--mut:#667085;--ln:#D8DEE9;--ac:#4F46E5;--onac:#fff;--late:#D92D20;--soon:#B54708;color-scheme:light dark}
-@media(prefers-color-scheme:dark){:root{--bg:#0E1320;--s:#171E2E;--ink:#EAEEF7;--mut:#8F9BB3;--ln:#2A3347;--ac:#8B93FF;--onac:#0E1320;--late:#FF6B5E;--soon:#F5B14C}}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.4 'Bricolage Grotesque',system-ui,sans-serif}
-body{padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left)}
-[hidden]{display:none!important}
-button,input,select,textarea{font:inherit;color:inherit}
-input,select,textarea{font-size:16px;width:100%;padding:10px 12px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);margin-top:4px}
-:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
-main,#app{max-width:640px;margin:0 auto;padding:0 16px}
-#login{padding-top:20vh}
-#login h1{font-size:3rem;margin:0 0 8px}
-header{display:flex;justify-content:space-between;align-items:flex-end;padding:24px 0 12px}
-header h1{font-size:2.4rem;font-weight:800;line-height:1;margin:0}
-small{color:var(--mut)}
-.hr{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
-.lnk{background:none;border:0;padding:6px 4px;cursor:pointer;color:var(--ac);font-weight:600}
-.dng{color:var(--late)}
-.pri{background:var(--ac);color:var(--onac);border:0;border-radius:10px;padding:12px 20px;font-weight:600;cursor:pointer}
-ul{list-style:none;margin:0;padding:0 0 150px}
-.t{display:flex;align-items:center;gap:12px;background:var(--s);border-left:6px solid hsl(var(--h,230) 65% 55%);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer}
-.t .b{flex:1;min-width:0}
-.t b{display:block;overflow-wrap:anywhere}
-.t small{display:block}
-.r{font-weight:600;font-size:1.05rem;text-align:right;white-space:nowrap}
-.late .r{color:var(--late)}.soon .r{color:var(--soon)}
-.fin b,.fin .r{text-decoration:line-through;opacity:.55}
-.chk{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--mut);background:none;cursor:pointer;font-weight:800;color:var(--ac)}
-.fin .chk{border-color:var(--ac)}
-.empty{text-align:center;padding:48px 8px;color:var(--mut)}
-.empty b{display:block;color:var(--ink);font-size:1.1rem}
-#fab{position:fixed;right:max(16px,calc(50% - 304px));bottom:calc(76px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;border:0;background:var(--ac);color:var(--onac);font-size:2rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgb(0 0 0/.3)}
-#tabs{position:fixed;left:0;right:0;bottom:0;background:var(--s);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
-#tabs div{max-width:640px;margin:0 auto;display:flex}
-#tabs button{flex:1;background:none;border:0;padding:14px 2px;cursor:pointer;color:var(--mut);font-weight:600;font-size:.9rem}
-#tabs .on{color:var(--ac);box-shadow:inset 0 3px var(--ac)}
-dialog{border:0;border-radius:16px;width:min(92vw,440px);padding:20px;background:var(--s);color:var(--ink)}
-dialog::backdrop{background:rgb(0 0 0/.5)}
-dialog h2{margin:0 0 8px}
-label{display:block;margin-top:12px;font-weight:600}
-.act{display:flex;gap:8px;align-items:center;margin-top:20px}.act span{flex:1}
-</style><link rel="stylesheet" href="theme.css"></head>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>(function(){var d=document.documentElement,t;try{t=localStorage.getItem("dl-theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.dataset.theme=t})()</script>
+<link rel="stylesheet" href="theme.css"></head>
 <body>
 <main id="login" hidden>
-<h1>Deadlines</h1>
-<p>Classes, assignments and exams in one list, synced on every device you sign in on.</p>
+<small class="cap">Deadlines</small>
+<h1>A clean slate.<br>Every day.</h1>
+<p>Classes, assignments and exams in one calm list, synced on every device you sign in on.</p>
 <button id="signin" class="pri">Sign in with Google</button>
 <p id="err" role="alert"></p>
 </main>
 <div id="app" hidden>
-<header><div><h1 id="ttl">Today</h1><small id="sub"></small></div>
-<div class="hr"><small id="st">Syncing</small><button id="out" class="lnk">Sign out</button></div></header>
+<header><div class="hl"><small id="hello"></small><h1 id="ttl">Today</h1><div class="sub"><small id="sub"></small><small id="st">Syncing</small></div></div>
+<div class="hr"><button id="out" class="lnk">Sign out</button></div></header>
 <ul id="list"></ul>
 <button id="fab" aria-label="Add new">+</button>
-<nav id="tabs"><div>
-<button data-v="today">Today</button><button data-v="week">Week</button><button data-v="all">All</button><button data-v="done">Finished</button><button data-v="courses">Courses</button>
-</div></nav>
+<nav id="tabs" aria-label="Views"><div><button data-v="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><span>Today</span></button><button data-v="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Week</span></button><button data-v="all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7h11M9 12h11M9 17h11M4.5 7h.01M4.5 12h.01M4.5 17h.01"/></svg><span>All</span></button><button data-v="done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span>Finished</span></button><button data-v="courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/></svg><span>Courses</span></button><button data-v="insights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-7"/></svg><span>Insights</span></button></div></nav>
 </div>
 <dialog id="td"><form id="tf">
 <h2 id="tdt">New task</h2>
@@ -106,7 +64,8 @@ const p2=n=>String(n).padStart(2,'0');
 const ls=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`;
 const when=d=>d.toLocaleString([],{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 function rel(ms){const a=Math.abs(ms),m=Math.round(a/6e4),h=Math.round(a/36e5),d=Math.round(a/864e5);const v=m<60?`${m} min`:h<48?`${h} h`:`${d} days`;return ms<0?`${v} late`:`in ${v}`}
-const empty=(a,b)=>`<li class="empty"><b>${a}</b>${b}</li>`;
+const IC={"Assignment": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 3h7l4 4v14H7z\"/><path d=\"M14 3v4h4M10 12h5M10 16h5\"/></svg>", "Quiz": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01\"/></svg>", "Exam": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"6\" y=\"4\" width=\"12\" height=\"17\" rx=\"2\"/><path d=\"M9 4h6v3H9zM9.5 14l2 2 3.5-4\"/></svg>", "Project": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m12 3 9 5-9 5-9-5zM3 13l9 5 9-5\"/></svg>", "Course": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z\"/><path d=\"M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3\"/></svg>", "Today": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"M12 8v4l3 2\"/></svg>", "check": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 12.5 4 4 8-9\"/></svg>"};
+const empty=(a,b)=>`<li class="empty"><span class="eic">${IC.Today}</span><b>${a}</b>${b}</li>`;
 const path=(n,id)=>doc(db,`users/${uid}/${n}/${id}`);
 
 $('#signin').onclick=async()=>{const p=new GoogleAuthProvider();try{await signInWithPopup(auth,p)}catch(e){if(e.code==='auth/popup-closed-by-user')return;try{await signInWithRedirect(auth,p)}catch(e2){msg(e2.message)}}};
@@ -122,19 +81,21 @@ onAuthStateChanged(auth,u=>{
 
 function render(){
  if(!uid)return;
- $('#ttl').textContent={today:'Today',week:'Week',all:'All',done:'Finished',courses:'Courses'}[view];
+ $('#ttl').textContent={today:'Today',week:'Week',all:'All',done:'Finished',courses:'Courses',insights:'Insights'}[view];
  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
  const L=$('#list');
+ if(view==='insights'){L.innerHTML='';return}
  if(view==='courses'){
-  L.innerHTML=courses.length?[...courses].sort((a,b)=>a.name.localeCompare(b.name)).map(c=>`<li class="t" data-c="${c.id}" style="--h:${hue(c.id)}"><div class="b"><b>${esc(c.name)}</b><small>${esc([c.prof,c.day?({MO:'Mon',TU:'Tue',WE:'Wed',TH:'Thu',FR:'Fri',SA:'Sat',SU:'Sun'})[c.day]+' '+c.start+'-'+c.end:c.sched,c.room].filter(Boolean).join(', '))||'No details yet'}</small></div><span class="r">${tasks.filter(t=>t.courseId===c.id&&!t.done).length} open</span></li>`).join(''):empty('No courses yet','Tap + to add a course, then link tasks to it.');
+  L.innerHTML=courses.length?[...courses].sort((a,b)=>a.name.localeCompare(b.name)).map((c,i)=>`<li class="t" data-c="${c.id}" style="--h:${hue(c.id)};--i:${i}"><span class="ic">${IC.Course}</span><div class="b"><b>${esc(c.name)}</b><small>${esc([c.prof,c.day?({MO:'Mon',TU:'Tue',WE:'Wed',TH:'Thu',FR:'Fri',SA:'Sat',SU:'Sun'})[c.day]+' '+c.start+'-'+c.end:c.sched,c.room].filter(Boolean).join(', '))||'No details yet'}</small></div><span class="r">${tasks.filter(t=>t.courseId===c.id&&!t.done).length} open</span></li>`).join(''):empty('No courses yet','Tap + to add a course, then link tasks to it.');
   return;
  }
  const eod=new Date();eod.setHours(23,59,59,999);const wk=Date.now()+7*864e5;
  const a=tasks.filter(t=>view==='done'?t.done:!t.done&&(view==='all'||due(t)<=(view==='today'?eod:wk))).sort((x,y)=>view==='done'?due(y)-due(x):due(x)-due(y));
- L.innerHTML=a.length?a.map(t=>{
+ const nx=view==='done'?null:a.find(t=>due(t)>=Date.now());
+ L.innerHTML=a.length?a.map((t,i)=>{
   const c=courses.find(x=>x.id===t.courseId),ms=due(t)-Date.now();
   const u=t.done?'fin':ms<0?'late':ms<1728e5?'soon':'';
-  return `<li class="t ${u}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230}"><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${t.done?'✓':''}</button><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Finished':rel(ms)}</span></li>`}).join(''):
+  return `<li class="t ${u}${t===nx?' next':''}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230};--i:${i}"><span class="ic">${IC[t.type]||IC.Assignment}</span><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Finished':rel(ms)}</span><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${IC.check}</button></li>`}).join(''):
   empty({today:'Nothing due today',week:'Nothing due this week',all:'No open tasks',done:'Nothing finished yet'}[view],'Tap + to add a task.');
 }
 setInterval(render,6e4);
@@ -143,7 +104,7 @@ $('#tabs').onclick=e=>{const b=e.target.closest('button');if(b){view=b.dataset.v
 $('#fab').onclick=()=>view==='courses'?openCourse():openTask();
 $('#list').onclick=e=>{
  const k=e.target.closest('[data-k]');
- if(k){const t=tasks.find(x=>x.id===k.dataset.k);setDoc(path('tasks',t.id),{done:!t.done,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));return}
+ if(k){const t=tasks.find(x=>x.id===k.dataset.k);setDoc(path('tasks',t.id),{done:!t.done,doneAt:t.done?0:Date.now(),updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));return}
  const li=e.target.closest('li');if(!li)return;
  li.dataset.c?openCourse(li.dataset.c):li.dataset.id&&openTask(li.dataset.id);
 };
@@ -159,7 +120,7 @@ function openTask(id){
 }
 $('#tf').onsubmit=e=>{
  e.preventDefault();const f=e.target,id=editing||crypto.randomUUID(),old=tasks.find(x=>x.id===id);
- setDoc(path('tasks',id),{title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim(),done:old?.done||false,updatedAt:Date.now()}).catch(er=>msg(er.message));
+ setDoc(path('tasks',id),{title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim(),done:old?.done||false,doneAt:old?.doneAt||0,updatedAt:Date.now()}).catch(er=>msg(er.message));
  $('#td').close();
 };
 $('#tdel').onclick=()=>{if(confirm('Delete this task?')){setDoc(path('tasks',editing),{deleted:true,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));$('#td').close()}};
@@ -184,4 +145,5 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 <script type="module" src="backup.js"></script>
 <script type="module" src="ui.js"></script>
 <script type="module" src="motion.js"></script>
+<script type="module" src="insights.js"></script>
 </body></html>
