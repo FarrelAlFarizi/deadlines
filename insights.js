@@ -12,7 +12,7 @@ const meta=document.querySelector('meta[name="theme-color"]');
 function theme(){
  const dark=mode==='dark'||(mode==='auto'&&mq.matches);
  root.dataset.theme=dark?'dark':'light';
- if(meta)meta.content=dark?'#0B0B0D':'#E9E9EC';
+ if(meta)meta.content=dark?'#070A1F':'#BFB0E6';
  tb.innerHTML=svg(TI[mode]);tb.setAttribute('aria-label','Theme: '+mode+'. Tap to change.');tb.title='Theme: '+mode;
 }
 tb.onclick=()=>{mode={auto:'light',light:'dark',dark:'auto'}[mode];try{if(mode==='auto')localStorage.removeItem('dl-theme');else localStorage.setItem('dl-theme',mode)}catch(e){}theme()};

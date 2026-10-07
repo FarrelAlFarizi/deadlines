@@ -1,6 +1,6 @@
 /* Slate: monochrome, glassy, segmented. Light and dark. */
-:root{--bg:#E9E9EC;--card:rgba(255,255,255,.66);--card2:rgba(255,255,255,.28);--solid:#FAFAFB;--ink:#0E0E10;--mut:#6D6D75;--ln:rgba(14,14,16,.16);--inv:#0E0E10;--on:#F6F6F8;--seg:rgba(14,14,16,.13);--beam:rgba(255,255,255,.75);--late:#C0291D;--soon:#8C5B00;--sh:0 1px 1px rgba(0,0,0,.04),0 10px 30px rgba(20,20,30,.08);--f:'Chakra Petch',system-ui,-apple-system,sans-serif;color-scheme:light}
-:root[data-theme="dark"]{--bg:#0B0B0D;--card:rgba(255,255,255,.07);--card2:rgba(255,255,255,.025);--solid:#16161A;--ink:#F3F3F5;--mut:#8F8F98;--ln:rgba(255,255,255,.14);--inv:#F3F3F5;--on:#0B0B0D;--seg:rgba(255,255,255,.12);--beam:rgba(255,255,255,.045);--late:#FF7A6E;--soon:#F0B95A;--sh:0 1px 1px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45);color-scheme:dark}
+:root{--bg:#CDBFEA;--card:rgba(255,255,255,.66);--card2:rgba(255,255,255,.28);--solid:#FAFAFB;--ink:#0E0E10;--mut:#55555E;--ln:rgba(14,14,16,.16);--inv:#0E0E10;--on:#F6F6F8;--seg:rgba(14,14,16,.13);--beam:rgba(255,255,255,.75);--late:#C0291D;--soon:#8C5B00;--sh:0 1px 1px rgba(0,0,0,.04),0 10px 30px rgba(20,20,30,.08);--f:'Chakra Petch',system-ui,-apple-system,sans-serif;color-scheme:light}
+:root[data-theme="dark"]{--bg:#070A1F;--card:rgba(255,255,255,.07);--card2:rgba(255,255,255,.025);--solid:#16161A;--ink:#F3F3F5;--mut:#8F8F98;--ln:rgba(255,255,255,.14);--inv:#F3F3F5;--on:#0B0B0D;--seg:rgba(255,255,255,.12);--beam:rgba(255,255,255,.045);--late:#FF7A6E;--soon:#F0B95A;--sh:0 1px 1px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45);color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;background:var(--bg)}
 body{margin:0;min-height:100dvh;background:var(--bg);color:var(--ink);font:400 1rem/1.4 var(--f);padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);overflow-x:hidden;overscroll-behavior-y:none}
@@ -152,3 +152,8 @@ dialog.closing{animation:dout .22s ease-in forwards;pointer-events:none}
 dialog.closing::backdrop{animation:dfadeout .22s ease forwards}
 #list.enter .t{animation:rise .5s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i,0)*45ms)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Pixel sky behind everything */
+body{background:transparent}
+body::before{display:none}
+#sky{position:fixed;left:0;top:0;z-index:-1;pointer-events:none;image-rendering:crisp-edges;image-rendering:pixelated}
