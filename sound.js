@@ -1,8 +1,15 @@
 const $=s=>document.querySelector(s);
 let on=true;try{on=localStorage.getItem('dl-snd')!=='off'}catch(e){}
+let volume=.5;try{const saved=localStorage.getItem('dl-volume');if(saved!==null&&Number.isFinite(Number(saved)))volume=Math.max(0,Math.min(1,Number(saved)/100))}catch(e){}
 let ac=null,master=null;
+function setVolume(value){
+ const next=Number(value);if(!Number.isFinite(next))return;
+ volume=Math.max(0,Math.min(1,next));
+ try{localStorage.setItem('dl-volume',String(Math.round(volume*100)))}catch(e){}
+ if(master)master.gain.setTargetAtTime(volume,ac.currentTime,.02);
+}
 const ctx=()=>{
- if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;ac=new A();master=ac.createGain();master.gain.value=.5;const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=3200;master.connect(f);f.connect(ac.destination)}
+ if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;ac=new A();master=ac.createGain();master.gain.value=volume;const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=3200;master.connect(f);f.connect(ac.destination)}
  if(ac.state==='suspended')ac.resume();
  return ac;
 };
@@ -51,4 +58,21 @@ if(menu){
  const lab=()=>{b.textContent='Sounds: '+(on?'On':'Off')};lab();
  b.onclick=()=>{on=!on;try{localStorage.setItem('dl-snd',on?'on':'off')}catch(e){}lab();if(on)FX.save()};
  menu.insertBefore(b,$('#out'));
+}
+function installVolumeControl(){
+ const list=document.querySelector('dialog #rl');
+ if(!list||document.querySelector('#dl-snd-vol'))return false;
+ const section=document.createElement('div');section.id='dl-snd-vol';section.className='rg';
+ const title=document.createElement('b');title.textContent='Sound effects volume';
+ const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:12px';
+ const input=document.createElement('input');input.type='range';input.min='0';input.max='100';input.step='1';input.value=String(Math.round(volume*100));input.setAttribute('aria-label','Sound effects volume');
+ input.style.cssText='flex:1;width:auto;height:24px;margin:0;padding:0;border:0;background:transparent;accent-color:var(--inv)';
+ const output=document.createElement('output');output.style.cssText='min-width:3.5em;text-align:right;font-variant-numeric:tabular-nums';output.textContent=input.value+'%';
+ input.addEventListener('input',()=>{output.textContent=input.value+'%';setVolume(Number(input.value)/100)});
+ row.append(input,output);section.append(title,row);list.before(section);
+ return true;
+}
+if(!installVolumeControl()){
+ const observer=new MutationObserver(()=>{if(installVolumeControl())observer.disconnect()});
+ observer.observe(document.body,{childList:true,subtree:true});
 }
