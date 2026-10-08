@@ -1,4 +1,4 @@
-const $=s=>document.querySelector(s);
+const $=s=>document.querySelector();
 let on=true;try{on=localStorage.getItem('dl-snd')!=='off'}catch(e){}
 let volume=.5;try{const saved=localStorage.getItem('dl-volume');if(saved!==null&&Number.isFinite(Number(saved)))volume=Math.max(0,Math.min(1,Number(saved)/100))}catch(e){}
 let ac=null,master=null;
@@ -54,25 +54,19 @@ document.addEventListener('click',e=>{
 },true);
 const menu=$('#menu');
 if(menu){
- const b=document.createElement('button');b.className='lnk';b.type='button';
+ const b=document.createElement('button');b.className='lnk';b.type='button';b.id='soundToggle';
  const lab=()=>{b.textContent='Sounds: '+(on?'On':'Off')};lab();
  b.onclick=()=>{on=!on;try{localStorage.setItem('dl-snd',on?'on':'off')}catch(e){}lab();if(on)FX.save()};
  menu.insertBefore(b,$('#out'));
-}
-function installVolumeControl(){
- const list=document.querySelector('dialog #rl');
- if(!list||document.querySelector('#dl-snd-vol'))return false;
- const section=document.createElement('div');section.id='dl-snd-vol';section.className='rg';
- const title=document.createElement('b');title.textContent='Sound effects volume';
- const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:12px';
- const input=document.createElement('input');input.type='range';input.min='0';input.max='100';input.step='1';input.value=String(Math.round(volume*100));input.setAttribute('aria-label','Sound effects volume');
- input.style.cssText='flex:1;width:auto;height:24px;margin:0;padding:0;border:0;background:transparent;accent-color:var(--inv)';
- const output=document.createElement('output');output.style.cssText='min-width:3.5em;text-align:right;font-variant-numeric:tabular-nums';output.textContent=input.value+'%';
+
+ const panel=document.createElement('div');panel.id='soundVolume';panel.style.cssText='padding:6px 14px 10px;width:200px;max-width:calc(100vw - 64px);box-sizing:border-box';
+ panel.addEventListener('click',e=>e.stopPropagation());
+ const label=document.createElement('label');label.htmlFor='soundVolumeSlider';label.textContent='Volume';
+ label.style.cssText='display:block;margin:0 0 6px;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:600';
+ const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:10px';
+ const input=document.createElement('input');input.id='soundVolumeSlider';input.type='range';input.min='0';input.max='100';input.step='1';input.value=String(Math.round(volume*100));input.setAttribute('aria-label','Sound effects volume');
+ input.style.cssText='flex:1;min-width:0;width:100%;height:22px;margin:0;padding:0;border:0;background:transparent;accent-color:var(--inv)';
+ const output=document.createElement('output');output.style.cssText='min-width:3em;text-align:right;font-variant-numeric:tabular-nums';output.textContent=input.value+'%';
  input.addEventListener('input',()=>{output.textContent=input.value+'%';setVolume(Number(input.value)/100)});
- row.append(input,output);section.append(title,row);list.before(section);
- return true;
-}
-if(!installVolumeControl()){
- const observer=new MutationObserver(()=>{if(installVolumeControl())observer.disconnect()});
- observer.observe(document.body,{childList:true,subtree:true});
+ row.append(input,output);panel.append(label,row);menu.insertBefore(panel,$('#out'));
 }
