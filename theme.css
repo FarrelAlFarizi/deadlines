@@ -1,6 +1,6 @@
 /* Slate: monochrome, glassy, segmented. Light and dark. */
-:root{--bg:#CDBFEA;--card:rgba(255,255,255,.7);--card2:rgba(255,255,255,.4);--halo:rgba(255,255,255,.85);--field:rgba(255,255,255,.85);--solid:#FAFAFB;--ink:#0E0E10;--mut:#55555E;--ln:rgba(14,14,16,.16);--inv:#0E0E10;--on:#F6F6F8;--seg:rgba(14,14,16,.13);--beam:rgba(255,255,255,.75);--late:#C0291D;--soon:#8C5B00;--sh:0 1px 1px rgba(0,0,0,.04),0 10px 30px rgba(20,20,30,.08);--f:'Chakra Petch',system-ui,-apple-system,sans-serif;color-scheme:light}
-:root[data-theme="dark"]{--bg:#070A1F;--card:rgba(12,16,44,.7);--card2:rgba(12,16,44,.52);--halo:rgba(5,8,26,.95);--field:rgba(10,14,40,.82);--solid:#16161A;--ink:#F3F3F5;--mut:#8F8F98;--ln:rgba(255,255,255,.14);--inv:#F3F3F5;--on:#0B0B0D;--seg:rgba(255,255,255,.12);--beam:rgba(255,255,255,.045);--late:#FF7A6E;--soon:#F0B95A;--sh:0 1px 1px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45);color-scheme:dark}
+:root{--bg:#CDBFEA;--card:rgba(255,255,255,.7);--card2:rgba(255,255,255,.4);--halo:rgba(255,255,255,.85);--field:rgba(255,255,255,.85);--solid:#FAFAFB;--ink:#0E0E10;--mut:#55555E;--ln:rgba(14,14,16,.16);--inv:#0E0E10;--on:#F6F6F8;--seg:rgba(14,14,16,.13);--beam:rgba(255,255,255,.75);--late:#C0291D;--soon:#8C5B00;--shA:rgba(0,0,0,.04);--shB:rgba(20,20,30,.08);--f:'Chakra Petch',system-ui,-apple-system,sans-serif;color-scheme:light}
+:root[data-theme="dark"]{--bg:#070A1F;--card:rgba(12,16,44,.7);--card2:rgba(12,16,44,.52);--halo:rgba(5,8,26,.95);--field:rgba(10,14,40,.82);--solid:#16161A;--ink:#F3F3F5;--mut:#8F8F98;--ln:rgba(255,255,255,.14);--inv:#F3F3F5;--on:#0B0B0D;--seg:rgba(255,255,255,.12);--beam:rgba(255,255,255,.045);--late:#FF7A6E;--soon:#F0B95A;--shA:rgba(0,0,0,.4);--shB:rgba(0,0,0,.45);color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;background:var(--bg)}
 body{margin:0;min-height:100dvh;background:var(--bg);color:var(--ink);font:400 1rem/1.4 var(--f);padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);overflow-x:hidden;overscroll-behavior-y:none}
@@ -184,3 +184,24 @@ input,select,textarea,#ddb{background:var(--field)}
 #selbar button{border:0;background:none;color:inherit;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.7rem;padding:10px;border-radius:14px}
 #seldel{background:var(--late)!important;color:#fff!important}
 #seldel:disabled{opacity:.35}
+
+/* Theme colours glide between light and dark, in step with the sky */
+:root{--sh:0 1px 1px var(--shA),0 12px 32px var(--shB)}
+@property --bg{syntax:'<color>';inherits:true;initial-value:#CDBFEA}
+@property --card{syntax:'<color>';inherits:true;initial-value:rgba(255,255,255,.7)}
+@property --card2{syntax:'<color>';inherits:true;initial-value:rgba(255,255,255,.4)}
+@property --halo{syntax:'<color>';inherits:true;initial-value:rgba(255,255,255,.85)}
+@property --field{syntax:'<color>';inherits:true;initial-value:rgba(255,255,255,.85)}
+@property --solid{syntax:'<color>';inherits:true;initial-value:#FAFAFB}
+@property --ink{syntax:'<color>';inherits:true;initial-value:#0E0E10}
+@property --mut{syntax:'<color>';inherits:true;initial-value:#55555E}
+@property --ln{syntax:'<color>';inherits:true;initial-value:rgba(14,14,16,.16)}
+@property --inv{syntax:'<color>';inherits:true;initial-value:#0E0E10}
+@property --on{syntax:'<color>';inherits:true;initial-value:#F6F6F8}
+@property --seg{syntax:'<color>';inherits:true;initial-value:rgba(14,14,16,.13)}
+@property --beam{syntax:'<color>';inherits:true;initial-value:rgba(255,255,255,.75)}
+@property --late{syntax:'<color>';inherits:true;initial-value:#C0291D}
+@property --soon{syntax:'<color>';inherits:true;initial-value:#8C5B00}
+@property --shA{syntax:'<color>';inherits:true;initial-value:rgba(0,0,0,.04)}
+@property --shB{syntax:'<color>';inherits:true;initial-value:rgba(20,20,30,.08)}
+html{transition-property:--bg,--card,--card2,--halo,--field,--solid,--ink,--mut,--ln,--inv,--on,--seg,--beam,--late,--soon,--shA,--shB;transition-duration:2s;transition-timing-function:cubic-bezier(.65,0,.35,1)}

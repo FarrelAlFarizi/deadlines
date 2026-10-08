@@ -81,12 +81,14 @@ function scene(buf,lay,GW,GH,t,time,S,C){
 const $=s=>document.querySelector(s),root=document.documentElement;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let still=false;try{still=localStorage.getItem('dl-bg')==='still'}catch(e){}
+const meta=document.querySelector('meta[name="theme-color"]');
+const tc=t=>{if(!meta)return;const k=t<.5?t*2:(t-.5)*2,A=t<.5?SKY.day[0]:SKY.dusk[0],B=t<.5?SKY.dusk[0]:SKY.night[0],c=mixC(A,B,k);meta.content='rgb('+Math.round(c[0])+','+Math.round(c[1])+','+Math.round(c[2])+')'};
 const cv=document.createElement('canvas');cv.id='sky';cv.setAttribute('aria-hidden','true');document.body.prepend(cv);
 const ctx=cv.getContext&&cv.getContext('2d');
 if(ctx){
  let GW,GH,PX,img,buf,S,C,tCur,tFrom,tTo,tStart=0,last=0,raf=0,rt=0;
  const target=()=>root.dataset.theme==='dark'?1:0;
- const draw=()=>{scene(buf,null,GW,GH,tCur,still||reduce?0:performance.now()/1000,S,C);ctx.putImageData(img,0,0)};
+ const draw=()=>{scene(buf,null,GW,GH,tCur,still||reduce?0:performance.now()/1000,S,C);ctx.putImageData(img,0,0);tc(tCur)};
  const align=()=>{cv.style.left=((root.clientWidth||innerWidth)-GW*PX)/2+'px'};
  const size=()=>{
   const W=innerWidth,Hh=innerHeight;
