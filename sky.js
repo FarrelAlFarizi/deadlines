@@ -30,7 +30,7 @@ function stars(buf,lay,GW,GH,t,time,S){
 function disc(buf,lay,GW,GH,cx,cy,R,core,rim,glow,gk,m,det){
  const g=R*1.9,x0=Math.max(0,Math.floor(cx-g)),x1=Math.min(GW-1,Math.ceil(cx+g)),y0=Math.max(0,Math.floor(cy-g)),y1=Math.min(GH-1,Math.ceil(cy+g));
  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
-  const dx=x-cx,dy=y-cy,d=Math.sqrt(dx*dx+dy*dy),i=y*GW+x;
+  const dx=x+.5-cx,dy=y+.5-cy,d=Math.sqrt(dx*dx+dy*dy),i=y*GW+x;
   if(d<=R){let c=d>R-1.5?rim:core;if(det)c=det(dx,dy,c);buf[i]=c;if(lay)lay[i]=m}
   else if(d<g&&(1-(d-R)/(g-R))*gk>BAYER[((y&3)<<2)|(x&3)])buf[i]=mixp(buf[i],glow,.4);
  }
@@ -87,10 +87,11 @@ if(ctx){
  let GW,GH,PX,img,buf,S,C,tCur,tFrom,tTo,tStart=0,last=0,raf=0,rt=0;
  const target=()=>root.dataset.theme==='dark'?1:0;
  const draw=()=>{scene(buf,null,GW,GH,tCur,still||reduce?0:performance.now()/1000,S,C);ctx.putImageData(img,0,0)};
+ const align=()=>{cv.style.left=((root.clientWidth||innerWidth)-GW*PX)/2+'px'};
  const size=()=>{
   const W=innerWidth,Hh=innerHeight;
   PX=Math.max(3,Math.min(6,Math.round(Math.min(W,Hh)/100)));GW=Math.ceil(W/PX);GH=Math.ceil(Hh/PX);
-  cv.width=GW;cv.height=GH;cv.style.width=GW*PX+'px';cv.style.height=GH*PX+'px';
+  cv.width=GW;cv.height=GH;cv.style.width=GW*PX+'px';cv.style.height=GH*PX+'px';align();
   img=ctx.createImageData(GW,GH);buf=new Uint32Array(img.data.buffer);S=mkStars(GW,GH,7);C=mkClouds(GW,GH,11);draw();
  };
  const tick=now=>{
@@ -102,7 +103,8 @@ if(ctx){
  const go=()=>{if(!raf)raf=requestAnimationFrame(tick)};
  const set=v=>{tFrom=tCur;tTo=v;tStart=performance.now();if(reduce){tCur=v;draw()}else go()};
  new MutationObserver(()=>set(target())).observe(root,{attributes:true,attributeFilter:['data-theme']});
- addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(size,150)});
+ addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(size,150);align()});
+ if(typeof ResizeObserver!=='undefined')new ResizeObserver(align).observe(root);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)go()});
  tCur=tFrom=tTo=target();size();go();
  const menu=$('#menu');

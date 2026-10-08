@@ -1,6 +1,6 @@
 /* Slate: monochrome, glassy, segmented. Light and dark. */
-:root{--bg:#CDBFEA;--card:rgba(255,255,255,.66);--card2:rgba(255,255,255,.28);--solid:#FAFAFB;--ink:#0E0E10;--mut:#55555E;--ln:rgba(14,14,16,.16);--inv:#0E0E10;--on:#F6F6F8;--seg:rgba(14,14,16,.13);--beam:rgba(255,255,255,.75);--late:#C0291D;--soon:#8C5B00;--sh:0 1px 1px rgba(0,0,0,.04),0 10px 30px rgba(20,20,30,.08);--f:'Chakra Petch',system-ui,-apple-system,sans-serif;color-scheme:light}
-:root[data-theme="dark"]{--bg:#070A1F;--card:rgba(255,255,255,.07);--card2:rgba(255,255,255,.025);--solid:#16161A;--ink:#F3F3F5;--mut:#8F8F98;--ln:rgba(255,255,255,.14);--inv:#F3F3F5;--on:#0B0B0D;--seg:rgba(255,255,255,.12);--beam:rgba(255,255,255,.045);--late:#FF7A6E;--soon:#F0B95A;--sh:0 1px 1px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45);color-scheme:dark}
+:root{--bg:#CDBFEA;--card:rgba(255,255,255,.7);--card2:rgba(255,255,255,.4);--halo:rgba(255,255,255,.85);--field:rgba(255,255,255,.85);--solid:#FAFAFB;--ink:#0E0E10;--mut:#55555E;--ln:rgba(14,14,16,.16);--inv:#0E0E10;--on:#F6F6F8;--seg:rgba(14,14,16,.13);--beam:rgba(255,255,255,.75);--late:#C0291D;--soon:#8C5B00;--sh:0 1px 1px rgba(0,0,0,.04),0 10px 30px rgba(20,20,30,.08);--f:'Chakra Petch',system-ui,-apple-system,sans-serif;color-scheme:light}
+:root[data-theme="dark"]{--bg:#070A1F;--card:rgba(12,16,44,.7);--card2:rgba(12,16,44,.52);--halo:rgba(5,8,26,.95);--field:rgba(10,14,40,.82);--solid:#16161A;--ink:#F3F3F5;--mut:#8F8F98;--ln:rgba(255,255,255,.14);--inv:#F3F3F5;--on:#0B0B0D;--seg:rgba(255,255,255,.12);--beam:rgba(255,255,255,.045);--late:#FF7A6E;--soon:#F0B95A;--sh:0 1px 1px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.45);color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;background:var(--bg)}
 body{margin:0;min-height:100dvh;background:var(--bg);color:var(--ink);font:400 1rem/1.4 var(--f);padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);overflow-x:hidden;overscroll-behavior-y:none}
@@ -157,3 +157,30 @@ dialog.closing::backdrop{animation:dfadeout .22s ease forwards}
 body{background:transparent}
 body::before{display:none}
 #sky{position:fixed;left:0;top:0;z-index:-1;pointer-events:none;image-rendering:crisp-edges;image-rendering:pixelated}
+
+/* Readability over the sky */
+header,#cls h3,#login{text-shadow:0 0 2px var(--halo),0 0 10px var(--halo),0 0 22px var(--halo)}
+header button,header .ib,#cal,.pri,#menu,#ddl,#toast,#selbar{text-shadow:none}
+#meter{padding:14px 16px;border:1px solid var(--ln);border-radius:20px;background:linear-gradient(180deg,var(--card),var(--card2));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--sh)}
+.empty{margin:8px 0;padding:36px 16px;border:1px dashed var(--ln);border-radius:24px;background:linear-gradient(180deg,var(--card),var(--card2));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+input,select,textarea,#ddb{background:var(--field)}
+#flt input,#ddb,#cal,.chip{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.t{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+/* Select and delete several */
+#selrow{display:flex;justify-content:flex-end;margin:0 0 8px}
+#selbtn{border:1px solid var(--ln);border-radius:999px;background:var(--field);padding:7px 14px;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.sel{display:none;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--ink);place-items:center;color:transparent;transition:background .2s,color .2s}
+.sel svg{width:18px;height:18px}
+.selecting .t .chk{display:none}
+.selecting .sel{display:grid}
+.picked .sel{background:var(--ink);color:var(--on)}
+.picked{outline:2px solid var(--ink);outline-offset:-2px}
+.next .sel{border-color:var(--on)}
+.next.picked .sel{background:var(--on);color:var(--inv)}
+.next.picked{outline-color:var(--on)}
+.selecting #fab{display:none}
+#selbar{position:fixed;left:0;right:0;margin:0 auto;width:max-content;bottom:calc(92px + env(safe-area-inset-bottom));z-index:25;display:flex;align-items:center;gap:4px;padding:8px 10px 8px 20px;border-radius:22px;background:var(--inv);color:var(--on);box-shadow:var(--sh);max-width:calc(100vw - 24px);animation:popIn .22s cubic-bezier(.2,1.2,.35,1)}
+#selcount{font-weight:700;font-size:.8rem;letter-spacing:.06em;margin-right:6px;white-space:nowrap}
+#selbar button{border:0;background:none;color:inherit;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.7rem;padding:10px;border-radius:14px}
+#seldel{background:var(--late)!important;color:#fff!important}
+#seldel:disabled{opacity:.35}

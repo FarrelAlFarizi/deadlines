@@ -166,3 +166,14 @@ $('#cd').addEventListener('submit',e=>{
 },true);
 $('#cd').addEventListener('input',()=>{cerr.textContent=''});
 $('#cd').addEventListener('close',()=>{cerr.textContent=''});
+
+window.dlBulkDelete=(kind,ids)=>{
+ const map=kind==='courses'?pendC:pendT,data=kind==='courses'?{day:'',deleted:true}:{deleted:true};
+ for(const id of ids){
+  const commit=()=>{const p=map.get(id);if(!p)return;clearTimeout(p.t);map.delete(id);wr(kind,id,{...data,updatedAt:Date.now()})};
+  const old=map.get(id);if(old)clearTimeout(old.t);
+  map.set(id,{t:setTimeout(commit,6000),commit});
+ }
+ apply();
+ toast(`${ids.length} ${kind==='courses'?'course':'task'}${ids.length>1?'s':''} deleted`,()=>{for(const id of ids){const p=map.get(id);if(p)clearTimeout(p.t);map.delete(id)}apply()});
+};
