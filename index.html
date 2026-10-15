@@ -1,152 +1,89 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Deadlines</title>
-<meta name="theme-color" content="#E9E9EC">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Deadlines">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-180.png">
+<title>Daily Tracker - Never miss a deadline again</title>
+<meta name="description" content="A free deadline and class tracker for students. Classes, assignments and tests in one calm place, synced to Google Calendar and all your devices.">
+<meta name="theme-color" content="#BFB0E6">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Daily Tracker">
+<meta property="og:title" content="Daily Tracker - Never miss a deadline again">
+<meta property="og:description" content="Classes, assignments and tests in one calm place, synced to Google Calendar and all your devices.">
+<meta property="og:image" content="https://farrelalfarizi.github.io/deadlines/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script>(function(){var d=document.documentElement,t;try{t=localStorage.getItem("dl-theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.dataset.theme=t})()</script>
-<link rel="stylesheet" href="theme.css"></head>
-<body>
-<main id="login" hidden>
-<small class="cap">Deadlines</small>
-<h1>A clean slate.<br>Every day.</h1>
-<p>Classes, assignments and exams in one calm list, synced on every device you sign in on.</p>
-<button id="signin" class="pri">Sign in with Google</button>
-<p id="err" role="alert"></p>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<script>(function(){try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone){location.replace('app.html');return}}catch(e){}var d=document.documentElement,t;try{t=localStorage.getItem("dl-theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.dataset.theme=t})()</script>
+<link rel="stylesheet" href="landing.css">
+</head>
+<body id="top">
+<header class="top"><div class="wrap">
+ <a class="logo" href="#top"><i class="sq"></i>Daily Tracker</a>
+ <nav class="links" aria-label="Sections"><a href="#why">Why</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+ <div class="acts"><button id="theme" class="icb" type="button"></button><button class="btn ghost" type="button" data-auth data-in="Open app"><span class="lbl">Log in</span></button></div>
+</div></header>
+<main>
+<section class="hero wrap"><div class="card">
+ <div class="left">
+  <p class="kick">Free in beta</p>
+  <h1>Never miss a deadline again.</h1>
+  <p class="lede">Classes, assignments and tests in one calm place, synced to Google Calendar and all your devices.</p>
+  <button class="btn big" id="cta" type="button" data-auth data-in="Open the app"><span class="lbl">Continue with Google</span></button>
+  <p class="note" id="note">No password to remember. Sign in takes about 10 seconds.</p>
+  <p class="sub">Already tracking? <a href="app.html" id="open">Open the app</a></p>
+  <p class="err" id="authMsg" role="alert"></p>
+ </div>
+ <div class="right"><div class="bento">
+  <div class="tile t-courses"><canvas class="px" data-s="cal" data-k="4" aria-hidden="true"></canvas><b>Courses</b><span>Classes and professors in one list.</span></div>
+  <div class="tile t-duck"><canvas class="px duck" data-s="duck" data-k="7" aria-hidden="true"></canvas></div>
+  <div class="tile t-sun" aria-hidden="true"><canvas class="px sun" id="sunC"></canvas><canvas class="px moon" id="moonC"></canvas></div>
+  <div class="tile t-today"><small>Today</small><p>08:00 Discrete Math</p><p>10:00 Algorithms</p></div>
+  <div class="tile t-rem"><canvas class="px" data-s="bell" data-k="4" aria-hidden="true"></canvas><b>Reminders</b><span>Calendar alerts at times you pick.</span></div>
+  <div class="tile t-sync"><canvas class="px" data-s="sync" data-k="4" aria-hidden="true"></canvas><b>Sync</b><span>Phone and laptop, instantly.</span></div>
+  <div class="tile t-tasks"><canvas class="px" data-s="list" data-k="4" aria-hidden="true"></canvas><b>Tasks</b><span>Due dates, tests, notes.</span></div>
+ </div></div>
+</div></section>
+
+<section id="why" class="sec wrap"><div class="panel">
+ <h2>Why you will like it</h2>
+ <div class="cards">
+  <article class="fc"><b>Classes that behave</b><p>Add a weekly class once. Move or cancel a single week without touching the rest.</p></article>
+  <article class="fc"><b>Reminders on your terms</b><p>Pick days, hours and minutes with a scroll wheel, separately for exams, quizzes, assignments and classes.</p></article>
+  <article class="fc"><b>One list, every device</b><p>Change something on your laptop and it shows on your phone straight away. It keeps working offline too.</p></article>
+ </div>
+ <p class="more"><span>Undo for every delete</span><span>Select several to remove</span><span>Streaks and insights</span><span>Light and dark pixel sky</span><span>Export your data</span></p>
+</div></section>
+
+<section id="how" class="sec wrap"><div class="panel">
+ <h2>How it works</h2>
+ <ol class="steps">
+  <li><i>1</i><div><b>Sign in</b><p>Use your Google account. There is no new password.</p></div></li>
+  <li><i>2</i><div><b>Add your courses and tasks</b><p>Set a class day and time once. Add assignments with due dates and notes.</p></div></li>
+  <li><i>3</i><div><b>Connect Calendar (optional)</b><p>Tap Connect Calendar and your reminders arrive as alerts on your phone.</p></div></li>
+ </ol>
+ <div class="install"><b>Put it on your home screen</b><p>iPhone: open it in Safari, tap Share, then Add to Home Screen. Android: open it in Chrome, then Menu, then Install app.</p></div>
+</div></section>
+
+<section id="faq" class="sec wrap"><div class="panel">
+ <h2>Questions</h2>
+ <details><summary>Is it free?</summary><p>Yes. It is free while it is in beta.</p></details>
+ <details><summary>Do I need a Google account?</summary><p>Yes. You sign in with Google, and the same account is what connects to Google Calendar.</p></details>
+ <details><summary>What does the Calendar permission do?</summary><p>It lets the app add, update and remove reminder events on your calendar. Google words this permission broadly, since it covers your events, but the app only changes the events it created itself. It is optional, and you can remove it at any time in your Google Account settings.</p></details>
+ <details><summary>Why does Google show an "unverified app" warning?</summary><p>The app is new and has not finished Google's review yet. Signing in does not show the warning. It only appears when you connect Calendar, and you can continue through it by choosing Advanced.</p></details>
+ <details><summary>Who can see my tasks?</summary><p>Only you. Your tasks are stored under your own account and protected by security rules. You can export everything from the menu, and a one-tap delete button is on the way.</p></details>
+ <details><summary>Does it work on iPhone and Android?</summary><p>Yes, in any modern browser. Add it to your home screen for an app-style icon. Store apps may come later.</p></details>
+</div></section>
+
+<section class="sec wrap final-wrap"><div class="panel final">
+ <h2>Ready? Start in 10 seconds.</h2>
+ <button class="btn" type="button" data-auth data-in="Open the app"><span class="lbl">Continue with Google</span></button>
+</div></section>
 </main>
-<div id="app" hidden>
-<header><div class="hl"><small id="hello"></small><h1 id="ttl">Today</h1><div class="sub"><small id="sub"></small><small id="st">Syncing</small></div></div>
-<div class="hr"><button id="out" class="lnk">Sign out</button></div></header>
-<ul id="list"></ul>
-<button id="fab" aria-label="Add new">+</button>
-<nav id="tabs" aria-label="Views"><div><button data-v="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><span>Today</span></button><button data-v="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Week</span></button><button data-v="all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7h11M9 12h11M9 17h11M4.5 7h.01M4.5 12h.01M4.5 17h.01"/></svg><span>All</span></button><button data-v="done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span>Finished</span></button><button data-v="courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/></svg><span>Courses</span></button><button data-v="insights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-7"/></svg><span>Insights</span></button></div></nav>
-</div>
-<dialog id="td"><form id="tf">
-<h2 id="tdt">New task</h2>
-<label>Title<input name="title" required maxlength="120" placeholder="Algorithms assignment 3"></label>
-<label>Course<select name="course" id="cs"></select></label>
-<label>Type<select name="type"><option>Assignment<option>Quiz<option>Exam<option>Project</select></label>
-<label>Due<input type="datetime-local" name="due" required></label>
-<label>Notes<textarea name="notes" rows="3"></textarea></label>
-<div class="act"><button type="button" id="tdel" class="lnk dng">Delete</button><span></span><button type="button" class="lnk" data-x>Cancel</button><button class="pri">Save task</button></div>
-</form></dialog>
-<dialog id="cd"><form id="cf">
-<h2 id="cdt">New course</h2>
-<label>Course name<input name="name" required maxlength="80" placeholder="Algorithms"></label>
-<label>Professor<input name="prof" maxlength="80"></label>
-<label>Class day<select name="day"><option value="">No weekly class<option value="MO">Monday<option value="TU">Tuesday<option value="WE">Wednesday<option value="TH">Thursday<option value="FR">Friday<option value="SA">Saturday<option value="SU">Sunday</select></label>
-<label>Starts<input type="time" name="start"></label>
-<label>Ends<input type="time" name="end"></label>
-<label>Room<input name="room" maxlength="60" placeholder="B2.3"></label>
-<label>Repeats until (end of semester)<input type="date" name="until"></label>
-<div class="act"><button type="button" id="cdel" class="lnk dng">Delete</button><span></span><button type="button" class="lnk" data-x>Cancel</button><button class="pri">Save course</button></div>
-</form></dialog>
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,setDoc,deleteDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-const app=initializeApp({apiKey:"AIzaSyBe49PRXy_VtbrE-2I80AUo28CVUZPhY30",authDomain:"deadline-tracker-220cc.firebaseapp.com",projectId:"deadline-tracker-220cc",storageBucket:"deadline-tracker-220cc.firebasestorage.app",messagingSenderId:"700144852855",appId:"1:700144852855:web:ac7badeace66dc61d4cb72"});
-const auth=getAuth(app);
-const db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
-const $=s=>document.querySelector(s);
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const msg=m=>{$('#err').textContent=m;$('#st').textContent=m};
-let uid,courses=[],tasks=[],view='today',unsubs=[],editing=null;
-const due=t=>new Date(t.due);
-const hue=id=>[...String(id)].reduce((a,c)=>a+c.charCodeAt(0),0)*47%360;
-const p2=n=>String(n).padStart(2,'0');
-const ls=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`;
-const when=d=>d.toLocaleString([],{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-function rel(ms){const a=Math.abs(ms),m=Math.round(a/6e4),h=Math.round(a/36e5),d=Math.round(a/864e5);const v=m<60?`${m} min`:h<48?`${h} h`:`${d} days`;return ms<0?`${v} late`:`in ${v}`}
-const IC={"Assignment": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 3h7l4 4v14H7z\"/><path d=\"M14 3v4h4M10 12h5M10 16h5\"/></svg>", "Quiz": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01\"/></svg>", "Exam": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"6\" y=\"4\" width=\"12\" height=\"17\" rx=\"2\"/><path d=\"M9 4h6v3H9zM9.5 14l2 2 3.5-4\"/></svg>", "Project": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m12 3 9 5-9 5-9-5zM3 13l9 5 9-5\"/></svg>", "Course": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z\"/><path d=\"M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3\"/></svg>", "Today": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"M12 8v4l3 2\"/></svg>", "check": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 12.5 4 4 8-9\"/></svg>"};
-const empty=(a,b)=>`<li class="empty"><span class="eic">${IC.Today}</span><b>${a}</b>${b}</li>`;
-const path=(n,id)=>doc(db,`users/${uid}/${n}/${id}`);
-
-$('#signin').onclick=async()=>{const p=new GoogleAuthProvider();try{await signInWithPopup(auth,p)}catch(e){if(e.code==='auth/popup-closed-by-user')return;try{await signInWithRedirect(auth,p)}catch(e2){msg(e2.message)}}};
-$('#out').onclick=()=>signOut(auth);
-onAuthStateChanged(auth,u=>{
- unsubs.forEach(f=>f());unsubs=[];
- $('#login').hidden=!!u;$('#app').hidden=!u;
- if(!u){uid=null;return}
- uid=u.uid;$('#sub').textContent=new Date().toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'});
- const sub=(n,cb)=>onSnapshot(collection(db,`users/${uid}/${n}`),s=>{cb(s.docs.map(d=>({id:d.id,...d.data()})));render();$('#st').textContent=s.metadata.hasPendingWrites?'Saving':s.metadata.fromCache?'Offline copy':'Synced'},e=>msg(e.message));
- unsubs=[sub('courses',a=>courses=a.filter(c=>!c.deleted)),sub('tasks',a=>tasks=a.filter(t=>!t.deleted))];
-});
-
-function render(){
- if(!uid)return;
- $('#ttl').textContent={today:'Today',week:'Week',all:'All',done:'Finished',courses:'Courses',insights:'Insights'}[view];
- document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
- const L=$('#list');
- if(view==='insights'){L.innerHTML='';return}
- if(view==='courses'){
-  L.innerHTML=courses.length?[...courses].sort((a,b)=>a.name.localeCompare(b.name)).map((c,i)=>`<li class="t" data-c="${c.id}" style="--h:${hue(c.id)};--i:${i}"><span class="ic">${IC.Course}</span><div class="b"><b>${esc(c.name)}</b><small>${esc([c.prof,c.day?({MO:'Mon',TU:'Tue',WE:'Wed',TH:'Thu',FR:'Fri',SA:'Sat',SU:'Sun'})[c.day]+' '+c.start+'-'+c.end:c.sched,c.room].filter(Boolean).join(', '))||'No details yet'}</small></div><span class="r">${tasks.filter(t=>t.courseId===c.id&&!t.done).length} open</span></li>`).join(''):empty('No courses yet','Tap + to add a course, then link tasks to it.');
-  return;
- }
- const eod=new Date();eod.setHours(23,59,59,999);const wk=Date.now()+7*864e5;
- const a=tasks.filter(t=>view==='done'?t.done:!t.done&&(view==='all'||due(t)<=(view==='today'?eod:wk))).sort((x,y)=>view==='done'?due(y)-due(x):due(x)-due(y));
- const nx=view==='done'?null:a.find(t=>due(t)>=Date.now());
- L.innerHTML=a.length?a.map((t,i)=>{
-  const c=courses.find(x=>x.id===t.courseId),ms=due(t)-Date.now();
-  const u=t.done?'fin':ms<0?'late':ms<1728e5?'soon':'';
-  return `<li class="t ${u}${t===nx?' next':''}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230};--i:${i}"><span class="ic">${IC[t.type]||IC.Assignment}</span><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Finished':rel(ms)}</span><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${IC.check}</button></li>`}).join(''):
-  empty({today:'Nothing due today',week:'Nothing due this week',all:'No open tasks',done:'Nothing finished yet'}[view],'Tap + to add a task.');
-}
-setInterval(render,6e4);
-
-$('#tabs').onclick=e=>{const b=e.target.closest('button');if(b){view=b.dataset.v;render()}};
-$('#fab').onclick=()=>view==='courses'?openCourse():openTask();
-$('#list').onclick=e=>{
- const k=e.target.closest('[data-k]');
- if(k){const t=tasks.find(x=>x.id===k.dataset.k);setDoc(path('tasks',t.id),{done:!t.done,doneAt:t.done?0:Date.now(),updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));return}
- const li=e.target.closest('li');if(!li)return;
- li.dataset.c?openCourse(li.dataset.c):li.dataset.id&&openTask(li.dataset.id);
-};
-document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
-
-function openTask(id){
- window.dlEdit=id||null;editing=id||null;const t=tasks.find(x=>x.id===id),f=$('#tf');
- $('#tdt').textContent=t?'Edit task':'New task';$('#tdel').hidden=!t;
- $('#cs').innerHTML='<option value="">No course</option>'+courses.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
- const d=new Date();d.setDate(d.getDate()+1);d.setHours(23,59,0,0);
- f.title.value=t?.title||'';f.course.value=t?.courseId||'';f.type.value=t?.type||'Assignment';f.due.value=t?.due||ls(d);f.notes.value=t?.notes||'';
- $('#td').showModal();
-}
-$('#tf').onsubmit=e=>{
- e.preventDefault();const f=e.target,id=editing||crypto.randomUUID(),old=tasks.find(x=>x.id===id);
- setDoc(path('tasks',id),{title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim(),done:old?.done||false,doneAt:old?.doneAt||0,updatedAt:Date.now()}).catch(er=>msg(er.message));
- $('#td').close();
-};
-$('#tdel').onclick=()=>{if(confirm('Delete this task?')){setDoc(path('tasks',editing),{deleted:true,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));$('#td').close()}};
-
-function openCourse(id){
- window.dlEditC=id||null;editing=id||null;const c=courses.find(x=>x.id===id),f=$('#cf');
- $('#cdt').textContent=c?'Edit course':'New course';$('#cdel').hidden=!c;
- f.name.value=c?.name||'';f.prof.value=c?.prof||'';f.day.value=c?.day||'';f.start.value=c?.start||'';f.end.value=c?.end||'';f.room.value=c?.room||'';f.until.value=c?.until||'';
- window.dlCourse=c;const g=$('#chg');if(g)g.hidden=!(c&&c.day&&c.start&&c.until);$('#cd').showModal();
-}
-$('#cf').onsubmit=e=>{
- e.preventDefault();const f=e.target,id=editing||crypto.randomUUID();
- setDoc(path('courses',id),{name:f.name.value.trim(),prof:f.prof.value.trim(),day:f.day.value,start:f.start.value,end:f.end.value,room:f.room.value.trim(),until:f.until.value,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));
- $('#cd').close();
-};
-$('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose the course link.')){setDoc(path('courses',editing),{day:'',deleted:true,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));$('#cd').close()}};
-
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
-</script>
-<script type="module" src="extras.js"></script>
-<script type="module" src="calendar.js"></script>
-<script type="module" src="backup.js"></script>
-<script type="module" src="ui.js"></script>
-<script type="module" src="motion.js"></script>
-<script type="module" src="insights.js"></script>
+<footer class="foot"><div class="wrap">
+ <div><a class="logo" href="#top"><i class="sq"></i>Daily Tracker</a><p>Built by a student, for students.</p></div>
+ <div><b>Product</b><a href="#why">Why</a><a href="#how">How it works</a><a href="#faq">FAQ</a></div>
+ <div><b>App</b><a href="app.html">Open the app</a><a href="#how">Install on your phone</a></div>
+ <div><b>Legal</b><span class="soon">Privacy policy - soon</span><span class="soon">Terms - soon</span></div>
+</div></footer>
 <script type="module" src="sky.js"></script>
-<script type="module" src="select.js"></script>
-<script type="module" src="sound.js"></script>
+<script type="module" src="landing.js"></script>
 </body></html>
