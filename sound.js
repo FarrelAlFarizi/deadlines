@@ -1,15 +1,8 @@
-const $=s=>document.querySelector();
+const $=s=>document.querySelector(s);
 let on=true;try{on=localStorage.getItem('dl-snd')!=='off'}catch(e){}
-let volume=.5;try{const saved=localStorage.getItem('dl-volume');if(saved!==null&&Number.isFinite(Number(saved)))volume=Math.max(0,Math.min(1,Number(saved)/100))}catch(e){}
 let ac=null,master=null;
-function setVolume(value){
- const next=Number(value);if(!Number.isFinite(next))return;
- volume=Math.max(0,Math.min(1,next));
- try{localStorage.setItem('dl-volume',String(Math.round(volume*100)))}catch(e){}
- if(master)master.gain.setTargetAtTime(volume,ac.currentTime,.02);
-}
 const ctx=()=>{
- if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;ac=new A();master=ac.createGain();master.gain.value=volume;const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=3200;master.connect(f);f.connect(ac.destination)}
+ if(!ac){const A=window.AudioContext||window.webkitAudioContext;if(!A)return null;ac=new A();master=ac.createGain();master.gain.value=.5;const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=3200;master.connect(f);f.connect(ac.destination)}
  if(ac.state==='suspended')ac.resume();
  return ac;
 };
@@ -54,19 +47,8 @@ document.addEventListener('click',e=>{
 },true);
 const menu=$('#menu');
 if(menu){
- const b=document.createElement('button');b.className='lnk';b.type='button';b.id='soundToggle';
+ const b=document.createElement('button');b.className='lnk';b.type='button';
  const lab=()=>{b.textContent='Sounds: '+(on?'On':'Off')};lab();
  b.onclick=()=>{on=!on;try{localStorage.setItem('dl-snd',on?'on':'off')}catch(e){}lab();if(on)FX.save()};
  menu.insertBefore(b,$('#out'));
-
- const panel=document.createElement('div');panel.id='soundVolume';panel.style.cssText='padding:6px 14px 10px;width:200px;max-width:calc(100vw - 64px);box-sizing:border-box';
- panel.addEventListener('click',e=>e.stopPropagation());
- const label=document.createElement('label');label.htmlFor='soundVolumeSlider';label.textContent='Volume';
- label.style.cssText='display:block;margin:0 0 6px;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:600';
- const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:10px';
- const input=document.createElement('input');input.id='soundVolumeSlider';input.type='range';input.min='0';input.max='100';input.step='1';input.value=String(Math.round(volume*100));input.setAttribute('aria-label','Sound effects volume');
- input.style.cssText='flex:1;min-width:0;width:100%;height:22px;margin:0;padding:0;border:0;background:transparent;accent-color:var(--inv)';
- const output=document.createElement('output');output.style.cssText='min-width:3em;text-align:right;font-variant-numeric:tabular-nums';output.textContent=input.value+'%';
- input.addEventListener('input',()=>{output.textContent=input.value+'%';setVolume(Number(input.value)/100)});
- row.append(input,output);panel.append(label,row);menu.insertBefore(panel,$('#out'));
 }
