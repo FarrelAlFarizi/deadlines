@@ -109,7 +109,7 @@ input,select,textarea{width:100%;padding:12px 14px;margin-top:6px;border:1px sol
 #tabs .on{color:var(--on)}
 #pill{position:absolute;z-index:0;top:5px;bottom:5px;left:0;width:0;border-radius:20px;background:var(--inv);transition:transform .5s cubic-bezier(.34,1.4,.5,1),width .5s cubic-bezier(.34,1.4,.5,1);will-change:transform,width;pointer-events:none}
 /* Large text: six labels no longer fit in one row, so the bar becomes two rows of three, labels kept */
-@container tabbar (max-width:19.5em){
+@container tabbar (max-width:18.3em){
  #tabs div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:4px;gap:2px}
  #tabs button{border-radius:20px;padding:8px 2px 7px}
  #tabs span{max-width:100%;overflow-wrap:break-word;text-align:center}
@@ -121,7 +121,7 @@ dialog::backdrop{background:rgba(10,10,14,.5);-webkit-backdrop-filter:blur(4px);
 #td,#cd{width:min(88vw,380px);padding:18px}
 dialog h2{margin:0 0 6px;font-size:1.3rem;text-transform:uppercase;letter-spacing:.04em}
 label{display:block;margin-top:14px;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:600}
-.act{display:flex;gap:8px;align-items:center;margin-top:22px}.act span{flex:1}
+.act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:22px}.act span{flex:1}.act>span~:last-child{margin-left:auto}
 .ferr{color:var(--late);min-height:1.2em;margin:10px 0 0;font-size:.9rem}
 #toast{position:fixed;left:50%;bottom:calc(var(--tabh,61px) + 105px + env(safe-area-inset-bottom));z-index:30;display:flex;align-items:center;gap:14px;max-width:calc(100vw - 32px);padding:8px 8px 8px 20px;border-radius:22px;background:var(--inv);color:var(--on);box-shadow:var(--sh);font-weight:600;font-size:.9rem;opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,10px);transition:opacity .6s ease,transform .6s ease,visibility 0s linear .6s}
 #toast.show{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0);transition:opacity .4s ease,transform .4s ease,visibility 0s}

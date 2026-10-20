@@ -22,7 +22,7 @@ a{color:inherit;text-underline-offset:.2em}
 .wrap{width:min(1120px,100% - 32px);margin:0 auto}
 h1,h2,h3,p{margin:0}
 h1,h2{text-transform:uppercase;font-weight:700;text-wrap:balance}
-h1{font-size:clamp(2.4rem,1.3rem + 4.8vw,4.5rem);line-height:1.02;letter-spacing:-.01em}
+h1{font-size:min(clamp(2.4rem,1.3rem + 4.8vw,4.5rem),12.5vw);line-height:1.02;letter-spacing:-.01em;overflow-wrap:break-word}
 h2{font-size:clamp(1.7rem,1.2rem + 2vw,2.5rem);line-height:1.08}
 h3{font-size:1.15rem;line-height:1.25;font-weight:600}
 p{max-width:62ch}
@@ -30,7 +30,7 @@ p{max-width:62ch}
 /* header */
 .top{position:sticky;top:0;z-index:20;padding-top:env(safe-area-inset-top);background:color-mix(in srgb,var(--solid) 78%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--ln)}
 .bar{display:flex;align-items:center;gap:12px;min-height:64px}
-.logo{white-space:nowrap;display:inline-flex;align-items:center;gap:10px;min-height:44px;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
+.logo{min-width:0;display:inline-flex;align-items:center;gap:10px;min-height:44px;font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
 .mark{width:14px;height:14px;border-radius:4px;background:var(--ink);display:inline-block}
 .links{display:none;margin-left:auto;gap:4px}
 .links a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:12px;font-size:.8125rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut);transition:background .2s,color .2s}
@@ -60,7 +60,7 @@ p{max-width:62ch}
 .final :focus-visible{outline-color:var(--on)}
 
 /* hero */
-.hero{display:grid;gap:clamp(20px,4vw,40px);padding:clamp(24px,5vw,64px) 0 clamp(24px,4vw,48px);align-items:stretch}
+.hero{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(20px,4vw,40px);padding:clamp(24px,5vw,64px) 0 clamp(24px,4vw,48px);align-items:stretch}
 @media(min-width:900px){.hero{grid-template-columns:1.2fr .8fr}}
 .sheet{background:var(--card);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--ln);border-radius:28px;padding:clamp(24px,4vw,52px);box-shadow:0 1px 0 var(--sh1),0 24px 48px -28px var(--sh2)}
 .copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
@@ -80,11 +80,16 @@ canvas.px{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 :root[data-theme="dark"] #sunC{display:none}
 :root:not([data-theme="dark"]) #moonC{display:none}
 .ex-title{margin-top:8px;font-size:2rem;font-weight:700;text-transform:uppercase;line-height:1}
-.ex-list{list-style:none;margin:18px 0 0;padding:0;display:grid}
+.ex-list{list-style:none;margin:18px 0 0;padding:0;display:grid;container:exlist/inline-size}
 .ex-list li{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:13px 0;border-top:1px solid var(--ln)}
 .ex-time{font-variant-numeric:tabular-nums;font-weight:600;color:var(--mut);min-width:3.2em}
 .ex-name{font-weight:600}
 .ex-chip{border:1px solid var(--ln);border-radius:999px;padding:2px 10px;font-size:.8125rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+/* Large text: the tag moves under the name so the row fits the card */
+@container exlist (max-width:15em){
+ .ex-list li{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"t n" "t c";row-gap:6px}
+ .ex-time{grid-area:t;align-self:start}.ex-name{grid-area:n;overflow-wrap:break-word}.ex-chip{grid-area:c;justify-self:start}
+}
 .ex-foot{margin-top:auto;padding-top:18px;border-top:1px solid var(--ln);display:grid;gap:10px;font-size:.9375rem;color:var(--mut)}
 .segs{display:flex;gap:6px}
 .segs i{flex:1;height:8px;border-radius:4px;background:var(--seg)}
