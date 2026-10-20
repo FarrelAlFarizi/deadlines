@@ -86,27 +86,42 @@ const tc=t=>{if(!meta)return;const k=t<.5?t*2:(t-.5)*2,A=t<.5?SKY.day[0]:SKY.dus
 const cv=document.createElement('canvas');cv.id='sky';cv.setAttribute('aria-hidden','true');document.body.prepend(cv);
 const ctx=cv.getContext&&cv.getContext('2d');
 if(ctx){
- let GW,GH,PX,img,buf,S,C,tCur,tFrom,tTo,tStart=0,last=0,raf=0,rt=0;
+ let GW,GH,PX,img,buf,prev,full=true,S,C,tCur,tFrom,tTo,tStart=0,last=0,raf=0,rt=0,calmUntil=0;
  const target=()=>root.dataset.theme==='dark'?1:0;
- const draw=()=>{scene(buf,null,GW,GH,tCur,still||reduce?0:performance.now()/1000,S,C);ctx.putImageData(img,0,0);tc(tCur)};
- const align=()=>{cv.style.left=((root.clientWidth||innerWidth)-GW*PX)/2+'px'};
+ /* Upload only the changed stretch of each band, so the blurred cards above re-blur a small area, not the whole screen */
+ const BANDS=8;
+ const upload=()=>{
+  if(full){ctx.putImageData(img,0,0);prev.set(buf);full=false;return}
+  const bh=Math.ceil(GH/BANDS);
+  for(let y0=0;y0<GH;y0+=bh){
+   const y1=Math.min(GH,y0+bh);let x0=GW,x1=-1;
+   for(let y=y0;y<y1;y++){const row=y*GW;for(let x=0;x<GW;x++)if(buf[row+x]!==prev[row+x]){if(x<x0)x0=x;if(x>x1)x1=x}}
+   if(x1>=0)ctx.putImageData(img,0,0,x0,y0,x1-x0+1,y1-y0);
+  }
+  prev.set(buf);
+ };
+ const draw=()=>{if(!buf)return;scene(buf,null,GW,GH,tCur,still||reduce?0:performance.now()/1000,S,C);upload();tc(tCur)};
+ const align=()=>{if(GW)cv.style.left=((root.clientWidth||innerWidth)-GW*PX)/2+'px'};
  const size=()=>{
   const W=innerWidth,Hh=innerHeight;
+  if(!(W>0&&Hh>0))return; /* a page opened in the background can have no size yet; size() runs again once it does */
   PX=Math.max(3,Math.min(6,Math.round(Math.min(W,Hh)/100)));GW=Math.ceil(W/PX);GH=Math.ceil(Hh/PX);
   cv.width=GW;cv.height=GH;cv.style.width=GW*PX+'px';cv.style.height=GH*PX+'px';align();
-  img=ctx.createImageData(GW,GH);buf=new Uint32Array(img.data.buffer);S=mkStars(GW,GH,7);C=mkClouds(GW,GH,11);draw();
+  img=ctx.createImageData(GW,GH);buf=new Uint32Array(img.data.buffer);prev=new Uint32Array(GW*GH);full=true;S=mkStars(GW,GH,7);C=mkClouds(GW,GH,11);draw();
  };
  const tick=now=>{
   raf=0;const moving=tTo!==tCur;
   if(moving){const k=Math.min(1,(now-tStart)/2000),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;tCur=k>=1?tTo:tFrom+(tTo-tFrom)*e}
   const ambient=!still&&!reduce&&!document.hidden;
-  if(moving||ambient){if(now-last>=(moving?33:100)){last=now;if(moving||!document.querySelector('dialog[open]'))draw()}raf=requestAnimationFrame(tick)}
+  /* Ambient drift runs at 5 fps and rests while the page scrolls, when the blurred cards are already busy */
+  if(moving||ambient){if(now-last>=(moving?33:200)){if(moving||(now>calmUntil&&!document.querySelector('dialog[open]'))){last=now;draw()}}raf=requestAnimationFrame(tick)}
  };
+ addEventListener('scroll',()=>{calmUntil=performance.now()+250},{passive:true,capture:true});
  const go=()=>{if(!raf)raf=requestAnimationFrame(tick)};
  const set=v=>{tFrom=tCur;tTo=v;tStart=performance.now();if(reduce){tCur=v;draw()}else go()};
  new MutationObserver(()=>set(target())).observe(root,{attributes:true,attributeFilter:['data-theme']});
  addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(size,150);align()});
- if(typeof ResizeObserver!=='undefined')new ResizeObserver(align).observe(root);
+ if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>{if(buf)align();else size()}).observe(root);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)go()});
  tCur=tFrom=tTo=target();size();go();
  const menu=$('#menu');
