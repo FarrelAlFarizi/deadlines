@@ -17,6 +17,7 @@ if(bar){
  };
  new MutationObserver(()=>place()).observe(bar,{attributes:true,subtree:true,attributeFilter:['class']});
  addEventListener('resize',()=>place(true));
+ if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>place(true)).observe(bar);
  place();
 }
 

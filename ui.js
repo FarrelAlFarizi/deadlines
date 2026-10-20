@@ -16,6 +16,10 @@ if(hr&&sub){
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 }
 
+/* Share the tab bar's real height so the + button, toast and list padding clear it at any text size */
+const tabs=$('#tabs');
+if(tabs&&typeof ResizeObserver!=='undefined')new ResizeObserver(()=>document.documentElement.style.setProperty('--tabh',tabs.offsetHeight+'px')).observe(tabs);
+
 /* Give every dialog an accessible name from its heading */
 const nameDialogs=()=>document.querySelectorAll('dialog').forEach(d=>{if(d.getAttribute('aria-label')||d.getAttribute('aria-labelledby'))return;const h=d.querySelector('h2');if(h){h.id=h.id||'dh'+Math.random().toString(36).slice(2,7);d.setAttribute('aria-labelledby',h.id)}});
 nameDialogs();new MutationObserver(nameDialogs).observe(document.body,{childList:true});
