@@ -7,6 +7,7 @@ if(hr&&sub){
  mb.setAttribute('aria-label','Menu');mb.setAttribute('aria-expanded','false');
  mb.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
  [...hr.querySelectorAll('button')].forEach(b=>{if(b.id!=='cal')menu.append(b)});
+ [['privacy.html','Privacy policy'],['terms.html','Terms']].forEach(([h,t])=>{const a=document.createElement('a');a.href=h;a.textContent=t;menu.insertBefore(a,menu.querySelector('#out'))});
  hr.append(mb,menu);
  const close=()=>{if(menu.hidden)return;menu.classList.add('out');mb.setAttribute('aria-expanded','false');setTimeout(()=>{menu.hidden=true;menu.classList.remove('out')},160)};
  mb.onclick=e=>{e.stopPropagation();if(menu.hidden){menu.hidden=false;mb.setAttribute('aria-expanded','true')}else close()};

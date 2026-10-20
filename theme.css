@@ -34,6 +34,14 @@ header h1{font-size:2.3rem;font-weight:700;line-height:1;text-transform:uppercas
 #menu button,#ddl button{text-align:left;padding:12px 14px;border:0;border-radius:12px;background:none;color:var(--ink);font-weight:600;letter-spacing:.04em}
 #menu button:hover,#ddl button:hover{background:var(--seg)}
 #menu #out{color:var(--late)}
+#menu a{display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:12px;color:var(--ink);font-weight:600;letter-spacing:.04em;text-decoration:none}
+#menu a:hover{background:var(--seg)}
+label.ckl{display:flex;gap:10px;align-items:flex-start;text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--ink);font-weight:500;line-height:1.4}
+label.ckl input{flex:none;width:20px;height:20px;margin:0;padding:0;border:0;border-radius:0;background:none;-webkit-appearance:checkbox;appearance:auto;accent-color:var(--late)}
+.pri.dngb{background:var(--late);color:var(--solid)}
+.pri:disabled{opacity:.5;cursor:not-allowed}
+#login .legal-links{margin-top:18px;font-size:.875rem}
+#login .legal-links a{color:inherit;font-weight:600}
 #ddl button.on{text-decoration:underline;text-underline-offset:4px}
 #meter{margin:2px 0 18px}
 .mh,.mf{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}

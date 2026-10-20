@@ -19,6 +19,7 @@
 <p>Your classes and deadlines in one place, synced on every device you sign in on.</p>
 <button id="signin" class="pri"><span class="lbl">Continue with Google</span></button>
 <p id="err" role="alert"></p>
+<p class="legal-links">By continuing you agree to the <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy policy</a>.</p>
 </main>
 <main id="app" hidden>
 <header><div class="hl"><small id="hello"></small><h1 id="ttl">Today</h1><div class="sub"><small id="sub"></small><small id="st">Syncing</small></div></div>
@@ -164,6 +165,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 <script type="module" src="extras.js"></script>
 <script type="module" src="calendar.js"></script>
 <script type="module" src="backup.js"></script>
+<script type="module" src="erase.js"></script>
 <script type="module" src="ui.js"></script>
 <script type="module" src="motion.js"></script>
 <script type="module" src="insights.js"></script>
