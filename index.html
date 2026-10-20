@@ -1,88 +1,109 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Daily Tracker - Never miss a deadline again</title>
-<meta name="description" content="A free deadline and class tracker for students. Classes, assignments and tests in one calm place, synced to Google Calendar and all your devices.">
+<title>Daily Tracker – classes and deadlines in one place</title>
+<meta name="description" content="A free, ad-free deadline and class tracker for students. Add your courses once, track assignments, quizzes and exams, and get Google Calendar reminders on your phone.">
 <meta name="theme-color" content="#BFB0E6">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Daily Tracker">
-<meta property="og:title" content="Daily Tracker - Never miss a deadline again">
-<meta property="og:description" content="Classes, assignments and tests in one calm place, synced to Google Calendar and all your devices.">
+<meta property="og:title" content="Daily Tracker – classes and deadlines in one place">
+<meta property="og:description" content="A free, ad-free deadline and class tracker for students, with Google Calendar reminders and sync across your devices.">
 <meta property="og:image" content="https://farrelalfarizi.github.io/deadlines/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>(function(){try{if(matchMedia('(display-mode: standalone)').matches||navigator.standalone){location.replace('app.html');return}}catch(e){}var d=document.documentElement,t;try{t=localStorage.getItem("dl-theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.dataset.theme=t})()</script>
 <link rel="stylesheet" href="landing.css">
 </head>
 <body id="top">
-<header class="top"><div class="wrap">
- <a class="logo" href="#top"><i class="sq"></i>Daily Tracker</a>
- <nav class="links" aria-label="Sections"><a href="#why">Why</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
- <div class="acts"><button id="theme" class="icb" type="button"></button><button class="btn ghost" type="button" data-auth data-in="Open app"><span class="lbl">Log in</span></button></div>
-</div></header>
-<main>
-<section class="hero wrap"><div class="card">
- <div class="left">
-  <p class="kick">Free in beta</p>
-  <h1>Never miss a deadline again.</h1>
-  <p class="lede">Classes, assignments and tests in one calm place, synced to Google Calendar and all your devices.</p>
-  <button class="btn big" id="cta" type="button" data-auth data-in="Open the app"><span class="lbl">Continue with Google</span></button>
-  <p class="note" id="note">No password to remember. Sign in takes about 10 seconds.</p>
-  <p class="sub">Already tracking? <a href="app.html" id="open">Open the app</a></p>
-  <p class="err" id="authMsg" role="alert"></p>
+<header class="top">
+ <div class="wrap bar">
+  <a class="logo" href="#top"><i class="mark" aria-hidden="true"></i>Daily Tracker</a>
+  <nav class="links" aria-label="Sections"><a href="#why">Why</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+  <div class="acts">
+   <button id="theme" class="icb" type="button"></button>
+   <button class="btn ghost hbtn" type="button" data-auth data-in="Open app"><span class="lbl">Continue with Google</span></button>
+   <button id="menuBtn" class="icb menu-btn" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"></button>
+  </div>
  </div>
- <div class="right"><div class="bento">
-  <div class="tile t-courses"><canvas class="px" data-s="cal" data-k="4" aria-hidden="true"></canvas><b>Courses</b><span>Classes and professors in one list.</span></div>
-  <div class="tile t-duck"><canvas class="px duck" data-s="duck" data-k="7" aria-hidden="true"></canvas></div>
-  <div class="tile t-sun" aria-hidden="true"><canvas class="px sun" id="sunC"></canvas><canvas class="px moon" id="moonC"></canvas></div>
-  <div class="tile t-today"><small>Today</small><p>08:00 Discrete Math</p><p>10:00 Algorithms</p></div>
-  <div class="tile t-rem"><canvas class="px" data-s="bell" data-k="4" aria-hidden="true"></canvas><b>Reminders</b><span>Calendar alerts at times you pick.</span></div>
-  <div class="tile t-sync"><canvas class="px" data-s="sync" data-k="4" aria-hidden="true"></canvas><b>Sync</b><span>Phone and laptop, instantly.</span></div>
-  <div class="tile t-tasks"><canvas class="px" data-s="list" data-k="4" aria-hidden="true"></canvas><b>Tasks</b><span>Due dates, tests, notes.</span></div>
+ <div id="mnav" class="mnav" hidden><div class="wrap">
+  <a href="#why">Why</a><a href="#how">How it works</a><a href="#faq">FAQ</a>
+  <button class="btn" type="button" data-auth data-in="Open app"><span class="lbl">Continue with Google</span></button>
  </div></div>
-</div></section>
-
-<section id="why" class="sec wrap"><div class="panel">
- <h2>Why you will like it</h2>
- <div class="cards">
-  <article class="fc"><b>Classes that behave</b><p>Add a weekly class once. Move or cancel a single week without touching the rest.</p></article>
-  <article class="fc"><b>Reminders on your terms</b><p>Pick days, hours and minutes with a scroll wheel, separately for exams, quizzes, assignments and classes.</p></article>
-  <article class="fc"><b>One list, every device</b><p>Change something on your laptop and it shows on your phone straight away. It keeps working offline too.</p></article>
+</header>
+<main>
+<section class="hero wrap">
+ <div class="sheet copy">
+  <h1>Your classes and deadlines in one place.</h1>
+  <p class="lede">Add your courses once. Track assignments, quizzes and exams, and get Google Calendar alerts on your phone. Free, no ads, built by a student.</p>
+  <button class="btn big" id="cta" type="button" data-auth data-in="Open app"><span class="lbl">Continue with Google</span></button>
+  <p class="note" id="note">Uses your Google account, so there is no new password.</p>
+  <p class="err" id="authMsg" role="alert"></p>
+  <noscript><p class="err">Turn on JavaScript to sign in.</p></noscript>
  </div>
- <p class="more"><span>Undo for every delete</span><span>Select several to remove</span><span>Streaks and insights</span><span>Light and dark pixel sky</span><span>Export your data</span></p>
-</div></section>
+ <aside class="example" aria-label="Example of the Today view">
+  <div class="ex-head"><span class="ex-tag">Example</span><div class="skychip" aria-hidden="true"><canvas class="px" id="sunC"></canvas><canvas class="px" id="moonC"></canvas></div></div>
+  <p class="ex-title">Today</p>
+  <ul class="ex-list">
+   <li><span class="ex-time">08:00</span><span class="ex-name">Discrete Math</span><span class="ex-chip">Class</span></li>
+   <li><span class="ex-time">10:00</span><span class="ex-name">Algorithms</span><span class="ex-chip">Class</span></li>
+   <li><span class="ex-time">23:59</span><span class="ex-name">Statistics, quiz 2</span><span class="ex-chip">Quiz</span></li>
+   <li><span class="ex-time">23:59</span><span class="ex-name">Essay draft</span><span class="ex-chip">Due</span></li>
+  </ul>
+  <div class="ex-foot"><span>2 of 5 done this week</span><div class="segs" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div></div>
+ </aside>
+</section>
 
-<section id="how" class="sec wrap"><div class="panel">
- <h2>How it works</h2>
- <ol class="steps">
-  <li><i>1</i><div><b>Sign in</b><p>Use your Google account. There is no new password.</p></div></li>
-  <li><i>2</i><div><b>Add your courses and tasks</b><p>Set a class day and time once. Add assignments with due dates and notes.</p></div></li>
-  <li><i>3</i><div><b>Connect Calendar (optional)</b><p>Tap Connect Calendar and your reminders arrive as alerts on your phone.</p></div></li>
- </ol>
- <div class="install"><b>Put it on your home screen</b><p>iPhone: open it in Safari, tap Share, then Add to Home Screen. Android: open it in Chrome, then Menu, then Install app.</p></div>
-</div></section>
+<div class="wrap"><div class="slab">
+ <section id="why" class="sec why">
+  <h2>Made for how a semester runs</h2>
+  <div class="why-grid">
+   <div class="lead">
+    <h3>Classes that repeat, until they don’t</h3>
+    <p>Add a weekly class once. Move or cancel a single week without touching the rest, and your calendar follows.</p>
+   </div>
+   <div class="rows">
+    <div class="row"><h3>Reminders on your terms</h3><p>Pick days, hours and minutes with a scroll wheel, separately for exams, quizzes, assignments and classes.</p></div>
+    <div class="row"><h3>One list on every device</h3><p>Change something on your laptop and it shows on your phone straight away. It keeps working offline too.</p></div>
+   </div>
+  </div>
+  <p class="also">Also: undo for every delete, select several to remove, streaks and insights, a light and dark pixel sky, and export of all your data.</p>
+ </section>
 
-<section id="faq" class="sec wrap"><div class="panel">
- <h2>Questions</h2>
- <details><summary>Is it free?</summary><p>Yes. It is free while it is in beta.</p></details>
- <details><summary>Do I need a Google account?</summary><p>Yes. You sign in with Google, and the same account is what connects to Google Calendar.</p></details>
- <details><summary>What does the Calendar permission do?</summary><p>It lets the app add, update and remove reminder events on your calendar. Google words this permission broadly, since it covers your events, but the app only changes the events it created itself. It is optional, and you can remove it at any time in your Google Account settings.</p></details>
- <details><summary>Why does Google show an "unverified app" warning?</summary><p>The app is new and has not finished Google's review yet. Signing in does not show the warning. It only appears when you connect Calendar, and you can continue through it by choosing Advanced.</p></details>
- <details><summary>Who can see my tasks?</summary><p>Only you. Your tasks are stored under your own account and protected by security rules. You can export everything from the menu, and a one-tap delete button is on the way.</p></details>
- <details><summary>Does it work on iPhone and Android?</summary><p>Yes, in any modern browser. Add it to your home screen for an app-style icon. Store apps may come later.</p></details>
-</div></section>
+ <section id="how" class="sec how">
+  <h2>How it works</h2>
+  <ol class="steps">
+   <li><span class="num" aria-hidden="true">1</span><h3>Sign in</h3><p>Use your Google account. There is no new password.</p></li>
+   <li><span class="num" aria-hidden="true">2</span><h3>Add your courses and tasks</h3><p>Set a class day and time once. Add assignments with due dates and notes.</p></li>
+   <li><span class="num" aria-hidden="true">3</span><h3>Connect Calendar (optional)</h3><p>Tap Connect Calendar and your reminders arrive as alerts on your phone.</p></li>
+  </ol>
+  <div class="install">
+   <h3>Put it on your home screen</h3>
+   <div class="inst-cols"><p><b>iPhone</b> Open it in Safari, tap Share, then Add to Home Screen.</p><p><b>Android</b> Open it in Chrome, then Menu, then Install app.</p></div>
+  </div>
+ </section>
 
-<section class="sec wrap final-wrap"><div class="panel final">
- <h2>Ready? Start in 10 seconds.</h2>
- <button class="btn" type="button" data-auth data-in="Open the app"><span class="lbl">Continue with Google</span></button>
+ <section id="faq" class="sec faq">
+  <h2>Questions</h2>
+  <details><summary>Is it free?</summary><p>Yes. It is free to use and has no ads.</p></details>
+  <details><summary>Do I need a Google account?</summary><p>Yes. You sign in with Google, and the same account is what connects to Google Calendar.</p></details>
+  <details><summary>What does the Calendar permission do?</summary><p>It lets the app add, update and remove reminder events on your calendar. Google words this permission broadly, since it covers your events, but the app only changes the events it created itself. It is optional, and you can remove it at any time in your Google Account settings.</p></details>
+  <details><summary>Why does Google show an “unverified app” warning?</summary><p>The app is new and has not finished Google’s review yet. Signing in does not show the warning. It only appears when you connect Calendar, and you can continue through it by choosing Advanced.</p></details>
+  <details><summary>Who can see my tasks?</summary><p>Only you. Your tasks are stored under your own account and protected by security rules. You can export everything from the menu, and a one-tap delete button is on the way.</p></details>
+  <details><summary>Does it work on iPhone and Android?</summary><p>Yes, in any modern browser. Add it to your home screen for an app-style icon. Store apps may come later.</p></details>
+ </section>
+</div></div>
+
+<section class="wrap"><div class="final">
+ <h2>Start with your first class.</h2>
+ <button class="btn inv" type="button" data-auth data-in="Open app"><span class="lbl">Continue with Google</span></button>
 </div></section>
 </main>
-<footer class="foot"><div class="wrap">
- <div><a class="logo" href="#top"><i class="sq"></i>Daily Tracker</a><p>Built by a student, for students.</p></div>
- <div><b>Product</b><a href="#why">Why</a><a href="#how">How it works</a><a href="#faq">FAQ</a></div>
- <div><b>App</b><a href="app.html">Open the app</a><a href="#how">Install on your phone</a></div>
- <div><b>Legal</b><span class="soon">Privacy policy - soon</span><span class="soon">Terms - soon</span></div>
+<footer class="foot"><div class="wrap fgrid">
+ <div><a class="logo" href="#top"><i class="mark" aria-hidden="true"></i>Daily Tracker</a><p class="fnote">Built by a student, for students.</p></div>
+ <div><p class="fh">Product</p><a href="#why">Why</a><a href="#how">How it works</a><a href="#faq">FAQ</a></div>
+ <div><p class="fh">App</p><a href="app.html">Open the app</a><a href="#how">Install on your phone</a></div>
+ <div><p class="fh">Legal</p><span class="soon">Privacy policy, coming soon</span><span class="soon">Terms, coming soon</span></div>
 </div></footer>
 <script type="module" src="sky.js"></script>
 <script type="module" src="landing.js"></script>

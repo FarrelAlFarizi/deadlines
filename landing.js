@@ -9,23 +9,8 @@ const tb=$('#theme');
 function theme(){root.dataset.theme=mode==='dark'||(mode==='auto'&&mq.matches)?'dark':'light';tb.innerHTML=svg(TI[mode]);tb.setAttribute('aria-label','Theme: '+mode+'. Tap to change.');tb.title='Theme: '+mode}
 tb.onclick=()=>{mode={auto:'light',light:'dark',dark:'auto'}[mode];try{if(mode==='auto')localStorage.removeItem('dl-theme');else localStorage.setItem('dl-theme',mode)}catch(e){}theme()};
 if(mq.addEventListener)mq.addEventListener('change',theme);theme();
-const PAL={k:'#14173F',y:'#FFD54A',d:'#E3A400',o:'#FF8A1F'};
-const S={
- cal:['..k......k..','..k......k..','kkkkkkkkkkkk','k..........k','kkkkkkkkkkkk','k.kk.kk.kk.k','k.kk.kk.kk.k','k..........k','k.kk.kk....k','k.kk.kk....k','k..........k','kkkkkkkkkkkk'],
- bell:['.....k.....','...kkkkk...','..kkkkkkk..','..kkkkkkk..','..kkkkkkk..','.kkkkkkkkk.','.kkkkkkkkk.','kkkkkkkkkkk','...........','....kkk....','.....k.....'],
- sync:['.....k.....','.....kk....','kkkkkkkkk..','.....kk....','.....k.....','...........','.....k.....','....kk.....','..kkkkkkkkk','....kk.....','.....k.....'],
- list:['kk.kkkkkkkk','kk.kkkkkkkk','...........','kk.kkkkkkkk','kk.kkkkkkkk','...........','kk.kkkkkkkk','kk.kkkkkkkk'],
- duck:['....kkkk.........','...kyyyyk........','..kyyyyyyk.......','..kyykyyyyokkk...','..kyyyyyyyooook..','..kyyyyyyykkkk...','...kyyyyyk.......','..kyyyyyyyk......','.kyyyyyyyyyk.....','.kyyddyyyyyyk....','.kyydddyyyyyyk...','..kyyyyyyyyyk....','...kkkkkkkkk.....']
-};
-function paint(cv,rows,pal,k){
- const W=Math.max(...rows.map(r=>r.length)),H=rows.length;cv.width=W;cv.height=H;
- cv.style.width=W*k+'px';cv.style.height=H*k+'px';
- const c=cv.getContext('2d');if(!c)return;
- rows.forEach((r,y)=>{for(let x=0;x<r.length;x++){const ch=r[x];if(ch!=='.'){c.fillStyle=pal[ch]||PAL.k;c.fillRect(x,y,1,1)}}});
-}
-$$('canvas[data-s]').forEach(cv=>paint(cv,S[cv.dataset.s],PAL,+cv.dataset.k));
 function sunMoon(){
- const k=5,sun=$('#sunC'),moon=$('#moonC');
+ const k=3,sun=$('#sunC'),moon=$('#moonC');
  {const R=12;sun.width=2*R+1;sun.height=R+2;sun.style.width=sun.width*k+'px';sun.style.height=sun.height*k+'px';const c=sun.getContext('2d');
   if(c)for(let y=0;y<=R;y++){const dy=R-y,hw=Math.floor(Math.sqrt(R*R-dy*dy));c.fillStyle='#F5B335';c.fillRect(R-hw,y,2*hw+1,1);c.fillStyle='#FFD966';c.fillRect(R-hw+1,y,Math.max(0,2*hw-1),1)}}
  {const R=9,W=2*R+9,H=2*R+3;moon.width=W;moon.height=H;moon.style.width=W*k+'px';moon.style.height=H*k+'px';const c=moon.getContext('2d');
@@ -35,23 +20,39 @@ function sunMoon(){
    c.fillStyle='#FFFFFF';[[1,1],[W-2,4],[2,H-3],[W-3,H-6]].forEach(([x,y])=>{c.fillRect(x,y,1,1)});}}
 }
 sunMoon();
+
+const BARS='<path d="M4 7h16M4 12h16M4 17h16"/>',XX='<path d="M6 6l12 12M18 6 6 18"/>';
+const mb=$('#menuBtn'),mn=$('#mnav');
+function menu(open){mn.hidden=!open;mb.setAttribute('aria-expanded',String(open));mb.setAttribute('aria-label',open?'Close menu':'Open menu');mb.innerHTML=svg(open?XX:BARS)}
+menu(false);
+mb.onclick=()=>menu(mn.hidden);
+mn.addEventListener('click',e=>{if(e.target.closest('a'))menu(false)});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!mn.hidden){menu(false);mb.focus()}});
+matchMedia('(min-width:860px)').addEventListener('change',e=>{if(e.matches)menu(false)});
+
 const auth=getAuth(initializeApp({apiKey:"AIzaSyBe49PRXy_VtbrE-2I80AUo28CVUZPhY30",authDomain:"deadline-tracker-220cc.firebaseapp.com",projectId:"deadline-tracker-220cc",storageBucket:"deadline-tracker-220cc.firebasestorage.app",messagingSenderId:"700144852855",appId:"1:700144852855:web:ac7badeace66dc61d4cb72"}));
-let signed=false;const msg=$('#authMsg');
+let signed=false,busy=false;const msg=$('#authMsg'),AUTH=$$('[data-auth]');
+AUTH.forEach(b=>{b.dataset.idle=b.querySelector('.lbl').textContent});
+function paintAuth(){AUTH.forEach(b=>{b.disabled=busy;b.setAttribute('aria-busy',String(busy));b.querySelector('.lbl').textContent=busy?'Opening Google\u2026':(signed?b.dataset.in:b.dataset.idle)})}
 async function start(){
+ if(busy)return;
  msg.textContent='';
  if(signed){location.href='app.html';return}
+ if(navigator.onLine===false){msg.textContent='You\u2019re offline. Connect to the internet, then try again.';return}
+ busy=true;paintAuth();
  const p=new GoogleAuthProvider();
  try{await signInWithPopup(auth,p);location.href='app.html'}
  catch(e){
-  if(e&&(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'))return;
-  try{sessionStorage.setItem('dl-auth','1');await signInWithRedirect(auth,p)}catch(e2){msg.textContent='Could not sign in: '+((e2&&e2.message)||e2)}
+  if(e&&(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request')){busy=false;paintAuth();return}
+  try{sessionStorage.setItem('dl-auth','1');await signInWithRedirect(auth,p)}
+  catch(e2){console.error(e2);try{sessionStorage.removeItem('dl-auth')}catch(_){}busy=false;paintAuth();msg.textContent='Couldn\u2019t sign you in. Check your connection and try again. If a pop-up was blocked, allow pop-ups for this site.'}
  }
 }
-$$('[data-auth]').forEach(b=>{b.onclick=start});
+AUTH.forEach(b=>{b.onclick=start});
 onAuthStateChanged(auth,u=>{
  signed=!!u;if(!u)return;
- $$('[data-auth]').forEach(b=>{b.querySelector('.lbl').textContent=b.dataset.in});
- $('#note').textContent='You are signed in.';
+ paintAuth();
+ $('#note').textContent='You\u2019re signed in.';
  let r=false;try{r=sessionStorage.getItem('dl-auth');sessionStorage.removeItem('dl-auth')}catch(e){}
  if(r)location.href='app.html';
 });
