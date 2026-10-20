@@ -32,7 +32,7 @@ if(sel){
  const l=document.createElement('div');l.id='ddl';l.hidden=true;l.setAttribute('role','listbox');
  sel.replaceWith(wrap);sel.classList.add('sr');sel.tabIndex=-1;sel.setAttribute('aria-hidden','true');wrap.append(b,l,sel);
  const lab=()=>{
-  b.innerHTML=`<span>${sel.selectedOptions[0].text}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
+  b.innerHTML=`<span>${sel.selectedOptions[0].text.replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';')}</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>`;
   l.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===sel.value));
  };
  const shut=()=>{if(l.hidden)return;l.classList.add('out');b.setAttribute('aria-expanded','false');setTimeout(()=>{l.hidden=true;l.classList.remove('out')},160)};

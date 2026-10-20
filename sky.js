@@ -82,7 +82,7 @@ const $=s=>document.querySelector(s),root=document.documentElement;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let still=false;try{still=localStorage.getItem('dl-bg')==='still'}catch(e){}
 const meta=document.querySelector('meta[name="theme-color"]');
-const tc=t=>{if(!meta)return;const k=t<.5?t*2:(t-.5)*2,A=t<.5?SKY.day[0]:SKY.dusk[0],B=t<.5?SKY.dusk[0]:SKY.night[0],c=mixC(A,B,k);meta.content='rgb('+Math.round(c[0])+','+Math.round(c[1])+','+Math.round(c[2])+')'};
+const tc=t=>{if(!meta)return;const k=t<.5?t*2:(t-.5)*2,A=t<.5?SKY.day[0]:SKY.dusk[0],B=t<.5?SKY.dusk[0]:SKY.night[0],c=mixC(A,B,k);const v='rgb('+Math.round(c[0])+','+Math.round(c[1])+','+Math.round(c[2])+')';if(meta.content!==v)meta.content=v};
 const cv=document.createElement('canvas');cv.id='sky';cv.setAttribute('aria-hidden','true');document.body.prepend(cv);
 const ctx=cv.getContext&&cv.getContext('2d');
 if(ctx){
@@ -100,7 +100,7 @@ if(ctx){
   raf=0;const moving=tTo!==tCur;
   if(moving){const k=Math.min(1,(now-tStart)/2000),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;tCur=k>=1?tTo:tFrom+(tTo-tFrom)*e}
   const ambient=!still&&!reduce&&!document.hidden;
-  if(moving||ambient){if(now-last>=(moving?33:66)){last=now;draw()}raf=requestAnimationFrame(tick)}
+  if(moving||ambient){if(now-last>=(moving?33:100)){last=now;if(moving||!document.querySelector('dialog[open]'))draw()}raf=requestAnimationFrame(tick)}
  };
  const go=()=>{if(!raf)raf=requestAnimationFrame(tick)};
  const set=v=>{tFrom=tCur;tTo=v;tStart=performance.now();if(reduce){tCur=v;draw()}else go()};

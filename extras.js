@@ -111,7 +111,7 @@ $('#sx').onclick=()=>dlg.close();
 dlg.querySelector('form').onsubmit=e=>{
  e.preventDefault();const rem={};
  TYPES.forEach(t=>{rem[t]=draft[t]});
- setDoc(doc(db,`users/${uid}/meta/settings`),{rem,cls:draft.cls}).catch(er=>alert(er.message));
+ setDoc(doc(db,`users/${uid}/meta/settings`),{rem,cls:draft.cls}).catch(er=>{console.error(er);toast('Could not save. Check your connection and try again.')});
  dlg.close();
 };
 onAuthStateChanged(auth,u=>{
@@ -135,7 +135,7 @@ function toast(msg,undo,ms=5000){
  tt.classList.add('show');tm=setTimeout(hideT,ms);
 }
 window.dlNote=m=>toast(m,null,8000);
-const wr=(n,id,data)=>setDoc(doc(db,`users/${uid}/${n}/${id}`),data,{merge:true}).catch(er=>alert(er.message));
+const wr=(n,id,data)=>setDoc(doc(db,`users/${uid}/${n}/${id}`),data,{merge:true}).catch(er=>{console.error(er);toast('Could not save. Check your connection and try again.')});
 const later=(map,n,id,msg,data)=>{
  const commit=()=>{const p=map.get(id);if(!p)return;clearTimeout(p.t);map.delete(id);wr(n,id,{...data,updatedAt:Date.now()})};
  map.set(id,{t:setTimeout(commit,6000),commit});apply();

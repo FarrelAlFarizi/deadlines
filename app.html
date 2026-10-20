@@ -10,23 +10,23 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script>(function(){var d=document.documentElement,t;try{t=localStorage.getItem("dl-theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.dataset.theme=t})()</script>
+<script>(function(){var d=document.documentElement,t;try{t=localStorage.getItem("dl-theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";d.dataset.theme=t;try{var m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==="dark"?"#070A1F":"#CDBFEA"}catch(e){}})()</script>
 <link rel="stylesheet" href="theme.css"></head>
 <body>
 <main id="login" hidden>
 <small class="cap">Deadlines</small>
 <h1>A clean slate.<br>Every day.</h1>
-<p>Classes, assignments and exams in one calm list, synced on every device you sign in on.</p>
-<button id="signin" class="pri">Sign in with Google</button>
+<p>Your classes and deadlines in one place, synced on every device you sign in on.</p>
+<button id="signin" class="pri"><span class="lbl">Continue with Google</span></button>
 <p id="err" role="alert"></p>
 </main>
-<div id="app" hidden>
+<main id="app" hidden>
 <header><div class="hl"><small id="hello"></small><h1 id="ttl">Today</h1><div class="sub"><small id="sub"></small><small id="st">Syncing</small></div></div>
 <div class="hr"><button id="out" class="lnk">Sign out</button></div></header>
 <ul id="list"></ul>
 <button id="fab" aria-label="Add new">+</button>
 <nav id="tabs" aria-label="Views"><div><button data-v="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><span>Today</span></button><button data-v="week"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Week</span></button><button data-v="all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7h11M9 12h11M9 17h11M4.5 7h.01M4.5 12h.01M4.5 17h.01"/></svg><span>All</span></button><button data-v="done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span>Finished</span></button><button data-v="courses"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3"/></svg><span>Courses</span></button><button data-v="insights"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-7"/></svg><span>Insights</span></button></div></nav>
-</div>
+</main>
 <dialog id="td"><form id="tf">
 <h2 id="tdt">New task</h2>
 <label>Title<input name="title" required maxlength="120" placeholder="Algorithms assignment 3"></label>
@@ -57,6 +57,8 @@ const db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:pe
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const msg=m=>{$('#err').textContent=m;$('#st').textContent=m};
+const say=e=>{const c=String(e&&e.code||'');return /unavailable|network/.test(c)?'You are offline. Changes will sync when you are back.':/permission/.test(c)?'This account cannot save here. Try signing out and in again.':'Could not save. Check your connection and try again.'};
+const fail=e=>{console.error(e);msg(say(e))};
 let uid,courses=[],tasks=[],view='today',unsubs=[],editing=null;
 const due=t=>new Date(t.due);
 const hue=id=>[...String(id)].reduce((a,c)=>a+c.charCodeAt(0),0)*47%360;
@@ -68,25 +70,44 @@ const IC={"Assignment": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"curre
 const empty=(a,b)=>`<li class="empty"><span class="eic">${IC.Today}</span><b>${a}</b>${b}</li>`;
 const path=(n,id)=>doc(db,`users/${uid}/${n}/${id}`);
 
-$('#signin').onclick=async()=>{const p=new GoogleAuthProvider();try{await signInWithPopup(auth,p)}catch(e){if(e.code==='auth/popup-closed-by-user')return;try{await signInWithRedirect(auth,p)}catch(e2){msg(e2.message)}}};
+let signing=false;const si=$('#signin');
+const busy=b=>{signing=b;si.disabled=b;si.setAttribute('aria-busy',String(b));si.querySelector('.lbl').textContent=b?'Opening Google\u2026':'Continue with Google'};
+si.onclick=async()=>{
+ if(signing)return;
+ $('#err').textContent='';
+ if(navigator.onLine===false){$('#err').textContent='You\u2019re offline. Connect to the internet, then try again.';return}
+ busy(true);const p=new GoogleAuthProvider();
+ try{await signInWithPopup(auth,p)}
+ catch(e){
+  if(e&&(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request')){busy(false);return}
+  try{await signInWithRedirect(auth,p)}
+  catch(e2){console.error(e2);busy(false);$('#err').textContent='Couldn\u2019t sign you in. Check your connection and try again. If a pop-up was blocked, allow pop-ups for this site.'}
+ }
+};
 $('#out').onclick=()=>signOut(auth);
 onAuthStateChanged(auth,u=>{
  unsubs.forEach(f=>f());unsubs=[];
  $('#login').hidden=!!u;$('#app').hidden=!u;
  if(!u){uid=null;return}
  uid=u.uid;$('#sub').textContent=new Date().toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'});
- const sub=(n,cb)=>onSnapshot(collection(db,`users/${uid}/${n}`),s=>{cb(s.docs.map(d=>({id:d.id,...d.data()})));render();$('#st').textContent=s.metadata.hasPendingWrites?'Saving':s.metadata.fromCache?'Offline copy':'Synced'},e=>msg(e.message));
+ const sub=(n,cb)=>onSnapshot(collection(db,`users/${uid}/${n}`),s=>{cb(s.docs.map(d=>({id:d.id,...d.data()})));render();$('#st').textContent=s.metadata.hasPendingWrites?'Saving':s.metadata.fromCache?'Offline copy':'Synced'},fail);
  unsubs=[sub('courses',a=>courses=a.filter(c=>!c.deleted)),sub('tasks',a=>tasks=a.filter(t=>!t.deleted))];
 });
 
 function render(){
+ const L=$('#list'),f=document.activeElement;let k=null;
+ if(f&&L.contains(f)){const li=f.closest('li');if(li)k={id:li.dataset.id||li.dataset.c,sel:f.classList.contains('chk')?'.chk':'.b'}}
+ draw();
+ if(k&&k.id){const li=[...L.children].find(x=>(x.dataset.id||x.dataset.c)===k.id),t=li&&li.querySelector(k.sel);if(t)t.focus({preventScroll:true})}
+}
+function draw(){
  if(!uid)return;
  $('#ttl').textContent={today:'Today',week:'Week',all:'All',done:'Finished',courses:'Courses',insights:'Insights'}[view];
- document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+ document.querySelectorAll('#tabs button').forEach(b=>{const on=b.dataset.v===view;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
  const L=$('#list');
  if(view==='insights'){L.innerHTML='';return}
  if(view==='courses'){
-  L.innerHTML=courses.length?[...courses].sort((a,b)=>a.name.localeCompare(b.name)).map((c,i)=>`<li class="t" data-c="${c.id}" style="--h:${hue(c.id)};--i:${i}"><span class="ic">${IC.Course}</span><div class="b"><b>${esc(c.name)}</b><small>${esc([c.prof,c.day?({MO:'Mon',TU:'Tue',WE:'Wed',TH:'Thu',FR:'Fri',SA:'Sat',SU:'Sun'})[c.day]+' '+c.start+'-'+c.end:c.sched,c.room].filter(Boolean).join(', '))||'No details yet'}</small></div><span class="r">${tasks.filter(t=>t.courseId===c.id&&!t.done).length} open</span></li>`).join(''):empty('No courses yet','Tap + to add a course, then link tasks to it.');
+  L.innerHTML=courses.length?[...courses].sort((a,b)=>a.name.localeCompare(b.name)).map((c,i)=>`<li class="t" data-c="${c.id}" style="--h:${hue(c.id)};--i:${i}"><span class="ic">${IC.Course}</span><button type="button" class="b"><b>${esc(c.name)}</b><small>${esc([c.prof,c.day?({MO:'Mon',TU:'Tue',WE:'Wed',TH:'Thu',FR:'Fri',SA:'Sat',SU:'Sun'})[c.day]+' '+c.start+'-'+c.end:c.sched,c.room].filter(Boolean).join(', '))||'No details yet'}</small></button><span class="r">${tasks.filter(t=>t.courseId===c.id&&!t.done).length} open</span></li>`).join(''):empty('No courses yet','Tap + to add a course, then link tasks to it.');
   return;
  }
  const eod=new Date();eod.setHours(23,59,59,999);const wk=Date.now()+7*864e5;
@@ -95,7 +116,7 @@ function render(){
  L.innerHTML=a.length?a.map((t,i)=>{
   const c=courses.find(x=>x.id===t.courseId),ms=due(t)-Date.now();
   const u=t.done?'fin':ms<0?'late':ms<1728e5?'soon':'';
-  return `<li class="t ${u}${t===nx?' next':''}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230};--i:${i}"><span class="ic">${IC[t.type]||IC.Assignment}</span><div class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></div><span class="r">${t.done?'Finished':rel(ms)}</span><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${IC.check}</button></li>`}).join(''):
+  return `<li class="t ${u}${t===nx?' next':''}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230};--i:${i}"><span class="ic">${IC[t.type]||IC.Assignment}</span><button type="button" class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small></button><span class="r">${t.done?'Finished':rel(ms)}</span><button class="chk" data-k="${t.id}" aria-label="Mark done or not done">${IC.check}</button></li>`}).join(''):
   empty({today:'Nothing due today',week:'Nothing due this week',all:'No open tasks',done:'Nothing finished yet'}[view],'Tap + to add a task.');
 }
 setInterval(render,6e4);
@@ -104,7 +125,7 @@ $('#tabs').onclick=e=>{const b=e.target.closest('button');if(b){view=b.dataset.v
 $('#fab').onclick=()=>view==='courses'?openCourse():openTask();
 $('#list').onclick=e=>{
  const k=e.target.closest('[data-k]');
- if(k){const t=tasks.find(x=>x.id===k.dataset.k);setDoc(path('tasks',t.id),{done:!t.done,doneAt:t.done?0:Date.now(),updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));return}
+ if(k){const t=tasks.find(x=>x.id===k.dataset.k);setDoc(path('tasks',t.id),{done:!t.done,doneAt:t.done?0:Date.now(),updatedAt:Date.now()},{merge:true}).catch(fail);return}
  const li=e.target.closest('li');if(!li)return;
  li.dataset.c?openCourse(li.dataset.c):li.dataset.id&&openTask(li.dataset.id);
 };
@@ -120,10 +141,10 @@ function openTask(id){
 }
 $('#tf').onsubmit=e=>{
  e.preventDefault();const f=e.target,id=editing||crypto.randomUUID(),old=tasks.find(x=>x.id===id);
- setDoc(path('tasks',id),{title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim(),done:old?.done||false,doneAt:old?.doneAt||0,updatedAt:Date.now()}).catch(er=>msg(er.message));
+ setDoc(path('tasks',id),{title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim(),done:old?.done||false,doneAt:old?.doneAt||0,updatedAt:Date.now()}).catch(fail);
  $('#td').close();
 };
-$('#tdel').onclick=()=>{if(confirm('Delete this task?')){setDoc(path('tasks',editing),{deleted:true,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));$('#td').close()}};
+$('#tdel').onclick=()=>{if(confirm('Delete this task?')){setDoc(path('tasks',editing),{deleted:true,updatedAt:Date.now()},{merge:true}).catch(fail);$('#td').close()}};
 
 function openCourse(id){
  window.dlEditC=id||null;editing=id||null;const c=courses.find(x=>x.id===id),f=$('#cf');
@@ -133,10 +154,10 @@ function openCourse(id){
 }
 $('#cf').onsubmit=e=>{
  e.preventDefault();const f=e.target,id=editing||crypto.randomUUID();
- setDoc(path('courses',id),{name:f.name.value.trim(),prof:f.prof.value.trim(),day:f.day.value,start:f.start.value,end:f.end.value,room:f.room.value.trim(),until:f.until.value,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));
+ setDoc(path('courses',id),{name:f.name.value.trim(),prof:f.prof.value.trim(),day:f.day.value,start:f.start.value,end:f.end.value,room:f.room.value.trim(),until:f.until.value,updatedAt:Date.now()},{merge:true}).catch(fail);
  $('#cd').close();
 };
-$('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose the course link.')){setDoc(path('courses',editing),{day:'',deleted:true,updatedAt:Date.now()},{merge:true}).catch(er=>msg(er.message));$('#cd').close()}};
+$('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose the course link.')){setDoc(path('courses',editing),{day:'',deleted:true,updatedAt:Date.now()},{merge:true}).catch(fail);$('#cd').close()}};
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>

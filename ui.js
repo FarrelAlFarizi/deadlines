@@ -14,3 +14,7 @@ if(hr&&sub){
  document.addEventListener('click',e=>{if(!menu.contains(e.target))close()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 }
+
+/* Give every dialog an accessible name from its heading */
+const nameDialogs=()=>document.querySelectorAll('dialog').forEach(d=>{if(d.getAttribute('aria-label')||d.getAttribute('aria-labelledby'))return;const h=d.querySelector('h2');if(h){h.id=h.id||'dh'+Math.random().toString(36).slice(2,7);d.setAttribute('aria-labelledby',h.id)}});
+nameDialogs();new MutationObserver(nameDialogs).observe(document.body,{childList:true});
