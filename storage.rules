@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Course files and photos: only the signed-in owner can add, open or remove them.
+    // Files are added once (no overwrite), up to 20 MB, and only the types the app accepts.
+    match /users/{uid}/materials/{matId}/{name} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.size <= 20 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*|application/pdf|application/msword|application/vnd[.]ms-powerpoint|application/vnd[.]ms-excel|text/plain|application/vnd[.]openxmlformats-officedocument[.](wordprocessingml[.]document|presentationml[.]presentation|spreadsheetml[.]sheet)');
+    }
+    // Everything else is closed.
+  }
+}

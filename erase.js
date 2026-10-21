@@ -1,15 +1,16 @@
 import {getApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,GoogleAuthProvider,reauthenticateWithPopup,deleteUser} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getFirestore,collection,doc,getDocsFromServer,writeBatch,terminate,clearIndexedDbPersistence} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-/* Delete my data: removes calendar events this app made, every Firestore record, and the sign-in account */
+import {getStorage,ref,deleteObject} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+/* Delete my data: removes calendar events this app made, course files and photos, every Firestore record, and the sign-in account */
 const auth=getAuth(getApp()),db=getFirestore(getApp()),$=s=>document.querySelector(s);
 const GC='https://www.googleapis.com/calendar/v3/calendars/primary/events';
-const COLS=['tasks','courses','meta'];
+const COLS=['tasks','courses','materials','meta'];
 const btn=document.createElement('button');btn.className='lnk dng';btn.type='button';btn.textContent='Delete my data';
 $('.hr').insertBefore(btn,$('#out'));
 const dlg=document.createElement('dialog');
 dlg.innerHTML=`<form><h2>Delete my data</h2>
-<p><small>This permanently deletes all your courses, tasks and settings, and your CleanSlate account. It cannot be undone. If you might want them later, use Backup to export a copy first.</small></p>
+<p><small>This permanently deletes all your courses, tasks, notes, files, photos and settings, and your CleanSlate account. It cannot be undone. If you might want them later, use Backup to export a copy first.</small></p>
 <label class="ckl" id="ecw"><input type="checkbox" id="ecal" checked> Also remove the events CleanSlate added to my Google Calendar</label>
 <label>Type DELETE to confirm<input id="ein" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
 <p><small>Google will ask you to confirm your account before anything is deleted.</small></p>
@@ -24,6 +25,14 @@ const say=m=>{err.textContent=m};
 const busy=b=>{running=b;go.disabled=b||!ok();go.textContent=b?'Deleting…':'Delete everything';$('#ex').disabled=b;go.setAttribute('aria-busy',String(b))};
 const all=async uid=>{const out=[];for(const n of COLS)for(const d of (await getDocsFromServer(collection(db,`users/${uid}/${n}`))).docs)out.push({n,id:d.id,...d.data()});return out};
 async function wipe(uid,docs){for(let i=0;i<docs.length;i+=400){const b=writeBatch(db);docs.slice(i,i+400).forEach(d=>b.delete(doc(db,`users/${uid}/${d.n}/${d.id}`)));await b.commit()}}
+async function unFiles(docs){
+ const st=getStorage(getApp()),gone=e=>{if(e&&e.code!=='storage/object-not-found')throw e};
+ for(const d of docs){
+  if(d.n!=='materials'||!d.path)continue;
+  await deleteObject(ref(st,d.path)).catch(gone);
+  if(d.thumb)await deleteObject(ref(st,d.path.replace(/[^/]+$/,'thumb.jpg'))).catch(gone);
+ }
+}
 async function unCal(tok,docs){
  for(const d of docs){
   if(!d.calSig||d.n==='meta')continue;
@@ -54,6 +63,8 @@ f.onsubmit=async e=>{
   stage='cal';
   let docs=await all(u.uid);
   if(cal){const tok=GoogleAuthProvider.credentialFromResult(r)?.accessToken;if(!tok)throw new Error('no token');await unCal(tok,docs)}
+  stage='files';
+  await unFiles(docs);
   stage='data';
   await wipe(u.uid,docs);
   docs=await all(u.uid);if(docs.length)await wipe(u.uid,docs);
@@ -63,6 +74,7 @@ f.onsubmit=async e=>{
   console.error(e);busy(false);const c=String(e&&e.code||'');
   if(stage==='auth')say(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request'?'Google confirmation was closed. Nothing was deleted.':c==='auth/user-mismatch'?'That was a different Google account. Choose the account you signed in with. Nothing was deleted.':c==='auth/popup-blocked'?'The Google pop-up was blocked. Allow pop-ups for this site and try again. Nothing was deleted.':'Couldn’t confirm your Google account. Check your connection and try again. Nothing was deleted.');
   else if(stage==='cal')say('Couldn’t remove your calendar events, so nothing was deleted. Try again, or untick the calendar box to delete your data and leave the events.');
+  else if(stage==='files')say('Some of your course files couldn’t be deleted, so your other data was kept. Check your connection and try again.');
   else if(stage==='data')say('Some of your data couldn’t be deleted. Check your connection and try again.');
   else say('Your data is deleted, but your account couldn’t be removed. Try again.');
   return;

@@ -165,7 +165,7 @@ $('#list').onclick=e=>{
  const k=e.target.closest('[data-k]');
  if(k){const t=tasks.find(x=>x.id===k.dataset.k);setDoc(path('tasks',t.id),{done:!t.done,doneAt:t.done?0:Date.now(),updatedAt:Date.now()},{merge:true}).catch(fail);return}
  const li=e.target.closest('li');if(!li)return;
- li.dataset.c?openCourse(li.dataset.c):li.dataset.id&&openTask(li.dataset.id);
+ li.dataset.c?(window.dlCoursePage||openCourse)(li.dataset.c):li.dataset.id&&openTask(li.dataset.id);
 };
 document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 
@@ -210,5 +210,6 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 <script type="module" src="sky.js"></script>
 <script type="module" src="select.js"></script>
 <script type="module" src="onboard.js"></script>
+<script type="module" src="materials.js"></script>
 <script type="module" src="sound.js"></script>
 </body></html>

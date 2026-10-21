@@ -19,7 +19,7 @@
 </header>
 <main class="wrap legal">
 <article class="slab sec">
- <p class="ex-tag">Last updated 20 October 2026</p>
+ <p class="ex-tag">Last updated 21 October 2026</p>
  <h1>Privacy policy</h1>
  <p class="lede">CleanSlate is a free class and deadline tracker made by a student. It has no ads, no analytics and no tracking, and your data is never sold. This page explains what is stored, why, and how to remove it.</p>
 
@@ -33,9 +33,11 @@
  <ul>
   <li>Courses: name, professor, room, weekly day and time, and the date the semester ends.</li>
   <li>Tasks: title, course, type (assignment, quiz, exam or project), due date and time, notes, and whether it is done.</li>
+  <li>Course notes you write.</li>
+  <li>Files and photos you add to a course, with their names, sizes and the date you added them. Photos are made smaller on your device before they are uploaded.</li>
   <li>Your reminder settings, and small markers the app uses to keep Google Calendar in step.</li>
  </ul>
- <p>This is saved in Google Firebase (Cloud Firestore) under your own account. The database rules only let your signed-in account read or write it.</p>
+ <p>This is saved in Google Firebase under your own account: text in Cloud Firestore, and files and photos in Cloud Storage for Firebase. The security rules only let your signed-in account add, read or delete it. Each file and photo also has a long private link that the app uses to show it; anyone who is given that exact link could open that one file, so do not share it.</p>
  <h3>On your device</h3>
  <p>Your theme, background and sound choices are kept in your browser's local storage. The app also keeps an offline copy of your data and of its own files in the browser, so it works without a connection. Signing out does not erase that offline copy; clearing the site's data in your browser does.</p>
 
@@ -54,7 +56,7 @@
  <h2>Who else handles it</h2>
  <p>There is no server of the maker's own. These services are involved, each under its own privacy terms:</p>
  <ul>
-  <li><b>Google Firebase</b> stores your data and handles sign-in. Its servers may be outside your country.</li>
+  <li><b>Google Firebase</b> stores your data, files and photos and handles sign-in. Its servers may be outside your country.</li>
   <li><b>Google Calendar</b>, only if you connect it.</li>
   <li><b>GitHub Pages</b> hosts the website and, like any web host, may log visitors' IP addresses.</li>
   <li><b>Google Fonts</b> serves the typeface, which means your browser contacts Google when a page loads.</li>
@@ -62,13 +64,13 @@
  <p>Nothing is sold or shared with anyone else, unless the law requires it.</p>
 
  <h2>How long it is kept</h2>
- <p>Until you delete it. When you delete a task or course in the app, it is removed from the database straight away. If it had already been put on your Google Calendar, it is first hidden, and removed for good once its calendar event has been cleaned up, which happens the next time Calendar is connected. If you stop using the app, your data stays until you delete it with Delete my data.</p>
+ <p>Until you delete it. When you delete a task or course in the app, it is removed from the database straight away. If it had already been put on your Google Calendar, it is first hidden, and removed for good once its calendar event has been cleaned up, which happens the next time Calendar is connected. Deleted notes, files and photos can be brought back with Undo for a few seconds, then are removed for good. Deleting a course also deletes its notes, files and photos. If you stop using the app, your data stays until you delete it with Delete my data.</p>
 
  <h2>Your choices</h2>
  <ul>
-  <li><b>See and download it:</b> everything you entered is visible in the app, and the JSON backup exports all of it.</li>
-  <li><b>Correct it:</b> edit any course or task.</li>
-  <li><b>Delete everything:</b> in the app, open the menu and choose Delete my data. After you confirm with Google, it deletes all your courses, tasks and settings, your CleanSlate account, and (if you tick the box) the events the app added to your Google Calendar. It happens straight away and cannot be undone.</li>
+  <li><b>See and download it:</b> everything you entered is visible in the app. The JSON backup exports your courses, tasks and notes, plus a list of your files and photos; open a file or photo in the app to download it.</li>
+  <li><b>Correct it:</b> edit any course, task or note, and rename any file or photo.</li>
+  <li><b>Delete everything:</b> in the app, open the menu and choose Delete my data. After you confirm with Google, it deletes all your courses, tasks, notes, files, photos and settings, your CleanSlate account, and (if you tick the box) the events the app added to your Google Calendar. It happens straight away and cannot be undone.</li>
   <li><b>Stop calendar access:</b> see the Google Calendar section above.</li>
  </ul>
 

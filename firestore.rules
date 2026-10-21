@@ -39,6 +39,18 @@ service cloud.firestore {
         && optBool(d, 'deleted') && optNum(d, 'updatedAt');
     }
 
+    // Course materials: written notes, and records of files and photos kept in Firebase Storage.
+    // A stored file's path must sit inside the owner's own folder.
+    function validMaterial(uid, d) {
+      return d.keys().hasOnly(['courseId', 'kind', 'title', 'body', 'path', 'url', 'thumb', 'size', 'type',
+                               'createdAt', 'updatedAt', 'deleted'])
+        && optStr(d, 'courseId', 100) && (!('kind' in d) || d.kind in ['note', 'file', 'photo'])
+        && optStr(d, 'title', 300) && optStr(d, 'body', 25000)
+        && (!('path' in d) || (d.path is string && d.path.size() <= 500 && d.path.matches('users/' + uid + '/materials/.+')))
+        && optStr(d, 'url', 2000) && optStr(d, 'thumb', 2000) && optNum(d, 'size') && optStr(d, 'type', 200)
+        && optNum(d, 'createdAt') && optNum(d, 'updatedAt') && optBool(d, 'deleted');
+    }
+
     // Settings: reminder lead times per task type, and for weekly classes.
     function validSettings(d) {
       return d.keys().hasOnly(['rem', 'cls'])
@@ -54,6 +66,11 @@ service cloud.firestore {
     match /users/{uid}/tasks/{taskId} {
       allow read, delete: if isOwner(uid);
       allow create, update: if isOwner(uid) && validTask(request.resource.data);
+    }
+
+    match /users/{uid}/materials/{matId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validMaterial(uid, request.resource.data);
     }
 
     // Reading the whole folder stays allowed so Delete my data can find every record.

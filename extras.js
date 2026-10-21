@@ -135,16 +135,19 @@ onAuthStateChanged(auth,u=>{
 const tt=document.createElement('div');tt.id='toast';tt.setAttribute('role','status');document.body.append(tt);
 let tm;
 const hideT=()=>tt.classList.remove('show');
-function toast(msg,undo,ms=5000){
+/* Over an open page or dialog the toast moves into it, so Undo stays visible and tappable */
+function toast(msg,undo,ms=5000,plain){
  clearTimeout(tm);tt.innerHTML='';
+ const top=[...document.querySelectorAll('dialog[open]:not(.closing)')].pop()||document.body;if(tt.parentNode!==top)top.append(tt);tt.classList.toggle('indlg',top!==document.body);
  const s=document.createElement('span');s.textContent=msg;tt.append(s);
  const add=(label,fn,keep)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=()=>{if(!keep){hideT();clearTimeout(tm)}fn()};tt.append(b)};
  if(undo)add('Undo',undo);
  const c=$('#cal');
- if(undo&&c&&(c.dataset.s==='wait'||c.dataset.s==='idle'))add('Reconnect',()=>c.click(),true);
+ if(undo&&!plain&&c&&(c.dataset.s==='wait'||c.dataset.s==='idle'))add('Reconnect',()=>c.click(),true);
  tt.classList.add('show');tm=setTimeout(hideT,ms);
 }
 window.dlNote=m=>toast(m,null,8000);
+window.dlToast=(m,undo)=>toast(m,undo,undo?6000:5000,true);
 const wr=(n,id,data)=>setDoc(doc(db,`users/${uid}/${n}/${id}`),data,{merge:true}).catch(er=>{console.error(er);toast('Could not save. Check your connection and try again.')});
 const later=(map,n,id,msg,data)=>{
  const commit=()=>{const p=map.get(id);if(!p)return;clearTimeout(p.t);map.delete(id);wr(n,id,{...data,updatedAt:Date.now()})};
@@ -162,7 +165,7 @@ $('#td').addEventListener('click',e=>{
 },true);
 $('#cd').addEventListener('click',e=>{
  if(!e.target.closest('#cdel')||!window.dlEditC)return;
- e.stopPropagation();e.preventDefault();const id=window.dlEditC;$('#cd').close();later(pendC,'courses',id,'Course deleted',{day:'',deleted:true});
+ e.stopPropagation();e.preventDefault();const id=window.dlEditC;$('#cd').close();later(pendC,'courses',id,window.dlMatCount&&window.dlMatCount(id)?'Course and its materials deleted':'Course deleted',{day:'',deleted:true});
 },true);
 addEventListener('pagehide',()=>{[...pendT.values(),...pendC.values()].forEach(p=>p.commit())});
 
