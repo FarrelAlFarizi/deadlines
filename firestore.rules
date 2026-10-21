@@ -1,8 +1,67 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{uid}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+    // Each signed-in user can reach only their own records.
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
     }
+
+    // Optional-field checks: a field may be absent, or present with the right type.
+    // Size caps sit well above the app's own input limits so older or imported data still saves.
+    function optStr(d, k, max) { return !(k in d) || (d[k] is string && d[k].size() <= max); }
+    function optStrOrNull(d, k, max) { return !(k in d) || d[k] == null || (d[k] is string && d[k].size() <= max); }
+    function optNum(d, k) { return !(k in d) || d[k] is number; }
+    function optBool(d, k) { return !(k in d) || d[k] is bool; }
+    function optMap(d, k, max) { return !(k in d) || (d[k] is map && d[k].size() <= max); }
+
+    // Courses: name, lecturer, weekly slot, room, last class date, one-off class changes,
+    // calendar sync markers, and the retired free-text "sched" field kept by older records.
+    function validCourse(d) {
+      return d.keys().hasOnly(['name', 'prof', 'day', 'start', 'end', 'room', 'until', 'sched',
+                               'ov', 'calOv', 'calSig', 'deleted', 'updatedAt'])
+        && optStr(d, 'name', 200) && optStr(d, 'prof', 200) && optStr(d, 'day', 2)
+        && optStr(d, 'start', 5) && optStr(d, 'end', 5) && optStr(d, 'room', 120)
+        && optStr(d, 'until', 10) && optStr(d, 'sched', 200)
+        && optMap(d, 'ov', 400) && optMap(d, 'calOv', 400)
+        && optStrOrNull(d, 'calSig', 8000)
+        && optBool(d, 'deleted') && optNum(d, 'updatedAt');
+    }
+
+    // Tasks: title, course link, type, due time, notes, done state, calendar sync marker.
+    function validTask(d) {
+      return d.keys().hasOnly(['title', 'courseId', 'type', 'due', 'notes', 'done', 'doneAt',
+                               'calSig', 'deleted', 'updatedAt'])
+        && optStr(d, 'title', 300) && optStr(d, 'courseId', 100) && optStr(d, 'type', 30)
+        && optStr(d, 'due', 30) && optStr(d, 'notes', 5000)
+        && optBool(d, 'done') && optNum(d, 'doneAt')
+        && optStrOrNull(d, 'calSig', 8000)
+        && optBool(d, 'deleted') && optNum(d, 'updatedAt');
+    }
+
+    // Settings: reminder lead times per task type, and for weekly classes.
+    function validSettings(d) {
+      return d.keys().hasOnly(['rem', 'cls'])
+        && optMap(d, 'rem', 10)
+        && (!('cls' in d) || (d.cls is list && d.cls.size() <= 10));
+    }
+
+    match /users/{uid}/courses/{courseId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validCourse(request.resource.data);
+    }
+
+    match /users/{uid}/tasks/{taskId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && validTask(request.resource.data);
+    }
+
+    // Reading the whole folder stays allowed so Delete my data can find every record.
+    match /users/{uid}/meta/{docId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid) && docId == 'settings' && validSettings(request.resource.data);
+    }
+
+    // Everything else, including other users' data and any new paths, is closed.
   }
 }
