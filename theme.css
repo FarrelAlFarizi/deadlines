@@ -1,6 +1,6 @@
 /* Slate: monochrome, glassy, segmented. Light and dark. */
-:root{--bg:#CDBFEA;--card:rgba(255,255,255,.7);--card2:rgba(255,255,255,.4);--halo:rgba(255,255,255,.85);--field:rgba(255,255,255,.85);--solid:#FAFAFB;--ink:#0E0E10;--mut:#4E4E57;--hdr:#32323A;--ln:rgba(14,14,16,.16);--inv:#0E0E10;--on:#F6F6F8;--seg:rgba(14,14,16,.13);--beam:rgba(255,255,255,.75);--late:#AE2418;--soon:#7A5000;--shA:rgba(0,0,0,.04);--shB:rgba(20,20,30,.08);--f:'Chakra Petch',system-ui,-apple-system,sans-serif;color-scheme:light}
-:root[data-theme="dark"]{--bg:#070A1F;--card:rgba(12,16,44,.7);--card2:rgba(12,16,44,.52);--halo:rgba(5,8,26,.95);--field:rgba(10,14,40,.82);--solid:#16161A;--ink:#F3F3F5;--mut:#9A9AA3;--hdr:#C9C9D1;--ln:rgba(255,255,255,.14);--inv:#F3F3F5;--on:#0B0B0D;--seg:rgba(255,255,255,.12);--beam:rgba(255,255,255,.045);--late:#FF7A6E;--soon:#F0B95A;--shA:rgba(0,0,0,.4);--shB:rgba(0,0,0,.45);color-scheme:dark}
+:root{--bg:#CDBFEA;--card:rgba(255,255,255,.7);--card2:rgba(255,255,255,.4);--halo:rgba(255,255,255,.85);--field:rgba(255,255,255,.85);--solid:#FAFAFB;--ink:#0E0E10;--mut:#4E4E57;--hdr:#32323A;--ln:rgba(14,14,16,.16);--inv:#0E0E10;--on:#F6F6F8;--seg:rgba(14,14,16,.13);--beam:rgba(255,255,255,.75);--late:#AE2418;--soon:#7A5000;--sync:#3442A8;--sync-inv:#A9B4FF;--shA:rgba(0,0,0,.04);--shB:rgba(20,20,30,.08);--f:'Chakra Petch',system-ui,-apple-system,sans-serif;color-scheme:light}
+:root[data-theme="dark"]{--bg:#070A1F;--card:rgba(12,16,44,.7);--card2:rgba(12,16,44,.52);--halo:rgba(5,8,26,.95);--field:rgba(10,14,40,.82);--solid:#16161A;--ink:#F3F3F5;--mut:#9A9AA3;--hdr:#C9C9D1;--ln:rgba(255,255,255,.14);--inv:#F3F3F5;--on:#0B0B0D;--seg:rgba(255,255,255,.12);--beam:rgba(255,255,255,.045);--late:#FF7A6E;--soon:#F0B95A;--sync:#A9B4FF;--sync-inv:#3442A8;--shA:rgba(0,0,0,.4);--shB:rgba(0,0,0,.45);color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;background:var(--bg)}
 body{margin:0;min-height:100dvh;background:var(--bg);color:var(--ink);font:400 1rem/1.4 var(--f);padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);overflow-x:hidden;overscroll-behavior-y:none}
@@ -76,6 +76,20 @@ label.ckl input{flex:none;width:20px;height:20px;margin:0;padding:0;border:0;bor
 .late{border-style:dashed;border-color:var(--late)}
 .late .r{color:var(--late);border-color:var(--late)}
 .soon .r{color:var(--soon);border-color:var(--soon)}
+/* Not on Calendar yet: an indigo tint and label, distinct from late (red) and soon (amber) */
+.t.unsync,.c.unsync{background:linear-gradient(180deg,color-mix(in srgb,var(--sync) 11%,var(--card)),color-mix(in srgb,var(--sync) 8%,var(--card2)))}
+.t.unsync:not(.late),.c.unsync{border-color:color-mix(in srgb,var(--sync) 55%,transparent)}
+.t .ns,.c .ns{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sync)}
+.t .ns::before,.c .ns::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor}
+.next.unsync{background:var(--inv)}
+.next .ns{color:var(--sync-inv)}
+#calbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin:0 0 12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--sync) 55%,transparent);border-radius:20px;background:linear-gradient(180deg,color-mix(in srgb,var(--sync) 14%,var(--solid)),color-mix(in srgb,var(--sync) 9%,var(--solid)));box-shadow:var(--sh)}
+#calbar .cb-ic{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--sync);border:1px solid color-mix(in srgb,var(--sync) 55%,transparent)}
+#calbar .cb-ic svg{width:20px;height:20px}
+#calbar p{flex:1 1 12rem;margin:0;min-width:0}
+#calbar b{display:block;font-weight:600}
+#calbar small{display:block;font-size:.78rem;color:var(--mut);margin-top:2px}
+#calbar .cb-act{display:flex;align-items:center;gap:8px;margin-left:auto}
 .next{background:var(--inv);color:var(--on);border-color:var(--inv)}
 .next small{color:color-mix(in srgb,var(--on) 62%,transparent)}
 .next .ic,.next .r{border-color:color-mix(in srgb,var(--on) 50%,transparent);color:var(--on)}

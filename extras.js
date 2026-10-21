@@ -38,7 +38,7 @@ function drawCls(){
  const a=new Date();a.setHours(0,0,0,0);const b=new Date(a);b.setDate(b.getDate()+(v==='today'?0:6));
  const o=occs(a,b);if(!o.length)return;
  const day=d=>new Date(d+'T00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
- cls.innerHTML=`<h2>${v==='today'?'Classes today':'Classes this week'}</h2>`+o.map(e=>`<div class="c${e.x?' x':''}" style="--h:${hue(e.c.id)}"><time>${v==='week'?day(e.date)+'<br>':''}${e.start} to ${e.end}</time><div><b>${esc(e.c.name)}</b><small>${esc([e.room,e.mv&&'Changed',e.x&&'Cancelled'].filter(Boolean).join(', '))}</small></div></div>`).join('');
+ cls.innerHTML=`<h2>${v==='today'?'Classes today':'Classes this week'}</h2>`+o.map(e=>`<div class="c${e.x?' x':''}" data-c="${e.c.id}" style="--h:${hue(e.c.id)}"><time>${v==='week'?day(e.date)+'<br>':''}${e.start} to ${e.end}</time><div><b>${esc(e.c.name)}</b><small>${esc([e.room,e.mv&&'Changed',e.x&&'Cancelled'].filter(Boolean).join(', '))}</small></div></div>`).join('');
 }
 const pendT=new Map(),pendC=new Map();
 const apply=()=>{
