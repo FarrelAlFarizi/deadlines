@@ -2,7 +2,7 @@ const $=s=>document.querySelector(s);
 const list=$('#list'),ttl=$('#ttl');
 if(list){
  let on=false,pick=new Set(),hold=0,skip=false,lastView='';
- const view=()=>$('#tabs .on')?.dataset.v||'today';
+ const view=()=>$('#tabs .on')?.dataset.v||'agenda';
  const kind=()=>view()==='courses'?'courses':'tasks';
  const idOf=li=>li.dataset.id||li.dataset.c;
  const ITEM='.t[data-id],.t[data-c]';
@@ -21,11 +21,14 @@ if(list){
    li.classList.toggle('picked',on&&pick.has(idOf(li)));
   }
   const n=pick.size;$('#selcount').textContent=n+' selected';$('#seldel').disabled=!n;
-  bar.hidden=!on;row.hidden=on||!list.querySelector(ITEM);
+  bar.hidden=!on;row.hidden=true;mi.hidden=!list.querySelector(ITEM);
  };
  const enter=id=>{on=true;if(id)pick.add(id);paint()};
  const exit=()=>{on=false;pick.clear();paint()};
  $('#selbtn').onclick=()=>enter();
+ /* Select lives in the menu (and long-press), not above the list */
+ const mi=document.createElement('button');mi.type='button';mi.className='lnk';mi.textContent='Select tasks';mi.hidden=true;
+ const menu=$('#menu');if(menu)menu.insertBefore(mi,menu.firstChild);mi.onclick=()=>enter();
  $('#selx').onclick=exit;
  $('#selall').onclick=()=>{const it=items(),all=it.length>0&&it.every(li=>pick.has(idOf(li)));it.forEach(li=>all?pick.delete(idOf(li)):pick.add(idOf(li)));paint()};
  $('#seldel').onclick=()=>{

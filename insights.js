@@ -28,14 +28,16 @@ const segs=[...meter.querySelectorAll('.seg i')];segs.forEach((s,i)=>s.style.set
 const insEl=document.createElement('section');insEl.id='ins';insEl.hidden=true;$('#list').after(insEl);
 const days=()=>{const m={};for(const t of tasks)if(t.done&&fin(t)){const k=ymd(new Date(fin(t)));m[k]=(m[k]||0)+1}return m};
 const streak=m=>{const d=new Date();let n=0;if(!m[ymd(d)])d.setDate(d.getDate()-1);while(m[ymd(d)]){n++;d.setDate(d.getDate()-1)}return n};
-function drawMeter(v){
- const t0=new Date();t0.setHours(0,0,0,0);const a=t0.getTime(),end=v==='today'?a+864e5-1:a+7*864e5;
- const sc=tasks.filter(t=>v==='all'||(dueMs(t)>=a&&dueMs(t)<=end));
+function drawMeter(){
+ /* Today's deadlines plus anything still overdue, so the strip agrees with the agenda below it */
+ const t0=new Date();t0.setHours(0,0,0,0);const a=t0.getTime(),b=a+864e5;
+ const sc=tasks.filter(t=>{const x=dueMs(t);return (x>=a&&x<b)||(!t.done&&x<a)});
  const dn=sc.filter(t=>t.done).length,tot=sc.length,n=tot?Math.round(32*dn/tot):0,st=streak(days());
- segs.forEach((s,i)=>s.classList.toggle('on',i<n));
- $('#ml').textContent={today:"Today's progress",week:'Week progress',all:'Overall progress'}[v];
- $('#mp').textContent=(tot?Math.round(100*dn/tot):0)+'%';
- $('#md').textContent=dn+' done';$('#mr').textContent=(tot-dn)+' left';$('#ms').textContent=st?st+'-day streak':'';
+ segs.forEach((s,i)=>s.classList.toggle('on',i<n));meter.classList.toggle('none',!tot);
+ $('#ml').textContent='Today';
+ $('#mp').textContent=tot?`${dn} of ${tot} done`:'Nothing due today';
+ $('#md').textContent=st?st+'-day streak':'';$('#mr').textContent='';$('#ms').textContent='';
+ meter.querySelector('.mf').hidden=!st;
 }
 function drawIns(){
  const m=days(),now=Date.now(),f=tasks.filter(t=>t.done&&fin(t));
@@ -45,15 +47,15 @@ function drawIns(){
  let cells='';
  for(let i=0;i<35;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);const n=m[ymd(d)]||0;cells+=`<i class="g${Math.min(n,4)}${d>new Date()?' fut':''}${ymd(d)===ymd(new Date())?' td':''}" title="${ymd(d)}: ${n} finished"></i>`}
  const per=courses.map(c=>{const a=tasks.filter(t=>t.courseId===c.id);return {c,a:a.length,dn:a.filter(t=>t.done).length}}).filter(x=>x.a);
- insEl.innerHTML=`<div class="stats"><div class="st"><small>Streak</small><b>${streak(m)}<em>days</em></b></div><div class="st"><small>This week</small><b>${wk.reduce((s,x)=>s+x.n,0)}<em>done</em></b></div><div class="st"><small>On time</small><b>${f.length?Math.round(100*ot/f.length)+'<em>%</em>':'-'}</b></div><div class="st"><small>Overdue</small><b>${over}</b></div></div>
+ insEl.innerHTML=`<div class="stats"><div class="st"><small>Streak</small><b>${streak(m)}<em>${streak(m)===1?'day':'days'}</em></b></div><div class="st"><small>This week</small><b>${wk.reduce((s,x)=>s+x.n,0)}<em>done</em></b></div><div class="st"><small>On time</small><b>${f.length?Math.round(100*ot/f.length)+'<em>%</em>':'-'}</b></div><div class="st"><small>Overdue</small><b>${over}</b></div></div>
 <div class="card"><small class="cap">Last 7 days</small><div class="orbs">${wk.map(x=>`<span class="${x.n?'on':''}"><i></i><small>${'SMTWTFS'[x.d.getDay()]}</small></span>`).join('')}</div></div>
 <div class="card"><small class="cap">Consistency grid</small><div class="gw">${[...'MTWTFSS'].map(x=>`<span>${x}</span>`).join('')}</div><div class="grid5">${cells}</div></div>${per.length?`<div class="card"><small class="cap">By course</small>${per.map(x=>`<div class="cb"><span>${esc(x.c.name)}</span><div class="seg s10">${[...Array(10)].map((_,i)=>`<i class="${i<Math.round(10*x.dn/x.a)?'on':''}" style="--i:${i}"></i>`).join('')}</div><em>${x.dn}/${x.a}</em></div>`).join('')}</div>`:''}`;
 }
 function draw(){
- const v=$('#tabs .on')?.dataset.v||'today';
- meter.hidden=!['today','week','all'].includes(v);insEl.hidden=v!=='insights';$('#fab').hidden=v==='insights';
+ const v=$('#tabs .on')?.dataset.v||'agenda';
+ meter.hidden=v!=='agenda';insEl.hidden=v!=='insights';$('#fab').hidden=v==='insights';
  hello.textContent=greet();
- if(!meter.hidden)drawMeter(v);if(!insEl.hidden)drawIns();
+ if(!meter.hidden)drawMeter();if(!insEl.hidden)drawIns();
 }
 onAuthStateChanged(auth,u=>{
  subs.forEach(f=>f());subs=[];tasks=[];courses=[];signed=!!u;who=u?.displayName||'';draw();

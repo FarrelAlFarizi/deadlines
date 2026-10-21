@@ -12,21 +12,22 @@ const dstr=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
 const DN={MO:1,TU:2,WE:3,TH:4,FR:5,SA:6,SU:0};
 const TYPES=['Assignment','Quiz','Exam','Project'],DEF={Assignment:[1440,180],Quiz:[1440,60],Exam:[10080,4320,1440],Project:[10080,2880,1440]};
 let uid,courses=[],cfg={},subs=[];
-const view=()=>$('#tabs .on')?.dataset.v||'today';
+const view=()=>$('#tabs .on')?.dataset.v||'agenda';
 const cls=document.createElement('div');cls.id='cls';
 const flt=document.createElement('div');flt.id='flt';
 flt.innerHTML=`<input id="q" type="search" placeholder="Search tasks" aria-label="Search tasks"><select id="ft" aria-label="Filter by type"><option value="">All types<option>Assignment<option>Quiz<option>Exam<option>Project</select>`;
 $('#list').before(cls,flt);
 const nm=document.createElement('div');nm.id='nm';nm.className='empty';nm.hidden=true;nm.textContent='No matching tasks';flt.after(nm);
-function occs(a,b){
+function occs(a,b,list=courses){
  const out=[],A=dstr(a),B=dstr(b);
- for(const c of courses){
+ for(const c of list){
+  if(c.deleted)continue;
   if(!(c.day&&c.start&&c.end&&c.until))continue;
   const ov=c.ov||{};
   for(let d=new Date(a.getTime()-14*864e5);dstr(d)<=c.until&&d<=new Date(b.getTime()+14*864e5);d.setDate(d.getDate()+1)){
    if(d.getDay()!==DN[c.day])continue;
    const k=dstr(d),o=ov[k],mv=o?.mode==='move';
-   const e={date:mv?(o.date||k):k,start:mv?(o.start||c.start):c.start,end:mv?(o.end||c.end):c.end,room:(mv&&o.room)||c.room,x:o?.mode==='cancel',mv};
+   const e={k,date:mv?(o.date||k):k,start:mv?(o.start||c.start):c.start,end:mv?(o.end||c.end):c.end,room:(mv&&o.room)||c.room,x:o?.mode==='cancel',mv};
    if(e.date>=A&&e.date<=B)out.push({c,...e});
   }
  }
@@ -40,6 +41,14 @@ function drawCls(){
  const day=d=>new Date(d+'T00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
  cls.innerHTML=`<h2>${v==='today'?'Classes today':'Classes this week'}</h2>`+o.map(e=>`<div class="c${e.x?' x':''}" data-c="${e.c.id}" style="--h:${hue(e.c.id)}"><time>${v==='week'?day(e.date)+'<br>':''}${e.start} to ${e.end}</time><div><b>${esc(e.c.name)}</b><small>${esc([e.room,e.mv&&'Changed',e.x&&'Cancelled'].filter(Boolean).join(', '))}</small></div></div>`).join('');
 }
+window.dlOccs=occs;
+/* Search lives behind a header icon; while a search or type filter is active the agenda shows matching tasks only */
+const SRCH='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>';
+const sb2=document.createElement('button');sb2.id='srch';sb2.type='button';sb2.className='ib';sb2.innerHTML=SRCH;sb2.setAttribute('aria-label','Search tasks');sb2.setAttribute('aria-expanded','false');sb2.setAttribute('aria-controls','flt');
+$('.hr').prepend(sb2);
+let sOpen=false;
+const setSearch=o=>{sOpen=o;sb2.setAttribute('aria-expanded',String(o));if(!o){$('#q').value='';$('#ft').value=''}apply();if(o)$('#q').focus();else sb2.focus()};
+sb2.onclick=()=>setSearch(!sOpen);
 const pendT=new Map(),pendC=new Map();
 const apply=()=>{
  const q=$('#q').value.toLowerCase(),t=$('#ft').value;
@@ -47,9 +56,10 @@ const apply=()=>{
  document.querySelectorAll('#list .t[data-c]').forEach(li=>{li.hidden=pendC.has(li.dataset.c)});
  const all=[...document.querySelectorAll('#list .t[data-id]')];
  nm.hidden=!(all.length&&(q||t)&&all.every(li=>li.hidden)&&all.some(li=>!pendT.has(li.dataset.id)));
- flt.hidden=['courses','insights'].includes(view());
+ const act=!!(q||t);flt.hidden=view()!=='agenda'||!(sOpen||act);sb2.hidden=view()!=='agenda';document.body.classList.toggle('searching',act&&view()==='agenda');
 };
 $('#q').oninput=apply;$('#ft').onchange=apply;
+$('#q').addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();setSearch(false)}});
 new MutationObserver(()=>{apply();drawCls()}).observe($('#list'),{childList:true});
 setInterval(drawCls,6e4);
 const H=40,MAXD=28,LAB={cls:'Classes'};

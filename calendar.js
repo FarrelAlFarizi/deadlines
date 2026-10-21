@@ -29,13 +29,13 @@ document.querySelector('#app header').after(bar);
 function tagRow(el,pend,changed){
  el.classList.toggle('unsync',pend);let n=el.querySelector('.ns');
  if(!pend){if(n)n.remove();return}
- if(!n){n=document.createElement('small');n.className='ns';(el.querySelector('.b')||el.querySelector('div')).append(n)}
+ if(!n){n=document.createElement('small');n.className='ns';(el.querySelector('.b')||el.querySelector('.cinfo')||el.querySelector('div')).append(n)}
  n.textContent=changed?'Change not on Calendar':'Not on Calendar';
 }
 function mark(n){
  const use=!!uid&&usesCal();
  document.querySelectorAll('#list .t[data-id]').forEach(li=>{const t=tasks.find(x=>x.id===li.dataset.id);tagRow(li,use&&!!t&&tpend(t),!!t?.calSig)});
- document.querySelectorAll('#list .t[data-c],#cls .c[data-c]').forEach(el=>{const c=courses.find(x=>x.id===el.dataset.c);tagRow(el,use&&!!c&&cpend(c),!!c?.calSig)});
+ document.querySelectorAll('#list .t[data-c],#list .c[data-c],#cls .c[data-c]').forEach(el=>{const c=courses.find(x=>x.id===el.dataset.c);tagRow(el,use&&!!c&&cpend(c),!!c?.calSig)});
  bar.hidden=!(use&&n>0&&!on()&&!later);
  if(!bar.hidden)bar.querySelector('b').textContent=n===1?'1 change isn’t on your Google Calendar yet':`${n} changes aren’t on your Google Calendar yet`;
 }
@@ -166,6 +166,13 @@ f.k.onchange=defs;f.m.onchange=defs;
 chg.onclick=()=>{cur=window.dlCourse;if(!cur)return;
  f.k.innerHTML=occ(cur,8).map(d=>`<option value="${d}">${new Date(d+'T00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'})}${cur.ov?.[d]?' (changed)':''}</option>`).join('');
  f.m.value='move';defs();document.querySelector('#cd').close();dlg.showModal()};
+/* From an agenda class card: open "Change one class" already set to that date */
+window.dlChangeClass=(id,k)=>{cur=courses.find(c=>c.id===id);if(!cur)return;window.dlCourse=cur;
+ const ds=occ(cur,8);if(k&&!ds.includes(k))ds.unshift(k);
+ f.k.innerHTML=ds.map(d=>`<option value="${d}">${new Date(d+'T00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'})}${cur.ov?.[d]?' (changed)':''}</option>`).join('');
+ if(k)f.k.value=k;f.m.value=cur.ov?.[k]?(cur.ov[k].mode==='cancel'?'cancel':'move'):'move';defs();
+ const o=cur.ov?.[k];if(o?.mode==='move'){f.d.value=o.date||k;f.s.value=o.start||cur.start;f.e.value=o.end||cur.end;f.r.value=o.room||''}
+ dlg.showModal()};
 f.onsubmit=e=>{e.preventDefault();const er=dlg.querySelector('#oerr');er.textContent='';if(f.m.value==='move'&&(f.e.value||cur.end)<=(f.s.value||cur.start)){er.textContent='The class must end after it starts.';return}const k=f.k.value,ov={...(cur.ov||{})};
  if(f.m.value==='reset')delete ov[k];else ov[k]=f.m.value==='cancel'?{mode:'cancel'}:{mode:'move',date:f.d.value||k,start:f.s.value,end:f.e.value,room:f.r.value.trim()};
  updateDoc(cref(cur),{ov}).catch(er=>stat(er.message));dlg.close()};

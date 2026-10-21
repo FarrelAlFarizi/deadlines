@@ -17,7 +17,7 @@ function step(n,done,title,note,action,extra=''){
  return `<li class="su-step${done?' done':''}"><button type="button" class="su-go" data-act="${action}"><span class="su-n" aria-hidden="true">${done?TICK:n}</span><span class="su-t"><b>${title}</b><small>${note}</small></span><span class="su-ch" aria-hidden="true">${GO}</span></button>${extra}</li>`;
 }
 function draw(){
- const v=$('#tabs .on')?.dataset.v||'today',inView=['today','week','all'].includes(v);
+ const v=$('#tabs .on')?.dataset.v||'agenda',inView=v==='agenda';
  const c1=courses.length>0,c2=tasks.length>0,c3=usesCal(),skip=get('dl-onb-cal-')==='skip';
  if(c1&&c2)put('dl-onb-','done');
  const full=uid&&ready>=2&&get('dl-onb-')!=='done'&&!(c1&&c2);

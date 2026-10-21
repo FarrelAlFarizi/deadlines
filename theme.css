@@ -119,7 +119,7 @@ input,select,textarea{width:100%;padding:12px 14px;margin-top:6px;border:1px sol
 #fab:active{transform:scale(.92)}
 #tabs{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:616px;margin:0 auto;border:1px solid var(--ln);border-radius:26px;background:color-mix(in srgb,var(--solid) 78%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);box-shadow:var(--sh);overflow:hidden;container:tabbar/inline-size}
 #tabs div{position:relative;display:flex}
-#tabs button{position:relative;z-index:1;flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 9px;border:0;background:none;color:var(--mut);font-size:.75rem;font-weight:600;letter-spacing:.02em;text-transform:none;transition:color .3s}
+#tabs button{position:relative;z-index:1;flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 9px;border:0;background:none;color:var(--hdr);font-size:.75rem;font-weight:600;letter-spacing:.02em;text-transform:none;transition:color .3s}
 #tabs svg{width:21px;height:21px}
 #tabs .on{color:var(--on)}
 #pill{position:absolute;z-index:0;top:5px;bottom:5px;left:0;width:0;border-radius:20px;background:var(--inv);transition:transform .5s cubic-bezier(.16,1,.3,1),width .5s cubic-bezier(.16,1,.3,1);will-change:transform,width;pointer-events:none}
@@ -127,7 +127,7 @@ input,select,textarea{width:100%;padding:12px 14px;margin-top:6px;border:1px sol
 @container tabbar (max-width:18.3em){
  #tabs div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:4px;gap:2px}
  #tabs button{border-radius:20px;padding:8px 2px 7px}
- #tabs span{max-width:100%;overflow-wrap:break-word;text-align:center}
+ #tabs span{max-width:100%;text-align:center;letter-spacing:0}
  #tabs .on{background:var(--inv)}
  #pill{display:none}
 }
@@ -287,7 +287,7 @@ button.b{display:block;width:100%;min-width:0;margin:0;padding:0;border:0;backgr
 .su-go:hover .su-ch{color:var(--ink)}
 .su-rec{display:inline-block;margin-left:4px;padding:0 7px;border:1px solid var(--ln);border-radius:999px;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
 .su-skip{margin-left:auto}
-body.onb #meter,body.onb #flt,body.onb #nm,body.onb #selrow,body.onb #list>.empty{display:none!important}
+body.onb #meter,body.onb #srch,body.onb #flt,body.onb #nm,body.onb #selrow,body.onb #list>.empty{display:none!important}
 /* Calendar explainer shown before Google's permission screen */
 #primer{width:min(92vw,420px)}
 #primer .pr-ic{display:grid;place-items:center;width:44px;height:44px;margin-bottom:12px;border:1px solid var(--ln);border-radius:50%}
@@ -299,3 +299,25 @@ body.onb #meter,body.onb #flt,body.onb #nm,body.onb #selrow,body.onb #list>.empt
 #primer .pr-note{font-size:.78rem;color:var(--mut)}
 /* Hidden on screen, still read by screen readers */
 .vh{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;border:0!important;overflow:hidden!important;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+/* Semester agenda: day labels, class cards, Finished toggle, search mode */
+#list .day{position:sticky;top:calc(env(safe-area-inset-top) + 6px);z-index:3;margin:18px 0 8px;pointer-events:none}
+#list .day:first-child{margin-top:4px}
+#list .day h2{display:inline-flex;align-items:baseline;gap:8px;margin:0;padding:6px 12px;border:1px solid var(--ln);border-radius:999px;background:color-mix(in srgb,var(--solid) 82%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:var(--sh);font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+#list .day h2 span{font-weight:600;letter-spacing:.06em;color:var(--mut)}
+#list .day.od h2{color:var(--late);border-color:color-mix(in srgb,var(--late) 45%,transparent)}
+#list .none{margin:0 0 10px;padding:2px 4px 6px;font-size:.78rem;color:var(--mut)}
+.c .cgo{flex:1;min-width:0;display:flex;align-items:center;gap:14px;min-height:44px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.c .cinfo{min-width:0}
+.c .cinfo b{display:block;font-weight:600;overflow-wrap:break-word}
+.c.past{opacity:.55}
+#list .fin-tog{margin:22px 0 10px}
+#list .fin-tog button{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 4px;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--hdr)}
+#list .fin-tog button span{padding:1px 8px;border:1px solid var(--ln);border-radius:999px;letter-spacing:.04em;color:var(--mut)}
+#list .fin-tog button::before{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .2s cubic-bezier(.16,1,.3,1)}
+#list .fin-tog button[aria-expanded="true"]::before{transform:rotate(45deg)}
+body.searching #list .day,body.searching #list .c,body.searching #list .none,body.searching #list .fin-tog{display:none}
+/* The progress meter as a slim "Today" strip */
+#meter{margin:2px 0 6px;padding:10px 14px}
+#meter .seg{height:8px;margin:7px 0 0}
+#meter.none .seg{display:none}
+#meter .mf{margin-top:6px}
