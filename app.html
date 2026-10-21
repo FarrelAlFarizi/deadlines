@@ -78,14 +78,19 @@ si.onclick=async()=>{
  $('#err').textContent='';
  if(navigator.onLine===false){$('#err').textContent='You\u2019re offline. Connect to the internet, then try again.';return}
  busy(true);const p=new GoogleAuthProvider();
- try{await signInWithPopup(auth,p)}
+ try{await signInWithPopup(auth,p);busy(false)}
  catch(e){
   if(e&&(e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request')){busy(false);return}
   try{await signInWithRedirect(auth,p)}
   catch(e2){console.error(e2);busy(false);$('#err').textContent='Couldn\u2019t sign you in. Check your connection and try again. If a pop-up was blocked, allow pop-ups for this site.'}
  }
 };
-$('#out').onclick=()=>signOut(auth);
+const installed=()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}};
+$('#out').onclick=async()=>{
+ dispatchEvent(new Event('pagehide'));/* save deletions still in their undo window */
+ try{await signOut(auth)}catch(e){console.error(e)}
+ if(!installed())location.replace('index.html');/* the landing page sends installed apps straight back here */
+};
 onAuthStateChanged(auth,u=>{
  unsubs.forEach(f=>f());unsubs=[];
  $('#login').hidden=!!u;$('#app').hidden=!u;
