@@ -68,7 +68,7 @@ f.onsubmit=async e=>{
   return;
  }
  try{sessionStorage.setItem('dl-erased','1')}catch(e){}
- try{['dl-theme','dl-bg','dl-snd','dl-cal-'+u.uid].forEach(k=>localStorage.removeItem(k))}catch(e){}
+ try{['dl-theme','dl-bg','dl-snd','dl-cal-'+u.uid,'dl-onb-'+u.uid,'dl-onb-cal-'+u.uid,'dl-primer-'+u.uid].forEach(k=>localStorage.removeItem(k))}catch(e){}
  try{await terminate(db);await clearIndexedDbPersistence(db)}catch(e){}
  location.replace('app.html');
 };

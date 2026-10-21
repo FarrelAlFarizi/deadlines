@@ -87,12 +87,25 @@ async function connect(){
   if(u?.email)p.setCustomParameters({login_hint:u.email});
   const r=await reauthenticateWithPopup(u,p);
   tok=GoogleAuthProvider.credentialFromResult(r)?.accessToken||null;exp=Date.now()+3.4e6;
-  if(tok){try{localStorage.setItem('dl-cal-'+uid,'1')}catch(e){}}
+  if(tok){try{localStorage.setItem('dl-cal-'+uid,'1')}catch(e){}dispatchEvent(new Event('dlcal'))}
   lab();sync();
  }catch(e){if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')stat(e.message)}
  finally{go.disabled=false;go.textContent='Reconnect'}
 }
-btn.onclick=()=>{if(on())sync();else connect()};
+/* Before Google's "unverified app" screen, say what Calendar does and how to get past the warning (once per device) */
+const pr=document.createElement('dialog');pr.id='primer';
+pr.innerHTML=`<form method="dialog"><span class="pr-ic">${CALIC}</span><h2>Get reminders on your phone</h2>
+<p>Your deadlines and weekly classes go into your Google Calendar, with alerts before each one. The app only adds, changes and removes the events it created.</p>
+<div class="pr-warn"><b>Google will show a warning first</b><p>This student app hasn’t finished Google’s review yet, so Google says “Google hasn’t verified this app”. Tap <b>Advanced</b>, then <b>Go to deadline-tracker-220cc.firebaseapp.com (unsafe)</b>. “Unsafe” only means the review isn’t finished.</p></div>
+<p class="pr-note">Access lasts about an hour at a time. When it runs out, one tap reconnects.</p>
+<div class="act"><button type="button" class="lnk" id="prx">Not now</button><span></span><button type="button" class="pri" id="prgo">Continue to Google</button></div></form>`;
+document.body.append(pr);
+const seenPrimer=()=>{try{return localStorage.getItem('dl-primer-'+uid)==='1'}catch(e){return false}};
+const primer=()=>{try{localStorage.setItem('dl-primer-'+uid,'1')}catch(e){}pr.showModal()};
+pr.querySelector('#prx').onclick=()=>pr.close();
+pr.querySelector('#prgo').onclick=()=>{pr.close();connect()};
+window.dlCalPrimer=()=>{if(!on())primer()};
+btn.onclick=()=>{if(on())sync();else if(!seenPrimer()&&!usesCal())primer();else connect()};
 bar.querySelector('#calgo').onclick=connect;
 bar.querySelector('#calx').onclick=()=>{later=true;bar.hidden=true};
 watch('#list');watch('#cls');

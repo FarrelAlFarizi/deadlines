@@ -137,12 +137,12 @@ $('#list').onclick=e=>{
 };
 document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 
-function openTask(id){
+function openTask(id,cid){
  window.dlEdit=id||null;editing=id||null;const t=tasks.find(x=>x.id===id),f=$('#tf');
  $('#tdt').textContent=t?'Edit task':'New task';$('#tdel').hidden=!t;
  $('#cs').innerHTML='<option value="">No course</option>'+courses.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
  const d=new Date();d.setDate(d.getDate()+1);d.setHours(23,59,0,0);
- f.title.value=t?.title||'';f.course.value=t?.courseId||'';f.type.value=t?.type||'Assignment';f.due.value=t?.due||ls(d);f.notes.value=t?.notes||'';
+ f.title.value=t?.title||'';f.course.value=t?.courseId||cid||'';f.type.value=t?.type||'Assignment';f.due.value=t?.due||ls(d);f.notes.value=t?.notes||'';
  $('#td').showModal();
 }
 $('#tf').onsubmit=e=>{
@@ -164,6 +164,7 @@ $('#cf').onsubmit=e=>{
  $('#cd').close();
 };
 $('#cdel').onclick=()=>{if(confirm('Delete this course? Its tasks stay, but lose the course link.')){setDoc(path('courses',editing),{day:'',deleted:true,updatedAt:Date.now()},{merge:true}).catch(fail);$('#cd').close()}};
+window.dlOpenTask=openTask;window.dlOpenCourse=openCourse;
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
@@ -176,5 +177,6 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 <script type="module" src="insights.js"></script>
 <script type="module" src="sky.js"></script>
 <script type="module" src="select.js"></script>
+<script type="module" src="onboard.js"></script>
 <script type="module" src="sound.js"></script>
 </body></html>

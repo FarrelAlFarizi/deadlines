@@ -262,3 +262,40 @@ button.b{display:block;width:100%;min-width:0;margin:0;padding:0;border:0;backgr
 #selbar button::after{content:"";position:absolute;inset:-4px 0}
 #toast button::after{content:"";position:absolute;inset:-6px 0}
 .chip::after{content:"";position:absolute;inset:-4px 0}
+
+/* First-run "Set up your semester" card */
+#setup{margin:0 0 14px;padding:16px 16px 6px;border:1px solid var(--ln);border-radius:20px;background:linear-gradient(180deg,var(--card),var(--card2));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--sh)}
+#setup{container:setup/inline-size}
+#setup.mini{padding:4px 16px}
+@container setup (max-width:16em){#setup .su-ch{display:none}#setup .su-rec{letter-spacing:.02em}}
+.su-head{display:flex;align-items:baseline;justify-content:space-between;gap:4px 12px;flex-wrap:wrap}
+#setup h2{margin:0;font-size:1.3rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.su-count{font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);white-space:nowrap}
+.su-lede{margin:6px 0 6px;color:var(--mut)}
+#setup ol{list-style:none;margin:0;padding:0}
+.su-step{display:flex;align-items:center;gap:0 8px;flex-wrap:wrap;border-top:1px solid var(--ln)}
+#setup.mini .su-step{border-top:0}
+.su-go{flex:1 1 14rem;min-width:0;display:flex;align-items:center;gap:12px;min-height:60px;padding:10px 0;border:0;background:none;color:var(--ink);text-align:left;cursor:pointer}
+.su-n{flex:none;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-weight:700;font-variant-numeric:tabular-nums}
+.su-n svg{width:16px;height:16px}
+.su-step.done .su-n{background:var(--inv);border-color:var(--inv);color:var(--on)}
+.su-t{flex:1;min-width:0}
+.su-t b{display:block;font-weight:600}
+.su-t small{display:block;margin-top:2px;font-size:.78rem;color:var(--mut)}
+.su-ch{flex:none;display:grid;color:var(--mut)}
+.su-ch svg{width:18px;height:18px}
+.su-go:hover .su-ch{color:var(--ink)}
+.su-rec{display:inline-block;margin-left:4px;padding:0 7px;border:1px solid var(--ln);border-radius:999px;font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
+.su-skip{margin-left:auto}
+body.onb #meter,body.onb #flt,body.onb #nm,body.onb #selrow,body.onb #list>.empty{display:none!important}
+/* Calendar explainer shown before Google's permission screen */
+#primer{width:min(92vw,420px)}
+#primer .pr-ic{display:grid;place-items:center;width:44px;height:44px;margin-bottom:12px;border:1px solid var(--ln);border-radius:50%}
+#primer .pr-ic svg{width:22px;height:22px}
+#primer p{margin:8px 0 0;line-height:1.5}
+#primer .pr-warn{margin-top:14px;padding:12px 14px;border:1px solid var(--ln);border-radius:14px;background:var(--seg)}
+#primer .pr-warn>b{display:block}
+#primer .pr-warn p{margin:4px 0 0}
+#primer .pr-note{font-size:.78rem;color:var(--mut)}
+/* Hidden on screen, still read by screen readers */
+.vh{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;border:0!important;overflow:hidden!important;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
