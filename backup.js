@@ -26,7 +26,7 @@ $('#bx').onclick=async()=>{
   const data={version:1,courses:cs.map(strip),tasks:ts.map(t=>({...strip(t),course:nm[t.courseId]||''}))};
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'}));
-  a.download='deadlines-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  a.download='cleanslate-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();
   say(`Exported ${cs.length} courses and ${ts.length} tasks.`);
  }catch(e){say(e.message)}
 };

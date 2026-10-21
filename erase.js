@@ -9,8 +9,8 @@ const btn=document.createElement('button');btn.className='lnk dng';btn.type='but
 $('.hr').insertBefore(btn,$('#out'));
 const dlg=document.createElement('dialog');
 dlg.innerHTML=`<form><h2>Delete my data</h2>
-<p><small>This permanently deletes all your courses, tasks and settings, and your Daily Tracker account. It cannot be undone. If you might want them later, use Backup to export a copy first.</small></p>
-<label class="ckl" id="ecw"><input type="checkbox" id="ecal" checked> Also remove the events Daily Tracker added to my Google Calendar</label>
+<p><small>This permanently deletes all your courses, tasks and settings, and your CleanSlate account. It cannot be undone. If you might want them later, use Backup to export a copy first.</small></p>
+<label class="ckl" id="ecw"><input type="checkbox" id="ecal" checked> Also remove the events CleanSlate added to my Google Calendar</label>
 <label>Type DELETE to confirm<input id="ein" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
 <p><small>Google will ask you to confirm your account before anything is deleted.</small></p>
 <p id="eerr" class="ferr" role="alert"></p>
