@@ -30,6 +30,7 @@ header h1{font-size:min(2.3rem,15vw);font-weight:700;line-height:1;text-transfor
 .ib,#mb{width:40px;height:40px;border-radius:50%;border:1px solid var(--ln);background:var(--card);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);display:grid;place-items:center;padding:0;color:var(--ink)}
 .ib svg,#mb svg{width:18px;height:18px}
 #cal{border:1px solid var(--ln);background:var(--card);border-radius:999px;padding:10px 12px;font-size:.75rem;letter-spacing:.05em;text-transform:uppercase;font-weight:600;color:var(--ink);text-align:left;line-height:1.25}
+
 .hr>#cal{flex:0 1 auto;min-width:0}
 #menu,#ddl{position:absolute;right:0;top:calc(100% + 10px);z-index:20;min-width:176px;display:flex;flex-direction:column;background:var(--solid);border:1px solid var(--ln);border-radius:18px;box-shadow:var(--sh);padding:6px;transform-origin:top right;animation:popIn .22s cubic-bezier(.16,1,.3,1)}
 #menu.out,#ddl.out{animation:popOut .16s ease forwards}
@@ -64,6 +65,7 @@ label.ckl input{flex:none;width:20px;height:20px;margin:0;padding:0;border:0;bor
  .t{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"ic b chk" "ic r chk";row-gap:8px}
  .t:not(:has(.chk)){grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ic b" "ic r"}
  .t>.ic{grid-area:ic}.t>.b{grid-area:b}.t>.r{grid-area:r;justify-self:start}.t>.chk,.t>.sel{grid-area:chk}
+ .c .cgo{flex-wrap:wrap;row-gap:4px}.c .cinfo{flex:1 1 100%}
 }
 .t small{display:block;font-size:.78rem}
 .r{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border:1px solid var(--ln);border-radius:999px;white-space:nowrap}
@@ -83,13 +85,13 @@ label.ckl input{flex:none;width:20px;height:20px;margin:0;padding:0;border:0;bor
 .t .ns::before,.c .ns::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor}
 .next.unsync{background:var(--inv)}
 .next .ns{color:var(--sync-inv)}
-#calbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin:0 0 12px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--sync) 55%,transparent);border-radius:20px;background:linear-gradient(180deg,color-mix(in srgb,var(--sync) 14%,var(--solid)),color-mix(in srgb,var(--sync) 9%,var(--solid)));box-shadow:var(--sh)}
-#calbar .cb-ic{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--sync);border:1px solid color-mix(in srgb,var(--sync) 55%,transparent)}
-#calbar .cb-ic svg{width:20px;height:20px}
-#calbar p{flex:1 1 12rem;margin:0;min-width:0}
-#calbar b{display:block;font-weight:600}
-#calbar small{display:block;font-size:.78rem;color:var(--mut);margin-top:2px}
-#calbar .cb-act{display:flex;align-items:center;gap:8px;margin-left:auto}
+#cal[data-s="wait"]{color:var(--sync);border-color:color-mix(in srgb,var(--sync) 55%,transparent);background:color-mix(in srgb,var(--sync) 11%,var(--card));display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px}
+#cal .cb-n{flex:none;min-width:2.3em;height:2.3em;padding:0 .55em;border-radius:999px;display:grid;place-items:center;background:var(--sync);color:var(--on);font-variant-numeric:tabular-nums;letter-spacing:0}
+#cal .cb-t{min-width:0}
+#cal:disabled{opacity:.6}
+header{container:hdr/inline-size}
+/* At large text on small phones the Calendar button takes its own line above the round controls, so its label never overflows */
+@container hdr (max-width:12em){.hr{flex:1 1 100%;flex-wrap:wrap}.hr>#cal{order:-1;flex:1 1 100%}}
 .next{background:var(--inv);color:var(--on);border-color:var(--inv)}
 .next small{color:color-mix(in srgb,var(--on) 62%,transparent)}
 .next .ic,.next .r{border-color:color-mix(in srgb,var(--on) 50%,transparent);color:var(--on)}

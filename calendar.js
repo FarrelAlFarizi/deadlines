@@ -17,14 +17,18 @@ const on=()=>tok&&Date.now()<exp;
 const tpend=t=>want(t)!==(t.calSig||null);
 /* Calendar sync is "in use" once it was connected on this device, or any record already carries a sync marker from another device */
 const usesCal=()=>{let f=false;try{f=localStorage.getItem('dl-cal-'+uid)==='1'}catch(e){}return f||tasks.some(t=>t.calSig)||courses.some(c=>c.calSig)};
-let later=false;
-function lab(){const n=tasks.filter(tpend).length+courses.filter(c=>cpend(c)).length;const use=!!uid&&usesCal();btn.textContent=on()?'Calendar on':n&&use?`Sync ${n} to Calendar`:'Connect Calendar';btn.style.color=!on()&&n&&use?'var(--late)':'';mark(n)}
+let opening=false;
+/* The header button is the one Calendar signal: neutral when off or on, indigo with a count when changes wait for a reconnect */
+function lab(){
+ const n=tasks.filter(tpend).length+courses.filter(c=>cpend(c)).length,use=!!uid&&usesCal();
+ btn.dataset.s=on()?'on':use?(n?'wait':'idle'):'new';
+ if(!opening){
+  if(btn.dataset.s==='wait'){btn.innerHTML=`<span class="cb-n" aria-hidden="true">${n>99?'99+':n}</span><span class="cb-t">Reconnect Calendar</span>`;btn.setAttribute('aria-label',`Reconnect Calendar, ${n} ${n===1?'change':'changes'} waiting`);btn.title='Calendar access lasts about an hour. Reconnect to send your changes.'}
+  else{btn.textContent=on()?'Calendar on':'Connect Calendar';btn.removeAttribute('aria-label');btn.removeAttribute('title')}
+ }
+ mark(n)}
 
-/* One-tap reconnect bar, shown when sync is in use, access has expired and changes are waiting */
 const CALIC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13.5v3.5M10.25 15.25h3.5"/></svg>';
-const bar=document.createElement('div');bar.id='calbar';bar.hidden=true;bar.setAttribute('role','status');
-bar.innerHTML=`<span class="cb-ic">${CALIC}</span><p><b></b><small>Calendar access lasts about an hour. Reconnect to send them.</small></p><div class="cb-act"><button type="button" class="lnk" id="calx">Later</button><button type="button" class="pri" id="calgo">Reconnect</button></div>`;
-document.querySelector('#app header').after(bar);
 /* Mark every task, course and class that is not on Calendar yet */
 function tagRow(el,pend,changed){
  el.classList.toggle('unsync',pend);let n=el.querySelector('.ns');
@@ -36,8 +40,6 @@ function mark(n){
  const use=!!uid&&usesCal();
  document.querySelectorAll('#list .t[data-id]').forEach(li=>{const t=tasks.find(x=>x.id===li.dataset.id);tagRow(li,use&&!!t&&tpend(t),!!t?.calSig)});
  document.querySelectorAll('#list .t[data-c],#list .c[data-c],#cls .c[data-c]').forEach(el=>{const c=courses.find(x=>x.id===el.dataset.c);tagRow(el,use&&!!c&&cpend(c),!!c?.calSig)});
- bar.hidden=!(use&&n>0&&!on()&&!later);
- if(!bar.hidden)bar.querySelector('b').textContent=n===1?'1 change isn’t on your Google Calendar yet':`${n} changes aren’t on your Google Calendar yet`;
 }
 const watch=sel=>{const el=document.querySelector(sel);if(el)new MutationObserver(()=>mark(tasks.filter(tpend).length+courses.filter(c=>cpend(c)).length)).observe(el,{childList:true})};
 function body(t){
@@ -81,7 +83,7 @@ async function sync(){
 }
 /* Naming the signed-in account lets Google skip its account chooser, so reconnecting is usually one tap */
 async function connect(){
- const go=bar.querySelector('#calgo');go.disabled=true;go.textContent='Opening Google…';
+ opening=true;btn.disabled=true;btn.textContent='Opening Google…';
  try{
   const u=auth.currentUser,p=new GoogleAuthProvider();p.addScope('https://www.googleapis.com/auth/calendar.events');
   if(u?.email)p.setCustomParameters({login_hint:u.email});
@@ -90,7 +92,7 @@ async function connect(){
   if(tok){try{localStorage.setItem('dl-cal-'+uid,'1')}catch(e){}dispatchEvent(new Event('dlcal'))}
   lab();sync();
  }catch(e){if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request')stat(e.message)}
- finally{go.disabled=false;go.textContent='Reconnect'}
+ finally{opening=false;btn.disabled=false;lab()}
 }
 /* Before Google's "unverified app" screen, say what Calendar does and how to get past the warning (once per device) */
 const pr=document.createElement('dialog');pr.id='primer';
@@ -106,11 +108,9 @@ pr.querySelector('#prx').onclick=()=>pr.close();
 pr.querySelector('#prgo').onclick=()=>{pr.close();connect()};
 window.dlCalPrimer=()=>{if(!on())primer()};
 btn.onclick=()=>{if(on())sync();else if(!seenPrimer()&&!usesCal())primer();else connect()};
-bar.querySelector('#calgo').onclick=connect;
-bar.querySelector('#calx').onclick=()=>{later=true;bar.hidden=true};
 watch('#list');watch('#cls');
 onAuthStateChanged(auth,u=>{
- subs.forEach(f=>f());subs=[];uid=u?.uid;tok=null;tasks=[];courses=[];later=false;lab();
+ subs.forEach(f=>f());subs=[];uid=u?.uid;tok=null;tasks=[];courses=[];lab();
  if(!u)return;
  const s=(n,cb)=>onSnapshot(collection(db,`users/${uid}/${n}`),q=>{cb(q.docs.map(d=>({id:d.id,...d.data()})));lab();sync()});
  subs=[s('courses',a=>courses=a),s('tasks',a=>tasks=a)];

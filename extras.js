@@ -141,7 +141,7 @@ function toast(msg,undo,ms=5000){
  const add=(label,fn,keep)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=()=>{if(!keep){hideT();clearTimeout(tm)}fn()};tt.append(b)};
  if(undo)add('Undo',undo);
  const c=$('#cal');
- if(undo&&c&&c.textContent!=='Calendar on')add('Sync calendar',()=>c.click(),true);
+ if(undo&&c&&(c.dataset.s==='wait'||c.dataset.s==='idle'))add('Reconnect',()=>c.click(),true);
  tt.classList.add('show');tm=setTimeout(hideT,ms);
 }
 window.dlNote=m=>toast(m,null,8000);
