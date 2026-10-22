@@ -25,7 +25,7 @@ $('#bx').onclick=async()=>{
   const cs=await load('courses'),ts=await load('tasks'),ms=await load('materials'),nm=Object.fromEntries(cs.map(c=>[c.id,c.name]));
   const data={version:1,courses:cs.map(strip),tasks:ts.map(t=>({...strip(t),course:nm[t.courseId]||''})),
    notes:ms.filter(m=>m.kind==='note').map(m=>({course:nm[m.courseId]||'',title:m.title||'',body:m.body||'',createdAt:m.createdAt,updatedAt:m.updatedAt})),
-   files:ms.filter(m=>m.kind!=='note').map(m=>({course:nm[m.courseId]||'',kind:m.kind,name:m.title||'',type:m.type,size:m.size,addedAt:m.createdAt}))};
+   files:ms.filter(m=>m.kind!=='note').map(m=>({course:nm[m.courseId]||'',kind:m.kind,name:m.title||'',notes:m.body||'',type:m.type,size:m.size,addedAt:m.createdAt}))};
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'}));
   a.download='cleanslate-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();

@@ -106,8 +106,8 @@ function head(){
  return true;
 }
 const noteRow=m=>`<li class="t mrow" data-m="${m.id}"><span class="ic">${NOTE}</span><button type="button" class="b" data-open><b>${esc(m.title||'Untitled note')}</b>${m.body?`<small class="clamp">${esc(m.body.slice(0,240))}</small>`:''}</button><span class="r">${date(m.updatedAt)}</span></li>`;
-const fileRow=m=>`<li class="t mrow" data-m="${m.id}"><span class="ic ft">${badge(m.type)}</span><a class="b" href="${esc(m.link)}" target="_blank" rel="noopener"><b>${esc(m.title||'File')}</b><small>${badge(m.type)} · ${size(m.size||0)} · ${date(m.createdAt)}</small></a><button type="button" class="ib" data-more aria-label="Rename or delete ${esc(m.title||'file')}">${MORE}</button></li>`;
-const photoRow=m=>`<li class="ph" data-m="${m.id}"><button type="button" data-open aria-label="${esc(m.title?'Photo: '+m.title:'Photo')}, ${date(m.createdAt)}">${m.prev?`<img src="${esc(m.prev)}" alt="" loading="lazy" decoding="async">`:`<span class="ph-none">${DRIVE}</span>`}</button></li>`;
+const fileRow=m=>`<li class="t mrow" data-m="${m.id}"><span class="ic ft">${badge(m.type)}</span><a class="b" href="${esc(m.link)}" target="_blank" rel="noopener"><b>${esc(m.title||'File')}</b><small>${badge(m.type)} · ${size(m.size||0)} · ${date(m.createdAt)}</small>${m.body&&m.body.trim()?`<small class="mnote">${esc(m.body.slice(0,200))}</small>`:''}</a><button type="button" class="ib" data-more aria-label="Rename or delete ${esc(m.title||'file')}">${MORE}</button></li>`;
+const photoRow=m=>{const n=!!(m.body&&m.body.trim());return `<li class="ph" data-m="${m.id}"><button type="button" data-open aria-label="${esc(m.title?'Photo: '+m.title:'Photo')}, ${date(m.createdAt)}${n?', has notes':''}">${m.prev?`<img src="${esc(m.prev)}" alt="" loading="lazy" decoding="async">`:`<span class="ph-none">${DRIVE}</span>`}${n?`<span class="ph-n" aria-hidden="true">${NOTE}</span>`:''}</button></li>`};
 const upTxt=p=>p.wait?'Waiting for Google Drive':p.err?'Upload failed':`Uploading ${p.prog}%`;
 const acts=p=>p.err?`<span class="up-act"><button type="button" class="lnk" data-retry>Retry</button><button type="button" class="lnk" data-drop>Remove</button></span>`:p.wait?`<span class="up-act"><button type="button" class="lnk" data-drop>Remove</button></span>`:'';
 const upRow=p=>p.kind==='photo'
@@ -226,7 +226,9 @@ $('#ned').onclick=()=>{clearTimeout(ntm);dirty=false;const m=mats.find(x=>x.id==
 const pv=document.createElement('dialog');pv.id='pv';pv.className='sheet';
 pv.innerHTML=`<div class="sh-bar"><button type="button" class="ib" id="pvx" aria-label="Back">${BACK}</button><small id="pvn" aria-live="polite"></small><button type="button" class="lnk dng" id="pvd">Delete</button></div>
 <figure class="pv-f"><img id="pvi" alt=""><button type="button" class="ib pv-p" id="pvp" aria-label="Previous photo">${BACK}</button><button type="button" class="ib pv-q" id="pvq" aria-label="Next photo">${NEXT}</button></figure>
-<div class="pv-cap"><label>Caption<input id="pvc" maxlength="200" placeholder="What is this? (optional)" autocomplete="off"></label><button type="button" class="lnk" id="pvl" hidden>Show full size</button><a class="lnk" id="pvo" target="_blank" rel="noopener">Open in Google Drive</a></div>`;
+<div class="pv-cap"><label>Caption<input id="pvc" maxlength="200" placeholder="What is this? (optional)" autocomplete="off"></label>
+<label>Notes<textarea id="pvb" rows="3" maxlength="20000" placeholder="Explain what it shows, or anything to remember"></textarea></label>
+<div class="pv-links"><small id="pvs" role="status"></small><button type="button" class="lnk" id="pvl" hidden>Show full size</button><a class="lnk" id="pvo" target="_blank" rel="noopener">Open in Google Drive</a></div></div>`;
 document.body.append(pv);
 let pid=null;
 const plist=()=>items('photo');
@@ -235,36 +237,46 @@ async function fullPhoto(m){
  const r=await api('GET',`${DRV}/${m.driveId}?alt=media`);if(!r.ok)throw new Error('Drive '+r.status);
  const u=URL.createObjectURL(await r.blob());full.set(m.id,u);return u;
 }
+/* Caption and notes save as you type; the fields only refill when another photo is shown, so live updates never overwrite typing */
+let shown=null,ptm=null,pdirty=false;
+function savePhoto(){
+ clearTimeout(ptm);if(!pdirty||!shown)return;pdirty=false;
+ setDoc(mref(shown),{title:$('#pvc').value.trim(),body:$('#pvb').value,updatedAt:Date.now()},{merge:true}).catch(fail);$('#pvs').textContent='Saved';
+}
 function showPhoto(){
  const L=plist(),i=L.findIndex(m=>m.id===pid);if(i<0){if(pv.open)pv.close();return}
  const m=L[i],img=$('#pvi');img.src=full.get(m.id)||m.prev||'';img.alt=m.title||`Photo from ${date(m.createdAt)}`;
- $('#pvn').textContent=`${i+1} of ${L.length}`;$('#pvc').value=m.title||'';$('#pvo').href=m.link||'#';
+ if(shown!==m.id){savePhoto();shown=m.id;$('#pvc').value=m.title||'';$('#pvb').value=m.body||'';$('#pvs').textContent=''}
+ $('#pvn').textContent=`${i+1} of ${L.length}`;$('#pvo').href=m.link||'#';
  $('#pvp').disabled=i===0;$('#pvq').disabled=i===L.length-1;
  $('#pvl').hidden=full.has(m.id)||on()||!m.driveId;
  if(on()&&m.driveId&&!full.has(m.id))fullPhoto(m).then(u=>{if(pid===m.id)img.src=u}).catch(e=>console.error(e));
 }
-function openPhoto(id){pid=id;pv.showModal();showPhoto();$('#pvx').focus()}
+function openPhoto(id){pid=id;shown=null;pv.showModal();showPhoto();$('#pvx').focus()}
 const step=d=>{const L=plist(),i=L.findIndex(m=>m.id===pid);const n=L[i+d];if(n){pid=n.id;showPhoto()}};
-$('#pvp').onclick=()=>step(-1);$('#pvq').onclick=()=>step(1);$('#pvx').onclick=()=>pv.close();
+$('#pvp').onclick=()=>step(-1);$('#pvq').onclick=()=>step(1);$('#pvx').onclick=()=>{savePhoto();pv.close()};
+pv.addEventListener('close',()=>{savePhoto();shown=null});
 $('#pvl').onclick=()=>ask(showPhoto);
-pv.addEventListener('keydown',e=>{if(e.target.matches('input'))return;if(e.key==='ArrowLeft')step(-1);else if(e.key==='ArrowRight')step(1)});
+pv.addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='ArrowLeft')step(-1);else if(e.key==='ArrowRight')step(1)});
 let sx=null;$('#pvi').addEventListener('pointerdown',e=>{sx=e.clientX});
 $('#pvi').addEventListener('pointerup',e=>{if(sx!==null&&Math.abs(e.clientX-sx)>50)step(e.clientX<sx?1:-1);sx=null});
-$('#pvc').onchange=()=>{const v=$('#pvc').value.trim();if(pid)setDoc(mref(pid),{title:v,updatedAt:Date.now()},{merge:true}).catch(fail)};
+const ptyped=()=>{pdirty=true;$('#pvs').textContent='Saving…';clearTimeout(ptm);ptm=setTimeout(savePhoto,700)};
+$('#pvc').oninput=ptyped;$('#pvb').oninput=ptyped;
 $('#pvd').onclick=()=>{const L=plist(),i=L.findIndex(m=>m.id===pid),m=L[i];if(!m)return;const n=L[i+1]||L[i-1];remove(m,'Photo');if(n){pid=n.id;showPhoto()}else pv.close()};
 
 /* ---- file details: rename (also in Drive while connected) or delete ---- */
 const fd=document.createElement('dialog');fd.id='fd';
 fd.innerHTML=`<form><h2>File</h2><p class="fd-m"><small id="fdm"></small> <a class="lnk" id="fdo" target="_blank" rel="noopener">Open in Google Drive</a></p>
 <label>Name<input id="fdn" maxlength="200" required autocomplete="off"></label>
+<label>Notes<textarea id="fdb" rows="4" maxlength="20000" placeholder="What is this file for? Pages to read, anything to remember"></textarea></label>
 <div class="act"><button type="button" class="lnk dng" id="fdd">Delete</button><span></span><button type="button" class="lnk" id="fdx">Cancel</button><button class="pri">Save</button></div></form>`;
 document.body.append(fd);
 let fid=null;
-function openFile(m){fid=m.id;$('#fdm').textContent=`${badge(m.type)} · ${size(m.size||0)} · added ${date(m.createdAt)}`;$('#fdo').href=m.link||'#';$('#fdn').value=m.title||'';fd.showModal()}
+function openFile(m){fid=m.id;$('#fdm').textContent=`${badge(m.type)} · ${size(m.size||0)} · added ${date(m.createdAt)}`;$('#fdo').href=m.link||'#';$('#fdn').value=m.title||'';$('#fdb').value=m.body||'';fd.showModal()}
 $('#fdx').onclick=()=>fd.close();
 fd.querySelector('form').onsubmit=e=>{
  e.preventDefault();const v=$('#fdn').value.trim(),m=mats.find(x=>x.id===fid);
- if(v&&m){setDoc(mref(m.id),{title:v,updatedAt:Date.now()},{merge:true}).catch(fail);if(on()&&m.driveId)api('PATCH',`${DRV}/${m.driveId}?fields=id`,{name:v}).catch(e=>console.error(e))}
+ if(v&&m){setDoc(mref(m.id),{title:v,body:$('#fdb').value,updatedAt:Date.now()},{merge:true}).catch(fail);if(on()&&m.driveId&&v!==m.title)api('PATCH',`${DRV}/${m.driveId}?fields=id`,{name:v}).catch(e=>console.error(e))}
  fd.close();
 };
 $('#fdd').onclick=()=>{const m=mats.find(x=>x.id===fid);fd.close();if(m)remove(m,'File')};
