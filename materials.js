@@ -70,7 +70,10 @@ async function connect(after){
 /* First time: say where files go and how to get past Google's unverified-app screen */
 const dp=document.createElement('dialog');dp.id='dprimer';
 dp.innerHTML=`<form method="dialog"><span class="pr-ic">${DRIVE}</span><h2>Save files to your Google Drive</h2>
-<p>Files and photos you add go into a <b>CleanSlate</b> folder in your own Google Drive and use its free space. The app can only see the files it saved there, never the rest of your Drive.</p>
+<p>CleanSlate has no file storage of its own, so the files and photos you add go into a <b>CleanSlate</b> folder in your own Google Drive. That way they open on all your devices and stay yours, even if you stop using the app.</p>
+<ul class="pr-list"><li><b>Free.</b> It uses your Drive’s free space (shared with Gmail and Google Photos). CleanSlate never charges anything.</li>
+<li><b>Only its own files.</b> The app can see only the files it saves there, never the rest of your Drive.</li>
+<li><b>Built on Google.</b> Sign-in and your data run on Google Firebase, and Google handles this permission. CleanSlate never sees your Google password.</li></ul>
 <div class="pr-warn"><b>Google may show a warning first</b><p>This student app hasn’t finished Google’s review yet. If Google says “Google hasn’t verified this app”, tap <b>Advanced</b>, then <b>Go to deadline-tracker-220cc.firebaseapp.com (unsafe)</b>.</p></div>
 <p class="pr-note">Access lasts about an hour at a time. Your files stay in Drive; adding more later takes one tap to reconnect.</p>
 <div class="act"><button type="button" class="lnk" id="dpx">Not now</button><span></span><button type="button" class="pri" id="dpgo">Continue to Google</button></div></form>`;

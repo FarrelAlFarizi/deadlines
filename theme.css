@@ -388,3 +388,8 @@ a.b{display:block;color:inherit;text-decoration:none}
 .ph-none{display:grid;place-items:center;width:100%;height:100%;color:var(--mut)}
 .mrow.up.wait small,.ph.up.wait small{color:var(--mut)}
 .mrow.up.wait .bar,.ph.up.wait .bar{display:none}
+#dprimer .pr-list{margin:10px 0 0;padding:0;list-style:none}
+#dprimer .pr-list li{margin-top:8px;line-height:1.45}
+:is(#primer,#dprimer) .pr-warn b{overflow-wrap:anywhere}
+dialog h2{overflow-wrap:break-word;hyphens:auto}
+dialog:not(.sheet){max-width:calc(100vw - 16px)}
