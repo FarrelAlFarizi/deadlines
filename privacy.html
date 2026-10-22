@@ -34,10 +34,10 @@
   <li>Courses: name, professor, room, weekly day and time, and the date the semester ends.</li>
   <li>Tasks: title, course, type (assignment, quiz, exam or project), due date and time, notes, and whether it is done.</li>
   <li>Course notes you write.</li>
-  <li>Files and photos you add to a course, with their names, sizes and the date you added them. Photos are made smaller on your device before they are uploaded.</li>
+  <li>For files and photos you add to a course: their names, sizes, the date you added them, the Google Drive link to each, and a small preview picture of each photo. The files themselves are kept in your own Google Drive (see below).</li>
   <li>Your reminder settings, and small markers the app uses to keep Google Calendar in step.</li>
  </ul>
- <p>This is saved in Google Firebase under your own account: text in Cloud Firestore, and files and photos in Cloud Storage for Firebase. The security rules only let your signed-in account add, read or delete it. Each file and photo also has a long private link that the app uses to show it; anyone who is given that exact link could open that one file, so do not share it.</p>
+ <p>This is saved in Google Firebase (Cloud Firestore) under your own account. The database rules only let your signed-in account read or write it.</p>
  <h3>On your device</h3>
  <p>Your theme, background and sound choices are kept in your browser's local storage. The app also keeps an offline copy of your data and of its own files in the browser, so it works without a connection. Signing out does not erase that offline copy; clearing the site's data in your browser does.</p>
 
@@ -48,7 +48,16 @@
   <li>The access key Google gives the app lasts about an hour and is kept only in the open page's memory. It is not saved to the database or sent anywhere else.</li>
   <li>You can remove access at any time from your <a href="https://myaccount.google.com/connections" rel="noopener">Google account's third-party connections</a>. Events already created stay on your calendar until you delete them.</li>
  </ul>
- <p>CleanSlate's use of information received from Google APIs follows the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements. Google user data is used only to show and sync your own schedule, is not shared with anyone, is not used for ads, and is not used to train AI models.</p>
+ <h2>Google Drive</h2>
+ <p>Drive access is only requested when you add a file or photo to a course. It uses Google's <code>drive.file</code> permission, the narrowest Drive permission: the app can only see and change the files it saved itself, never the rest of your Drive.</p>
+ <ul>
+  <li>Files and photos go into a folder called CleanSlate in your Google Drive, with a folder for each course, and use your Drive's own storage. Photos are made smaller on your device before they are saved.</li>
+  <li>They stay private in your Drive, with Drive's normal sharing settings. The app does not share them with anyone.</li>
+  <li>Like Calendar, the access key lasts about an hour and is kept only in the open page's memory.</li>
+  <li>Deleting a file or photo in the app moves it to your Drive trash (if Drive isn't connected at that moment, this happens the next time it is). You can also delete or move the files in Drive yourself at any time; they are yours.</li>
+  <li>You can remove access at any time from your <a href="https://myaccount.google.com/connections" rel="noopener">Google account's third-party connections</a>. Files already saved stay in your Drive.</li>
+ </ul>
+ <p>CleanSlate's use of information received from Google APIs follows the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements. Google user data is used only to show and sync your own schedule and course files, is not shared with anyone, is not used for ads, and is not used to train AI models.</p>
 
  <h2>Why it is used</h2>
  <p>Only to run the app for you: show your classes and deadlines, sync them across your devices, and put reminders on your calendar if you ask. Your data is not used for advertising, profiling or anything else, and the maker does not look at it except when you ask for help.</p>
@@ -56,21 +65,21 @@
  <h2>Who else handles it</h2>
  <p>There is no server of the maker's own. These services are involved, each under its own privacy terms:</p>
  <ul>
-  <li><b>Google Firebase</b> stores your data, files and photos and handles sign-in. Its servers may be outside your country.</li>
-  <li><b>Google Calendar</b>, only if you connect it.</li>
+  <li><b>Google Firebase</b> stores your data and handles sign-in. Its servers may be outside your country.</li>
+  <li><b>Google Calendar</b> and <b>Google Drive</b>, only if you connect them.</li>
   <li><b>GitHub Pages</b> hosts the website and, like any web host, may log visitors' IP addresses.</li>
   <li><b>Google Fonts</b> serves the typeface, which means your browser contacts Google when a page loads.</li>
  </ul>
  <p>Nothing is sold or shared with anyone else, unless the law requires it.</p>
 
  <h2>How long it is kept</h2>
- <p>Until you delete it. When you delete a task or course in the app, it is removed from the database straight away. If it had already been put on your Google Calendar, it is first hidden, and removed for good once its calendar event has been cleaned up, which happens the next time Calendar is connected. Deleted notes, files and photos can be brought back with Undo for a few seconds, then are removed for good. Deleting a course also deletes its notes, files and photos. If you stop using the app, your data stays until you delete it with Delete my data.</p>
+ <p>Until you delete it. When you delete a task or course in the app, it is removed from the database straight away. If it had already been put on your Google Calendar, it is first hidden, and removed for good once its calendar event has been cleaned up, which happens the next time Calendar is connected. Deleted notes, files and photos can be brought back with Undo for a few seconds; after that notes are removed for good and files and photos go to your Google Drive trash. Deleting a course does the same with its notes, files and photos. If you stop using the app, your data stays until you delete it with Delete my data.</p>
 
  <h2>Your choices</h2>
  <ul>
-  <li><b>See and download it:</b> everything you entered is visible in the app. The JSON backup exports your courses, tasks and notes, plus a list of your files and photos; open a file or photo in the app to download it.</li>
+  <li><b>See and download it:</b> everything you entered is visible in the app. The JSON backup exports your courses, tasks and notes, plus a list of your files and photos; the files themselves are already in your Google Drive.</li>
   <li><b>Correct it:</b> edit any course, task or note, and rename any file or photo.</li>
-  <li><b>Delete everything:</b> in the app, open the menu and choose Delete my data. After you confirm with Google, it deletes all your courses, tasks, notes, files, photos and settings, your CleanSlate account, and (if you tick the box) the events the app added to your Google Calendar. It happens straight away and cannot be undone.</li>
+  <li><b>Delete everything:</b> in the app, open the menu and choose Delete my data. After you confirm with Google, it deletes all your courses, tasks, notes and settings and your CleanSlate account. If you tick the boxes, it also removes the events the app added to your Google Calendar and moves the files and photos it saved in your Google Drive to the Drive trash (the empty CleanSlate folders stay for you to delete). It happens straight away and cannot be undone.</li>
   <li><b>Stop calendar access:</b> see the Google Calendar section above.</li>
  </ul>
 

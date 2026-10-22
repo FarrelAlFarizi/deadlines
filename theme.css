@@ -291,14 +291,14 @@ button.b{display:block;width:100%;min-width:0;margin:0;padding:0;border:0;backgr
 .su-skip{margin-left:auto}
 body.onb #meter,body.onb #srch,body.onb #flt,body.onb #nm,body.onb #selrow,body.onb #list>.empty{display:none!important}
 /* Calendar explainer shown before Google's permission screen */
-#primer{width:min(92vw,420px)}
-#primer .pr-ic{display:grid;place-items:center;width:44px;height:44px;margin-bottom:12px;border:1px solid var(--ln);border-radius:50%}
-#primer .pr-ic svg{width:22px;height:22px}
-#primer p{margin:8px 0 0;line-height:1.5}
-#primer .pr-warn{margin-top:14px;padding:12px 14px;border:1px solid var(--ln);border-radius:14px;background:var(--seg)}
-#primer .pr-warn>b{display:block}
-#primer .pr-warn p{margin:4px 0 0}
-#primer .pr-note{font-size:.78rem;color:var(--mut)}
+:is(#primer,#dprimer){width:min(92vw,420px)}
+:is(#primer,#dprimer) .pr-ic{display:grid;place-items:center;width:44px;height:44px;margin-bottom:12px;border:1px solid var(--ln);border-radius:50%}
+:is(#primer,#dprimer) .pr-ic svg{width:22px;height:22px}
+:is(#primer,#dprimer) p{margin:8px 0 0;line-height:1.5}
+:is(#primer,#dprimer) .pr-warn{margin-top:14px;padding:12px 14px;border:1px solid var(--ln);border-radius:14px;background:var(--seg)}
+:is(#primer,#dprimer) .pr-warn>b{display:block}
+:is(#primer,#dprimer) .pr-warn p{margin:4px 0 0}
+:is(#primer,#dprimer) .pr-note{font-size:.78rem;color:var(--mut)}
 /* Hidden on screen, still read by screen readers */
 .vh{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;border:0!important;overflow:hidden!important;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 /* Semester agenda: day labels, class cards, Finished toggle, search mode */
@@ -379,3 +379,12 @@ a.b{display:block;color:inherit;text-decoration:none}
 .pv-cap .lnk{min-height:44px;display:inline-flex;align-items:center}
 .fd-m{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;color:var(--mut)}
 .fd-m .lnk{min-height:44px;display:inline-flex;align-items:center}
+.dwait{list-style:none;grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin:0 0 10px;padding:12px 14px;border:1px solid var(--ln);border-radius:20px;background:var(--card)}
+.dwait .ic svg,.ph-none svg{width:20px;height:20px}
+.dwait p{flex:1 1 12rem;min-width:0;margin:0}
+.dwait b{display:block;font-weight:600}
+.dwait small{display:block;margin-top:2px;color:var(--mut);font-size:.78rem}
+.dwait .pri{margin-left:auto;min-height:44px}
+.ph-none{display:grid;place-items:center;width:100%;height:100%;color:var(--mut)}
+.mrow.up.wait small,.ph.up.wait small{color:var(--mut)}
+.mrow.up.wait .bar,.ph.up.wait .bar{display:none}
