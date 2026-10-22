@@ -74,14 +74,22 @@ document.body.append(dlg,pk);
 let draft={},pick=null;
 const render=()=>{$('#rl').innerHTML=[...TYPES,'cls'].map(k=>{const a=draft[k],max=k==='cls'?3:5;return `<div class="rg"><b>${LAB[k]||k}</b>${a.map((m,i)=>`<button type="button" class="chip" data-k="${k}" data-i="${i}">${fmt(m)}</button>`).join('')}${a.length<max?`<button type="button" class="chip add" data-k="${k}">+ Add</button>`:''}</div>`}).join('')};
 const val=w=>Math.min(Math.round(w.scrollTop/H),w.children.length-1);
-const mark=w=>{w.querySelector('.on')?.classList.remove('on');w.children[val(w)].classList.add('on')};
+/* Each wheel is a spin button for screen readers and keyboards: it announces "3 days" and arrow keys change it */
+const UNIT={days:['day','days'],hours:['hour','hours'],min:['minute','minutes']};
+const mark=(w,v=val(w))=>{w.querySelector('.on')?.classList.remove('on');w.children[v].classList.add('on');w.setAttribute('aria-valuenow',v);w.setAttribute('aria-valuetext',v+' '+UNIT[w.dataset.u][v===1?0:1])};
+const now=w=>+w.getAttribute('aria-valuenow');
 function attachWheel(w){
  let acc=0,tgt=null,t;
  const step=dir=>{
-  const i=Math.max(0,Math.min(w.children.length-1,(tgt??val(w))+dir));
-  tgt=i;w.scrollTo({top:i*H,behavior:'smooth'});
+  const i=Math.max(0,Math.min(w.children.length-1,(tgt??now(w))+dir));
+  tgt=i;mark(w,i);w.scrollTo({top:i*H,behavior:'smooth'});
   clearTimeout(t);t=setTimeout(()=>{tgt=null},300);
  };
+ w.addEventListener('keydown',e=>{
+  const n=w.children.length-1,d={ArrowUp:1,ArrowDown:-1,PageUp:5,PageDown:-5}[e.key];
+  if(d){e.preventDefault();step(d)}
+  else if(e.key==='Home'||e.key==='End'){e.preventDefault();step((e.key==='Home'?0:n)-(tgt??now(w)))}
+ });
  w.addEventListener('wheel',e=>{
   e.preventDefault();
   const d=e.deltaMode===1?e.deltaY*16:e.deltaY;
@@ -94,7 +102,7 @@ function attachWheel(w){
 const ws=pk.querySelector('.ws');
 const W=[['days',MAXD+1],['hours',24],['min',60]].map(([l,n])=>{
  const c=document.createElement('div');c.className='wc';
- c.innerHTML=`<div class="wl">${l}</div><div class="wh" tabindex="0" role="listbox" aria-label="${l}">${Array.from({length:n},(_,i)=>`<div data-i="${i}">${i}</div>`).join('')}</div>`;
+ c.innerHTML=`<div class="wl" aria-hidden="true">${l}</div><div class="wh" tabindex="0" role="spinbutton" data-u="${l}" aria-label="${UNIT[l][1][0].toUpperCase()+UNIT[l][1].slice(1)}" aria-valuemin="0" aria-valuemax="${n-1}" aria-valuenow="0">${Array.from({length:n},(_,i)=>`<div data-i="${i}" aria-hidden="true">${i}</div>`).join('')}</div>`;
  ws.append(c);const w=c.querySelector('.wh');
  w.onscroll=()=>mark(w);attachWheel(w);
  w.onclick=e=>{const i=e.target.dataset.i;if(i!=null)w.scrollTo({top:i*H,behavior:'smooth'})};
@@ -104,12 +112,13 @@ function openPick(k,i){
  pick={k,i};const m=i==null?60:draft[k][i];
  $('#pe').textContent='';$('#prm').hidden=i==null;
  pk.showModal();
- requestAnimationFrame(()=>{[Math.floor(m/1440),Math.floor(m%1440/60),m%60].forEach((v,j)=>{W[j].scrollTop=v*H;mark(W[j])})});
+ const vs=[Math.floor(m/1440),Math.floor(m%1440/60),m%60];vs.forEach((v,j)=>mark(W[j],v));
+ requestAnimationFrame(()=>vs.forEach((v,j)=>{W[j].scrollTop=v*H;mark(W[j])}));
 }
 $('#rl').onclick=e=>{const b=e.target.closest('.chip');if(b)openPick(b.dataset.k,b.dataset.i===undefined?null:+b.dataset.i)};
 $('#pf').onsubmit=e=>{
  e.preventDefault();
- const m=val(W[0])*1440+val(W[1])*60+val(W[2]);
+ const v=w=>+w.getAttribute('aria-valuenow'),m=v(W[0])*1440+v(W[1])*60+v(W[2]);
  if(m>MAXD*1440){$('#pe').textContent='The longest allowed is 28 days.';return}
  const a=draft[pick.k];if(pick.i==null)a.push(m);else a[pick.i]=m;
  draft[pick.k]=[...new Set(a)].sort((x,y)=>y-x);pk.close();render();

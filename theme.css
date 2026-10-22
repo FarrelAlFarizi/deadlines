@@ -157,9 +157,9 @@ label{display:block;margin-top:14px;font-size:.75rem;letter-spacing:.14em;text-t
 .wh div.on{color:var(--ink);font-weight:700}
 #pe{color:var(--late);min-height:1.2em;margin:4px 0 0}
 #ins{padding:0 0 176px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,7.5em),1fr));gap:10px;margin-bottom:10px}
 .st,.card{border:1px solid var(--ln);border-radius:20px;background:linear-gradient(180deg,var(--card),var(--card2));box-shadow:var(--sh);padding:14px 16px}
-.st small,.card .cap{display:block;font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600}
+.st small,.card .cap{display:block;overflow-wrap:break-word;font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600}
 .st b{display:block;font-size:2.1rem;font-weight:700;line-height:1.15}
 .st b em{font-size:.75rem;font-style:normal;color:var(--mut);margin-left:6px;letter-spacing:.1em;text-transform:uppercase}
 .card{margin-bottom:10px}
@@ -304,7 +304,7 @@ body.onb #meter,body.onb #srch,body.onb #flt,body.onb #nm,body.onb #selrow,body.
 /* Semester agenda: day labels, class cards, Finished toggle, search mode */
 #list .day{position:sticky;top:calc(env(safe-area-inset-top) + 6px);z-index:3;margin:18px 0 8px;pointer-events:none}
 #list .day:first-child{margin-top:4px}
-#list .day h2{display:inline-flex;align-items:baseline;gap:8px;margin:0;padding:6px 12px;border:1px solid var(--ln);border-radius:999px;background:color-mix(in srgb,var(--solid) 82%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:var(--sh);font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+#list .day h2{display:inline-flex;align-items:baseline;gap:8px;margin:0;padding:6px 12px;border:1px solid var(--ln);border-radius:999px;background:color-mix(in srgb,var(--solid) 94%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:var(--sh);font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
 #list .day h2 span{font-weight:600;letter-spacing:.06em;color:var(--mut)}
 #list .day.od h2{color:var(--late);border-color:color-mix(in srgb,var(--late) 45%,transparent)}
 #list .none{margin:0 0 10px;padding:2px 4px 6px;font-size:.78rem;color:var(--mut)}
@@ -334,10 +334,10 @@ dialog.sheet>*{flex-shrink:0}
 .sh-bar small{color:var(--mut);font-size:.8rem;font-variant-numeric:tabular-nums}
 #cp h2{margin:4px 0 4px;font-size:min(2.1rem,9vw);line-height:1.05;overflow-wrap:break-word}
 .cp-sub{margin:0;color:var(--mut);font-size:.9rem}
-.cp-next{display:block;width:100%;min-height:44px;margin-top:12px;padding:11px 14px;border:1px solid var(--ln);border-radius:16px;background:var(--card);color:var(--ink);font-weight:600;font-size:.875rem;text-align:left}
+.cp-next{display:block;width:100%;min-height:44px;margin-top:12px;padding:11px 14px;border:1px solid var(--ln);border-radius:14px;background:var(--card);color:var(--ink);font-weight:600;font-size:.875rem;text-align:left}
 .cp-next.late{color:var(--late);border-color:color-mix(in srgb,var(--late) 45%,transparent)}
-.mtabs{display:flex;gap:4px;margin:18px 0 14px;padding:4px;border:1px solid var(--ln);border-radius:16px;background:var(--card)}
-.mtabs button{flex:1;min-width:0;min-height:44px;padding:0 6px;border:0;border-radius:12px;background:none;color:var(--mut);font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.mtabs{display:flex;gap:4px;margin:18px 0 14px;padding:4px;border:1px solid var(--ln);border-radius:14px;background:var(--card)}
+.mtabs button{flex:1;min-width:0;min-height:44px;padding:0 6px;border:0;border-radius:10px;background:none;color:var(--mut);font-weight:600;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
 .mtabs button[aria-selected="true"]{background:var(--inv);color:var(--on)}
 .mtabs button[aria-selected="true"]:focus-visible{outline-color:var(--ink)}
 .mtabs .n{font-variant-numeric:tabular-nums;opacity:.8}
@@ -404,3 +404,4 @@ dialog:not(.sheet){max-width:calc(100vw - 16px)}
 .pv-links small{flex:1;color:var(--mut);font-size:.78rem}
 #fdb{resize:vertical;line-height:1.45}
 #pv .pv-f{min-height:max(12rem,48dvh)}
+::placeholder{color:var(--mut);opacity:1}
