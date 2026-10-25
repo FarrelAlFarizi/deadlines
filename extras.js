@@ -170,7 +170,8 @@ $('#list').addEventListener('click',e=>{
 },true);
 $('#td').addEventListener('click',e=>{
  if(!e.target.closest('#tdel')||!window.dlEdit)return;
- e.stopPropagation();e.preventDefault();const id=window.dlEdit;$('#td').close();later(pendT,'tasks',id,'Task deleted',{deleted:true});
+ e.stopPropagation();e.preventDefault();const id=window.dlEdit,one=()=>{$('#td').close();later(pendT,'tasks',id,'Task deleted',{deleted:true})};
+ if(!window.dlTaskDel?.(id,one))one();
 },true);
 $('#cd').addEventListener('click',e=>{
  if(!e.target.closest('#cdel')||!window.dlEditC)return;

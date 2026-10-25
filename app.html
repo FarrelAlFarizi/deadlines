@@ -33,8 +33,16 @@
 <label>Course<select name="course" id="cs"></select></label>
 <label>Type<select name="type"><option>Assignment<option>Quiz<option>Exam<option>Project</select></label>
 <label>Due<input type="datetime-local" name="due" required></label>
+<label class="ckl rpt"><input type="checkbox" name="rep" aria-describedby="rsum"> Repeats every week</label>
+<div id="rpb" hidden><label>Until<input type="date" name="until"></label><p id="rsum"></p><p id="terr" class="ferr" role="alert"></p></div>
 <label>Notes<textarea name="notes" rows="3"></textarea></label>
-<div class="act"><button type="button" id="tdel" class="lnk dng">Delete</button><span></span><button type="button" class="lnk" data-x>Cancel</button><button class="pri">Save task</button></div>
+<div class="act"><button type="button" id="tdel" class="lnk dng">Delete</button><span></span><button type="button" class="lnk" data-x>Cancel</button><button class="pri" id="tsv">Save task</button></div>
+</form></dialog>
+<dialog id="sc"><form>
+<h2 id="sct">Change which ones?</h2>
+<p id="scs"></p>
+<div class="scb"><button type="button" class="pri" data-v="one" id="sc1">Only this one</button><button type="button" class="sec" data-v="all" id="sc2">This and later ones</button></div>
+<div class="act"><span></span><button type="button" class="lnk" data-v="">Cancel</button></div>
 </form></dialog>
 <dialog id="cd"><form id="cf">
 <h2 id="cdt">New course</h2>
@@ -50,7 +58,7 @@
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,setDoc,deleteDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {initializeFirestore,persistentLocalCache,persistentMultipleTabManager,collection,doc,setDoc,deleteDoc,onSnapshot,writeBatch} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 const app=initializeApp({apiKey:"AIzaSyBe49PRXy_VtbrE-2I80AUo28CVUZPhY30",authDomain:"deadline-tracker-220cc.firebaseapp.com",projectId:"deadline-tracker-220cc",storageBucket:"deadline-tracker-220cc.firebasestorage.app",messagingSenderId:"700144852855",appId:"1:700144852855:web:ac7badeace66dc61d4cb72"});
 const auth=getAuth(app);
 const db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
@@ -66,7 +74,7 @@ const p2=n=>String(n).padStart(2,'0');
 const ls=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`;
 const when=d=>d.toLocaleString([],{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 function rel(ms){const a=Math.abs(ms),m=Math.round(a/6e4),h=Math.round(a/36e5),d=Math.round(a/864e5);const v=m<60?`${m} min`:h<48?`${h} h`:`${d} days`;return ms<0?`${v} late`:`in ${v}`}
-const IC={"Assignment": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 3h7l4 4v14H7z\"/><path d=\"M14 3v4h4M10 12h5M10 16h5\"/></svg>", "Quiz": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01\"/></svg>", "Exam": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"6\" y=\"4\" width=\"12\" height=\"17\" rx=\"2\"/><path d=\"M9 4h6v3H9zM9.5 14l2 2 3.5-4\"/></svg>", "Project": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m12 3 9 5-9 5-9-5zM3 13l9 5 9-5\"/></svg>", "Course": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z\"/><path d=\"M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3\"/></svg>", "Today": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"M12 8v4l3 2\"/></svg>", "check": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 12.5 4 4 8-9\"/></svg>"};
+const IC={"Assignment": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 3h7l4 4v14H7z\"/><path d=\"M14 3v4h4M10 12h5M10 16h5\"/></svg>", "Quiz": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01\"/></svg>", "Exam": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"6\" y=\"4\" width=\"12\" height=\"17\" rx=\"2\"/><path d=\"M9 4h6v3H9zM9.5 14l2 2 3.5-4\"/></svg>", "Project": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m12 3 9 5-9 5-9-5zM3 13l9 5 9-5\"/></svg>", "Course": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z\"/><path d=\"M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3\"/></svg>", "Today": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"M12 8v4l3 2\"/></svg>", "rep": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 11V9a3 3 0 0 1 3-3h12M16 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H5M8 21l-3-3 3-3\"/></svg>", "check": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 12.5 4 4 8-9\"/></svg>"};
 const empty=(a,b)=>`<li class="empty"><span class="eic">${IC.Today}</span><b>${a}</b>${b}</li>`;
 const path=(n,id)=>doc(db,`users/${uid}/${n}/${id}`);
 
@@ -119,10 +127,10 @@ function draw(){
  L.innerHTML=agenda();
 }
 /* One task row; the tick and the row both name the task and its timing for screen readers */
-function taskRow(t,i,nx){
+function taskRow(t,i,nx,x){
  const c=courses.find(x=>x.id===t.courseId),ms=due(t)-Date.now(),r=t.done?'Finished':rel(ms);
  const u=t.done?'fin':ms<0?'late':ms<1728e5?'soon':'';
- return `<li class="t ${u}${t===nx?' next':''}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230};--i:${i}"><span class="ic">${IC[t.type]||IC.Assignment}</span><button type="button" class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small><span class="vh">, ${r}</span></button><span class="r" aria-hidden="true">${r}</span><button class="chk" data-k="${t.id}" aria-pressed="${!!t.done}" aria-label="${t.done?'Finished: ':'Mark done: '}${esc(t.title)}">${IC.check}</button></li>`;
+ return `<li class="t ${u}${t===nx?' next':''}${x?.more?' rmore':''}" data-id="${t.id}" data-type="${esc(t.type)}" style="--h:${c?hue(c.id):230};--i:${i}"><span class="ic">${IC[t.type]||IC.Assignment}</span><button type="button" class="b"><b>${esc(t.title)}</b><small>${esc(c?c.name:'No course')}</small><small>${esc(t.type)}, ${when(due(t))}</small>${x?.meta?`<small class="rpm">${IC.rep}${x.meta}</small>`:''}<span class="vh">, ${r}</span></button><span class="r" aria-hidden="true">${r}</span><button class="chk" data-k="${t.id}" aria-pressed="${!!t.done}" aria-label="${t.done?'Finished: ':'Mark done: '}${esc(t.title)}">${IC.check}</button></li>`;
 }
 /* A weekly class on a given day; tapping it changes just that date */
 function classCard(o,today){
@@ -150,7 +158,14 @@ function agenda(){
   h+=it.length?it.map(x=>x.t?taskRow(x.t,i++,nx):x.html).join(''):'<li class="none">Nothing left today</li>';
  }
  const later=open.filter(t=>due(t).getTime()>=s0+7*D);
- if(later.length)h+=head('Later')+later.map(t=>taskRow(t,i++,nx)).join('');
+ /* A repeating deadline shows once in Later (its next copy); the other copies only appear while searching */
+ const seen=new Set();
+ if(later.length)h+=head('Later')+later.map(t=>{
+  if(!t.series)return taskRow(t,i++,nx);
+  if(seen.has(t.series))return taskRow(t,i,nx,{more:true});
+  seen.add(t.series);const n=open.filter(x=>x.series===t.series&&due(x)>due(t)).length;
+  return taskRow(t,i++,nx,{meta:`Every ${wday(t.due)}${n?` · ${n} more`:''}`});
+ }).join('');
  if(done.length)h+=`<li class="fin-tog"><button type="button" class="lnk" aria-expanded="${finOpen}">Finished<span>${done.length}</span></button></li>`+(finOpen?done.map(t=>taskRow(t,i++,null)).join(''):'');
  if(!open.length&&!occ.length&&!done.length)return empty('Nothing coming up','Tap + to add a deadline.');
  return h;
@@ -169,18 +184,100 @@ $('#list').onclick=e=>{
 };
 document.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 
+/* Repeating deadlines: weekly copies that share a series id; seq is each copy's number in its title */
+const MAXW=26,dOnly=s=>s.slice(0,10);
+const addDays=(s,n)=>{const d=new Date(s);d.setDate(d.getDate()+n);return ls(d)};
+const weeks=(from,until)=>{const a=[];for(let s=from;dOnly(s)<=until&&a.length<=MAXW;s=addDays(s,7))a.push(s);return a};
+const wday=s=>new Date(s).toLocaleDateString([],{weekday:'long'});
+const dshort=s=>new Date(s+'T00:00').toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
+const ser=t=>t?.series?tasks.filter(x=>x.series===t.series).sort((a,b)=>due(a)-due(b)):[];
+const after=t=>ser(t).filter(x=>x.id!==t.id&&!x.done&&due(x)>due(t));
+const base=(title,n)=>title.endsWith(' '+n)?title.slice(0,-(String(n).length+1)).trim():title;
+let orig=null,untilSet=false;
+const courseUntil=id=>courses.find(c=>c.id===id)?.until||'';
+function repInfo(){
+ const f=$('#tf'),t=tasks.find(x=>x.id===editing),u=f.until.value,d=f.due.value;
+ if(!f.rep.checked)return {};
+ if(!u||!d)return {hint:'Pick the last date it repeats.',err:'Pick the last date it repeats.'};
+ const w=weeks(d,u),pos=t?.series?ser(t).indexOf(t):0;
+ if(!w.length)return {hint:'Until is before the due date.',err:'Until must be on or after the due date.'};
+ if(pos+w.length>MAXW)return {hint:`That’s more than ${MAXW} weeks.`,err:`The most is ${MAXW} weeks. Pick an earlier Until date.`};
+ if(t?.series)return {n:w.length,hint:`Week ${pos+1} of ${pos+w.length}, every ${wday(d)} until ${dshort(u)}.`};
+ return {n:w.length,hint:w.length===1?`Only 1 deadline, on ${dshort(dOnly(d))}.`:`${w.length} deadlines, ${wday(d)}s at ${d.slice(11)}, until ${dshort(u)}.`};
+}
+function updRep(){
+ const f=$('#tf'),r=repInfo(),t=tasks.find(x=>x.id===editing);
+ $('#rpb').hidden=!f.rep.checked;$('#rsum').textContent=r.hint||'';$('#terr').textContent='';
+ $('#tsv').textContent=r.n>1&&!t?.series?`Save ${r.n} deadlines`:'Save task';
+}
 function openTask(id,cid){
  window.dlEdit=id||null;editing=id||null;const t=tasks.find(x=>x.id===id),f=$('#tf');
  $('#tdt').textContent=t?'Edit task':'New task';$('#tdel').hidden=!t;
  $('#cs').innerHTML='<option value="">No course</option>'+courses.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
  const d=new Date();d.setDate(d.getDate()+1);d.setHours(23,59,0,0);
  f.title.value=t?.title||'';f.course.value=t?.courseId||cid||'';f.type.value=t?.type||'Assignment';f.due.value=t?.due||ls(d);f.notes.value=t?.notes||'';
- $('#td').showModal();
+ const s=ser(t);f.rep.checked=!!t?.series;untilSet=!!t?.series;f.until.value=t?.series?dOnly(s[s.length-1].due):courseUntil(f.course.value);
+ orig={title:f.title.value,course:f.course.value,type:f.type.value,due:f.due.value,until:f.until.value,rep:f.rep.checked};
+ updRep();$('#td').showModal();
 }
-$('#tf').onsubmit=e=>{
- e.preventDefault();const f=e.target,id=editing||crypto.randomUUID(),old=tasks.find(x=>x.id===id);
- setDoc(path('tasks',id),{title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim(),done:old?.done||false,doneAt:old?.doneAt||0,updatedAt:Date.now()}).catch(fail);
+{const f=$('#tf');
+ f.rep.onchange=()=>{if(f.rep.checked&&!f.until.value)f.until.value=courseUntil(f.course.value);updRep()};
+ f.course.addEventListener('change',()=>{if(!untilSet&&!(tasks.find(x=>x.id===editing)?.series)){f.until.value=courseUntil(f.course.value);updRep()}});
+ f.until.oninput=()=>{untilSet=true;updRep()};f.due.addEventListener('input',updRep);
+}
+/* Asks whether a change or delete covers one copy or this and the later ones; resolves 'one', 'all' or '' */
+function askScope(del,t,n){
+ const d=$('#sc');$('#sct').textContent=del?'Delete which ones?':'Change which ones?';
+ $('#scs').textContent=`“${t.title}” repeats every ${wday(t.due)}, with ${n} more after this one. Finished ones never change.`;
+ $('#sc1').textContent=del?'Delete only this one':'Only this one';$('#sc2').textContent=del?'Delete this and later ones':'This and later ones';
+ return new Promise(res=>{d.onclick=e=>{const b=e.target.closest('[data-v]');if(!b)return;d.onclick=null;d.close();res(b.dataset.v)};d.onclose=()=>{d.onclick=null;res('')};d.showModal()});
+}
+const fields=f=>({title:f.title.value.trim(),courseId:f.course.value,type:f.type.value,due:f.due.value,notes:f.notes.value.trim()});
+const keep=(old,extra)=>({done:old?.done||false,doneAt:old?.doneAt||0,...extra,updatedAt:Date.now()});
+function newSeries(v,list,id,old){
+ const b=writeBatch(db),sid=crypto.randomUUID();
+ list.forEach((d,k)=>b.set(path('tasks',k?crypto.randomUUID():id),{...v,title:`${v.title} ${k+1}`,due:d,...keep(k?null:old,{series:sid,seq:k+1})}));
+ b.commit().catch(fail);window.dlToast?.(`${list.length} deadlines saved, every ${wday(list[0])}`);
+}
+/* "This and later ones": move each copy by the same number of days, apply title/course/type, then trim or extend to Until */
+function editLater(t,v,until){
+ const b=writeBatch(db),bt=base(v.title,t.seq),shift=Math.round((new Date(dOnly(v.due)+'T12:00')-new Date(dOnly(t.due)+'T12:00'))/864e5),hm=v.due.slice(11);
+ const gone=[];let last=v.due,n=ser(t).indexOf(t)+1,seq=Math.max(...ser(t).map(x=>x.seq||0));
+ b.set(path('tasks',t.id),{...v,title:`${bt} ${t.seq}`,...keep(t,{series:t.series,seq:t.seq})});
+ for(const x of after(t)){
+  const nd=dOnly(addDays(x.due,shift))+'T'+hm;
+  if(dOnly(nd)>until){gone.push(x.id);continue}
+  b.set(path('tasks',x.id),{title:`${bt} ${x.seq}`,courseId:v.courseId,type:v.type,due:nd,updatedAt:Date.now()},{merge:true});last=nd;n++;
+ }
+ for(let d=addDays(last,7);dOnly(d)<=until&&n<MAXW;d=addDays(d,7),n++)b.set(path('tasks',crypto.randomUUID()),{...v,title:`${bt} ${++seq}`,due:d,notes:'',...keep(null,{series:t.series,seq})});
+ b.commit().catch(fail);if(gone.length)window.dlBulkDelete?.('tasks',gone);
+}
+$('#tf').onsubmit=async e=>{
+ e.preventDefault();const f=e.target,id=editing||crypto.randomUUID(),old=tasks.find(x=>x.id===id),v=fields(f),r=repInfo();
+ if(f.rep.checked&&r.err){$('#rsum').textContent='';$('#terr').textContent=r.err;f.until.focus();return}
+ if(!old?.series){
+  $('#td').close();
+  if(f.rep.checked&&r.n>1)newSeries(v,weeks(v.due,f.until.value),id,old);
+  else setDoc(path('tasks',id),{...v,...keep(old)}).catch(fail);
+  return;
+ }
+ const mine={series:old.series,seq:old.seq},later=after(old);
+ const changed=['title','course','type','due','until','rep'].some(k=>orig[k]!==(k==='rep'?f.rep.checked:f[k].value));
+ if(!changed){setDoc(path('tasks',id),{...v,...keep(old,mine)}).catch(fail);$('#td').close();return}
+ const sc=later.length?await askScope(false,old,later.length):'all';
+ if(!sc)return;
+ if(!f.rep.checked){
+  setDoc(path('tasks',id),{...v,...keep(old,sc==='one'?{}:mine)}).catch(fail);
+  if(sc==='all'&&later.length)window.dlBulkDelete?.('tasks',later.map(x=>x.id));
+ }else if(sc==='one')setDoc(path('tasks',id),{...v,...keep(old,mine)}).catch(fail);
+ else editLater(old,v,f.until.value);
  $('#td').close();
+};
+/* Called by the delete handler in extras.js; returns true when it takes over (a copy with later copies) */
+window.dlTaskDel=(id,one)=>{
+ const t=tasks.find(x=>x.id===id),later=after(t);if(!t?.series||!later.length)return false;
+ askScope(true,t,later.length).then(sc=>{if(!sc)return;if(sc==='one')one();else{$('#td').close();window.dlBulkDelete?.('tasks',[id,...later.map(x=>x.id)])}});
+ return true;
 };
 $('#tdel').onclick=()=>{if(confirm('Delete this task?')){setDoc(path('tasks',editing),{deleted:true,updatedAt:Date.now()},{merge:true}).catch(fail);$('#td').close()}};
 

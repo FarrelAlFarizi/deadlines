@@ -405,3 +405,19 @@ dialog:not(.sheet){max-width:calc(100vw - 16px)}
 #fdb{resize:vertical;line-height:1.45}
 #pv .pv-f{min-height:max(12rem,48dvh)}
 ::placeholder{color:var(--mut);opacity:1}
+
+/* Repeating deadlines */
+label.ckl.rpt{align-items:center;min-height:44px;margin-top:10px;font-size:1rem}
+label.ckl.rpt input{accent-color:var(--ink)}
+#rpb label{margin-top:4px}
+#rsum{margin:8px 0 0;font-size:.875rem;color:var(--mut);line-height:1.4}
+#terr:empty{display:none}
+.t small.rpm{display:flex;align-items:center;gap:5px}
+.rpm svg{flex:none;width:1em;height:1em}
+body:not(.searching) #list li.rmore{display:none}
+#sc{width:min(88vw,380px)}
+#scs{margin:4px 0 0;color:var(--mut);line-height:1.45}
+.scb{display:flex;flex-direction:column;gap:8px;margin-top:20px}
+.scb button{min-height:48px}
+.sec{background:none;color:var(--ink);border:1px solid var(--ln);border-radius:14px;padding:13px 22px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.8rem}
+.sec:hover{background:var(--seg)}

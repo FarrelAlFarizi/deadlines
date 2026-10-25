@@ -28,12 +28,14 @@ service cloud.firestore {
         && optBool(d, 'deleted') && optNum(d, 'updatedAt');
     }
 
-    // Tasks: title, course link, type, due time, notes, done state, calendar sync marker.
+    // Tasks: title, course link, type, due time, notes, done state, calendar sync marker,
+    // and for a weekly repeating deadline its series id and its number in the series.
     function validTask(d) {
       return d.keys().hasOnly(['title', 'courseId', 'type', 'due', 'notes', 'done', 'doneAt',
-                               'calSig', 'deleted', 'updatedAt'])
+                               'series', 'seq', 'calSig', 'deleted', 'updatedAt'])
         && optStr(d, 'title', 300) && optStr(d, 'courseId', 100) && optStr(d, 'type', 30)
         && optStr(d, 'due', 30) && optStr(d, 'notes', 5000)
+        && optStr(d, 'series', 100) && (!('seq' in d) || (d.seq is int && d.seq >= 0 && d.seq <= 1000))
         && optBool(d, 'done') && optNum(d, 'doneAt')
         && optStrOrNull(d, 'calSig', 8000)
         && optBool(d, 'deleted') && optNum(d, 'updatedAt');

@@ -38,7 +38,7 @@ $('#bi').onclick=async()=>{
   const d=JSON.parse($('#bt').value),cs={};
   for(const c of await load('courses'))cs[String(c.name).toLowerCase()]=c.id;
   const ex=new Set((await load('tasks')).map(t=>t.title+'|'+t.due));
-  let nc=0,nt=0,sk=0;
+  let nc=0,nt=0,sk=0;const sids={};/* imported repeating copies get a fresh series id, shared again by the copies of one series */
   for(const c of d.courses||[]){
    const k=String(c.name||'').toLowerCase();if(!k||cs[k])continue;
    const id=crypto.randomUUID();
@@ -48,7 +48,7 @@ $('#bi').onclick=async()=>{
   for(const t of d.tasks||[]){
    if(!t.title||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(t.due||'')||isNaN(Date.parse(t.due))||ex.has(t.title+'|'+t.due)){sk++;continue}
    const cid=cs[String(t.course||'').toLowerCase()]||(Object.values(cs).includes(t.courseId)?t.courseId:'');
-   await setDoc(doc(db,`users/${uid}/tasks/${crypto.randomUUID()}`),{title:S(t.title,120),courseId:cid,type:['Assignment','Quiz','Exam','Project'].includes(t.type)?t.type:'Assignment',due:t.due,notes:S(t.notes,2000),done:!!t.done,updatedAt:Date.now()});
+   await setDoc(doc(db,`users/${uid}/tasks/${crypto.randomUUID()}`),{title:S(t.title,120),courseId:cid,type:['Assignment','Quiz','Exam','Project'].includes(t.type)?t.type:'Assignment',due:t.due,notes:S(t.notes,2000),done:!!t.done,...(t.series&&Number.isInteger(t.seq)&&t.seq>0&&t.seq<=1000?{series:sids[t.series]??=crypto.randomUUID(),seq:t.seq}:{}),updatedAt:Date.now()});
    ex.add(t.title+'|'+t.due);nt++;
   }
   const en=new Set((await load('materials')).filter(m=>m.kind==='note').map(m=>m.courseId+'|'+m.title+'|'+m.body));let nn=0;
