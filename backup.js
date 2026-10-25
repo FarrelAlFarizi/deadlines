@@ -6,7 +6,7 @@ const btn=document.createElement('button');btn.className='lnk';btn.textContent='
 $('.hr').insertBefore(btn,$('#out'));
 const dlg=document.createElement('dialog');
 dlg.innerHTML=`<form><h2>Backup and import</h2>
-<p><small>Export saves your courses, tasks and notes to a file, with a list of your course files and photos (the files themselves stay in the app). Import adds items from a file or pasted text and never overwrites what you have.</small></p>
+<p><small>Export saves your courses, deadlines and notes to a file, with a list of your course files and photos (the files themselves stay in the app). Import adds items from a file or pasted text and never overwrites what you have.</small></p>
 <div class="act"><button type="button" class="pri" id="bx">Export file</button></div>
 <label>Paste data to import<textarea id="bt" rows="6" placeholder='{"courses":[],"tasks":[]}'></textarea></label>
 <label>Or choose a file<input type="file" id="bf" accept=".json,application/json"></label>
@@ -29,7 +29,7 @@ $('#bx').onclick=async()=>{
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:'application/json'}));
   a.download='cleanslate-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();
-  say(`Exported ${cs.length} courses, ${ts.length} tasks and ${data.notes.length} notes.`);
+  say(`Exported ${cs.length} courses, ${ts.length} deadlines and ${data.notes.length} notes.`);
  }catch(e){say(e.message)}
 };
 $('#bf').onchange=async e=>{const f=e.target.files[0];if(f)$('#bt').value=await f.text()};
@@ -58,6 +58,6 @@ $('#bi').onclick=async()=>{
    const now=Date.now();await setDoc(doc(db,`users/${uid}/materials/${crypto.randomUUID()}`),{courseId:cid,kind:'note',title,body,createdAt:Number(n.createdAt)||now,updatedAt:now});
    en.add(cid+'|'+title+'|'+body);nn++;
   }
-  say(`Imported ${nc} courses, ${nt} tasks and ${nn} notes. Skipped ${sk} (duplicates or invalid).`);
+  say(`Imported ${nc} courses, ${nt} deadlines and ${nn} notes. Skipped ${sk} (duplicates or invalid).`);
  }catch(e){say('Could not import: '+e.message)}
 };

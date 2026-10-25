@@ -6,7 +6,8 @@ if(list){
  const kind=()=>view()==='courses'?'courses':'tasks';
  const idOf=li=>li.dataset.id||li.dataset.c;
  const ITEM='.t[data-id],.t[data-c]';
- const items=()=>[...list.querySelectorAll(ITEM)].filter(li=>!li.hidden);
+ /* Only rows on screen: hidden ones include the folded copies of a repeating deadline in Later */
+ const items=()=>[...list.querySelectorAll(ITEM)].filter(li=>!li.hidden&&li.getClientRects().length>0);
  const row=document.createElement('div');row.id='selrow';row.hidden=true;
  row.innerHTML='<button type="button" id="selbtn">Select</button>';
  list.before(row);
@@ -27,7 +28,7 @@ if(list){
  const exit=()=>{on=false;pick.clear();paint()};
  $('#selbtn').onclick=()=>enter();
  /* Select lives in the menu (and long-press), not above the list */
- const mi=document.createElement('button');mi.type='button';mi.className='lnk';mi.textContent='Select tasks';mi.hidden=true;
+ const mi=document.createElement('button');mi.type='button';mi.className='lnk';mi.textContent='Select deadlines';mi.hidden=true;
  const menu=$('#menu');if(menu)menu.insertBefore(mi,menu.firstChild);mi.onclick=()=>enter();
  $('#selx').onclick=exit;
  $('#selall').onclick=()=>{const it=items(),all=it.length>0&&it.every(li=>pick.has(idOf(li)));it.forEach(li=>all?pick.delete(idOf(li)):pick.add(idOf(li)));paint()};

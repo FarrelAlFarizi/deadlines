@@ -15,9 +15,9 @@ let uid,courses=[],cfg={},subs=[];
 const view=()=>$('#tabs .on')?.dataset.v||'agenda';
 const cls=document.createElement('div');cls.id='cls';
 const flt=document.createElement('div');flt.id='flt';
-flt.innerHTML=`<input id="q" type="search" placeholder="Search tasks" aria-label="Search tasks"><select id="ft" aria-label="Filter by type"><option value="">All types<option>Assignment<option>Quiz<option>Exam<option>Project</select>`;
+flt.innerHTML=`<input id="q" type="search" placeholder="Search deadlines" aria-label="Search deadlines"><select id="ft" aria-label="Filter by type"><option value="">All types<option>Assignment<option>Quiz<option>Exam<option>Project</select>`;
 $('#list').before(cls,flt);
-const nm=document.createElement('div');nm.id='nm';nm.className='empty';nm.hidden=true;nm.textContent='No matching tasks';flt.after(nm);
+const nm=document.createElement('div');nm.id='nm';nm.className='empty';nm.hidden=true;nm.textContent='No matching deadlines';flt.after(nm);
 function occs(a,b,list=courses){
  const out=[],A=dstr(a),B=dstr(b);
  for(const c of list){
@@ -44,7 +44,7 @@ function drawCls(){
 window.dlOccs=occs;
 /* Search lives behind a header icon; while a search or type filter is active the agenda shows matching tasks only */
 const SRCH='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>';
-const sb2=document.createElement('button');sb2.id='srch';sb2.type='button';sb2.className='ib';sb2.innerHTML=SRCH;sb2.setAttribute('aria-label','Search tasks');sb2.setAttribute('aria-expanded','false');sb2.setAttribute('aria-controls','flt');
+const sb2=document.createElement('button');sb2.id='srch';sb2.type='button';sb2.className='ib';sb2.innerHTML=SRCH;sb2.setAttribute('aria-label','Search deadlines');sb2.setAttribute('aria-expanded','false');sb2.setAttribute('aria-controls','flt');
 $('.hr').prepend(sb2);
 let sOpen=false;
 const setSearch=o=>{sOpen=o;sb2.setAttribute('aria-expanded',String(o));if(!o){$('#q').value='';$('#ft').value=''}apply();if(o)$('#q').focus();else sb2.focus()};
@@ -170,7 +170,7 @@ $('#list').addEventListener('click',e=>{
 },true);
 $('#td').addEventListener('click',e=>{
  if(!e.target.closest('#tdel')||!window.dlEdit)return;
- e.stopPropagation();e.preventDefault();const id=window.dlEdit,one=()=>{$('#td').close();later(pendT,'tasks',id,'Task deleted',{deleted:true})};
+ e.stopPropagation();e.preventDefault();const id=window.dlEdit,one=()=>{$('#td').close();later(pendT,'tasks',id,'Deadline deleted',{deleted:true})};
  if(!window.dlTaskDel?.(id,one))one();
 },true);
 $('#cd').addEventListener('click',e=>{
@@ -198,5 +198,5 @@ window.dlBulkDelete=(kind,ids)=>{
   map.set(id,{t:setTimeout(commit,6000),commit});
  }
  apply();
- toast(`${ids.length} ${kind==='courses'?'course':'task'}${ids.length>1?'s':''} deleted`,()=>{for(const id of ids){const p=map.get(id);if(p)clearTimeout(p.t);map.delete(id)}apply()});
+ toast(`${ids.length} ${kind==='courses'?'course':'deadline'}${ids.length>1?'s':''} deleted`,()=>{for(const id of ids){const p=map.get(id);if(p)clearTimeout(p.t);map.delete(id)}apply()});
 };

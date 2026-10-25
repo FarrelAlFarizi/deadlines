@@ -421,3 +421,28 @@ body:not(.searching) #list li.rmore{display:none}
 .scb button{min-height:48px}
 .sec{background:none;color:var(--ink);border:1px solid var(--ln);border-radius:14px;padding:13px 22px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.8rem}
 .sec:hover{background:var(--seg)}
+
+/* First-visit guide: a dimmed screen with one outlined control and a card beside it */
+:root{--tour-dim:rgba(10,10,14,.68);--tour-ring:#F6F6F8}
+:root[data-theme="dark"]{--tour-dim:rgba(2,3,12,.72);--tour-ring:#F3F3F5}
+#tour{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:hidden;overscroll-behavior:contain;touch-action:none;color:var(--ink)}
+#tour::backdrop{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+#tour[open]{animation:dfade .25s ease}
+#tour.closing{animation:dfadeout .2s ease forwards}
+.tr-safe{position:fixed;inset:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.tr-hole{position:fixed;left:0;top:0;pointer-events:none;box-shadow:0 0 0 2px var(--tour-ring),0 0 0 9999px var(--tour-dim);transition:transform .45s cubic-bezier(.16,1,.3,1),width .45s cubic-bezier(.16,1,.3,1),height .45s cubic-bezier(.16,1,.3,1),border-radius .45s cubic-bezier(.16,1,.3,1)}
+.tr-hole::after{content:"";position:absolute;inset:-2px;border-radius:inherit;box-shadow:0 0 0 2px var(--tour-ring);animation:trpulse 1.8s cubic-bezier(.16,1,.3,1) infinite}
+.tr-hole.off{box-shadow:0 0 0 9999px var(--tour-dim)}
+.tr-hole.off::after{display:none}
+@keyframes trpulse{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(1.18)}}
+.tr-card{position:fixed;display:flex;flex-direction:column;width:min(340px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:18px 18px 14px;border:1px solid var(--ln);border-radius:20px;background:var(--solid);box-shadow:var(--sh);transition:top .45s cubic-bezier(.16,1,.3,1),left .45s cubic-bezier(.16,1,.3,1)}
+.tr-card.in{animation:dfade .3s ease}
+.tr-n{display:block;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+#tour h2{margin:6px 0 0;font-size:1.1rem;text-transform:uppercase;letter-spacing:.04em;line-height:1.2}
+#trb{margin:8px 0 0;line-height:1.45}
+.tr-card .act{margin-top:16px}
+.tr-card .act .lnk,.tr-card .act .pri{min-height:44px}
+.tr-txt{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.tr-card .act{flex:none}
+/* The task and course forms keep their buttons pinned to the bottom, so Save is always in reach on a phone */
+#td .act,#cd .act{position:sticky;bottom:-18px;z-index:1;margin:18px -18px -18px;padding:12px 18px 18px;background:var(--solid);border-top:1px solid var(--ln)}
